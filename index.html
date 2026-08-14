@@ -1,0 +1,792 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <title>Love 轨迹 · 统计</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="Love轨迹" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>❤️</text></svg>"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Helvetica Neue",
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+      }
+
+      body {
+        background: #f5f0eb;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 100vh;
+        padding: 20px 16px 40px;
+        background-image: radial-gradient(
+          circle at 10% 30%,
+          rgba(255, 240, 230, 0.4) 0%,
+          transparent 60%
+        );
+      }
+
+      .app-container {
+        max-width: 390px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .card {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        background: #ffffff;
+        border-radius: 32px;
+        padding: 24px 20px;
+        box-shadow:
+          0 12px 30px rgba(0, 0, 0, 0.06),
+          0 4px 10px rgba(0, 0, 0, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        transition: all 0.1s ease;
+      }
+
+      .header-card {
+        padding: 20px 20px 18px;
+        background: linear-gradient(145deg, #ffffff, #fcf8f5);
+        border-bottom: 1px solid rgba(255, 200, 180, 0.2);
+      }
+
+      .app-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 26px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        color: #3d2c26;
+      }
+
+      .app-title span {
+        background: #ffddd6;
+        padding: 4px 12px 4px 10px;
+        border-radius: 40px;
+        font-size: 18px;
+        font-weight: 500;
+        color: #7a4a3a;
+        margin-left: 4px;
+      }
+
+      .subhead {
+        font-size: 14px;
+        color: #a48377;
+        margin-top: 4px;
+        padding-left: 4px;
+        font-weight: 400;
+        letter-spacing: 0.3px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #f0e3dd;
+        border: none;
+        border-radius: 60px;
+        padding: 14px 22px;
+        font-size: 18px;
+        font-weight: 600;
+        color: #3d2c26;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+        transition: all 0.08s ease;
+        cursor: default;
+        width: 100%;
+        letter-spacing: 0.3px;
+        background: #f4e8e2;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+      }
+
+      .btn:active {
+        background: #dccbc2 !important;
+        transform: scale(0.97);
+        box-shadow: 0 2px 8px rgba(90, 50, 40, 0.12);
+      }
+
+      .btn-primary {
+        background: #fadbd2;
+        color: #4f322a;
+        font-size: 20px;
+        padding: 18px 22px;
+        border: 1px solid rgba(255, 215, 200, 0.6);
+      }
+      .btn-primary:active {
+        background: #efc7ba !important;
+      }
+
+      .btn-secondary {
+        background: #efe6e1;
+        padding: 12px 16px;
+        font-size: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.6);
+      }
+      .btn-secondary:active {
+        background: #ddd0c9 !important;
+      }
+
+      .btn-small {
+        padding: 10px 14px;
+        font-size: 15px;
+        background: #f0e3dd;
+      }
+      .btn-small:active {
+        background: #dccbc2 !important;
+      }
+
+      .date-list {
+        margin-top: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .date-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #f9f4f0;
+        padding: 12px 16px;
+        border-radius: 60px;
+        font-size: 16px;
+        border: 1px solid rgba(255, 200, 180, 0.15);
+        color: #3d2c26;
+      }
+
+      .date-item .delete-btn {
+        background: none;
+        border: none;
+        font-size: 20px;
+        color: #b48b7a;
+        padding: 0 6px;
+        transition: all 0.08s;
+        cursor: default;
+        line-height: 1;
+      }
+      .date-item .delete-btn:active {
+        color: #c0392b;
+        transform: scale(0.9);
+      }
+
+      .empty-message {
+        color: #b8a39a;
+        text-align: center;
+        padding: 18px 0 8px;
+        font-size: 15px;
+        letter-spacing: 0.3px;
+      }
+
+      .stats-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 6px;
+      }
+
+      .stat-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 4px;
+        border-bottom: 1px dashed rgba(180, 150, 140, 0.15);
+      }
+      .stat-row:last-child {
+        border-bottom: none;
+      }
+
+      .stat-label {
+        font-weight: 500;
+        color: #5f4a40;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      .stat-value {
+        background: #f0e3dd;
+        padding: 4px 16px;
+        border-radius: 40px;
+        font-weight: 600;
+        color: #3d2c26;
+        font-size: 15px;
+      }
+
+      .add-location-area {
+        background: #faf5f1;
+        border-radius: 60px;
+        padding: 6px 6px 6px 18px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 12px 0 6px;
+        border: 1px solid rgba(200, 170, 160, 0.2);
+      }
+      .add-location-area input {
+        flex: 1;
+        border: none;
+        background: transparent;
+        padding: 12px 0;
+        font-size: 16px;
+        outline: none;
+        color: #3d2c26;
+        min-width: 0;
+      }
+      .add-location-area input::placeholder {
+        color: #b8a39a;
+        font-weight: 400;
+      }
+      .add-location-area .btn {
+        width: auto;
+        padding: 10px 20px;
+        font-size: 16px;
+        background: #fadbd2;
+        border-radius: 40px;
+        flex-shrink: 0;
+      }
+      .add-location-area .btn:active {
+        background: #efc7ba !important;
+      }
+
+      .location-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 4px;
+        border-bottom: 1px solid rgba(180, 150, 140, 0.1);
+      }
+      .location-item:last-child {
+        border-bottom: none;
+      }
+      .location-item .loc-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .location-item .loc-name {
+        font-weight: 500;
+        color: #3d2c26;
+      }
+      .location-item .loc-date {
+        font-size: 13px;
+        color: #a48377;
+      }
+      .location-item .loc-del {
+        background: none;
+        border: none;
+        color: #b48b7a;
+        font-size: 18px;
+        padding: 4px 8px;
+        transition: 0.08s;
+        cursor: default;
+      }
+      .location-item .loc-del:active {
+        color: #c0392b;
+        transform: scale(0.9);
+      }
+
+      .footer-note {
+        font-size: 12px;
+        color: #b8a39a;
+        text-align: center;
+        margin-top: 12px;
+        letter-spacing: 0.2px;
+      }
+
+      .flex-row {
+        display: flex;
+        gap: 12px;
+      }
+      .flex-row .btn {
+        flex: 1;
+      }
+      .mt-2 {
+        margin-top: 12px;
+      }
+      .mb-1 {
+        margin-bottom: 8px;
+      }
+
+      .stat-summary {
+        display: flex;
+        justify-content: space-around;
+        background: #f9f4f0;
+        border-radius: 60px;
+        padding: 12px 8px;
+        margin-top: 14px;
+        border: 1px solid rgba(200, 180, 170, 0.15);
+      }
+      .stat-summary-item {
+        text-align: center;
+      }
+      .stat-summary-item .number {
+        font-size: 22px;
+        font-weight: 700;
+        color: #3d2c26;
+      }
+      .stat-summary-item .label {
+        font-size: 12px;
+        color: #a48377;
+        margin-top: 2px;
+      }
+
+      @supports (padding: max(0px)) {
+        .app-container {
+          padding-bottom: max(16px, env(safe-area-inset-bottom));
+        }
+      }
+
+      @media (min-width: 430px) {
+        body {
+          padding: 40px 20px;
+        }
+        .app-container {
+          max-width: 400px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <div class="card header-card">
+        <div class="app-title">
+          ❤️ Love 轨迹
+          <span>v1.0</span>
+        </div>
+        <div class="subhead">记录每一次心动 · 珍藏地点</div>
+      </div>
+
+      <!-- 开房日期卡片 -->
+      <div class="card">
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+          "
+        >
+          <span style="font-size: 22px">📅</span>
+          <span style="font-weight: 600; font-size: 18px; color: #3d2c26"
+            >开房日期</span
+          >
+          <span
+            style="margin-left: auto; font-size: 14px; color: #b8a39a"
+            id="recordCountLabel"
+            >0 条</span
+          >
+        </div>
+        <button class="btn btn-primary" id="recordDateBtn">
+          ❤️ 一键记录今天
+        </button>
+        <div class="date-list" id="dateListContainer">
+          <div class="empty-message">还没有记录，点击上方按钮</div>
+        </div>
+        <!-- 统计汇总 -->
+        <div class="stat-summary">
+          <div class="stat-summary-item">
+            <div class="number" id="totalDates">0</div>
+            <div class="label">总记录</div>
+          </div>
+          <div class="stat-summary-item">
+            <div class="number" id="uniqueLocations">0</div>
+            <div class="label">不同地点</div>
+          </div>
+          <div class="stat-summary-item">
+            <div class="number" id="mostFreqLoc">-</div>
+            <div class="label">最常去</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 旅行地点统计卡片 -->
+      <div class="card">
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+          "
+        >
+          <span style="font-size: 22px">🗺️</span>
+          <span style="font-weight: 600; font-size: 18px; color: #3d2c26"
+            >旅行地点统计</span
+          >
+          <span
+            style="
+              margin-left: auto;
+              background: #f0e3dd;
+              padding: 2px 14px;
+              border-radius: 30px;
+              font-size: 14px;
+              color: #5f4a40;
+            "
+            id="locationCount"
+            >0</span
+          >
+        </div>
+
+        <!-- 添加地点 -->
+        <div class="add-location-area">
+          <input
+            type="text"
+            id="newLocationInput"
+            placeholder="地点名称 (如 杭州)"
+            maxlength="30"
+          />
+          <input
+            type="date"
+            id="newLocationDate"
+            style="
+              border: none;
+              background: transparent;
+              padding: 12px 0;
+              font-size: 15px;
+              color: #3d2c26;
+              width: 130px;
+              flex-shrink: 0;
+              outline: none;
+            "
+          />
+          <button
+            class="btn btn-small"
+            id="addLocationBtn"
+            style="width: auto; padding: 10px 18px"
+          >
+            ➕ 添加
+          </button>
+        </div>
+
+        <div class="stats-grid" id="locationStatsContainer">
+          <div class="empty-message" style="padding: 8px 0">
+            还没有地点，添加一条吧
+          </div>
+        </div>
+        <div class="footer-note">💡 添加地点时会记录日期，按时间排序</div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        "use strict";
+
+        const STORAGE_KEY = "love_trail_data_v4";
+
+        function getDefaultData() {
+          return {
+            dates: [],
+            locationCount: {},
+            locations: [],
+          };
+        }
+
+        function loadData() {
+          try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (raw) {
+              const parsed = JSON.parse(raw);
+              if (!parsed.dates) parsed.dates = [];
+              if (!parsed.locationCount) parsed.locationCount = {};
+              if (!parsed.locations) parsed.locations = [];
+              return parsed;
+            }
+          } catch (e) {
+            console.warn("数据解析失败", e);
+          }
+          return getDefaultData();
+        }
+
+        function saveData(data) {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        let appData = loadData();
+
+        // DOM
+        const dateListContainer = document.getElementById("dateListContainer");
+        const recordCountLabel = document.getElementById("recordCountLabel");
+        const locationStatsContainer = document.getElementById(
+          "locationStatsContainer",
+        );
+        const locationCountSpan = document.getElementById("locationCount");
+
+        const recordBtn = document.getElementById("recordDateBtn");
+        const addLocationBtn = document.getElementById("addLocationBtn");
+        const newLocationInput = document.getElementById("newLocationInput");
+        const newLocationDate = document.getElementById("newLocationDate");
+
+        // 统计汇总元素
+        const totalDatesEl = document.getElementById("totalDates");
+        const uniqueLocationsEl = document.getElementById("uniqueLocations");
+        const mostFreqLocEl = document.getElementById("mostFreqLoc");
+
+        function formatDate(dateObj) {
+          const y = dateObj.getFullYear();
+          const m = String(dateObj.getMonth() + 1).padStart(2, "0");
+          const d = String(dateObj.getDate()).padStart(2, "0");
+          return `${y}-${m}-${d}`;
+        }
+        function getTodayStr() {
+          return formatDate(new Date());
+        }
+
+        function renderAll() {
+          renderDateList();
+          renderLocationStats();
+          updateCounters();
+          rebuildLocationCount();
+          updateSummary();
+        }
+
+        function rebuildLocationCount() {
+          const countMap = {};
+          appData.locations.forEach((item) => {
+            const name = item.name.trim();
+            if (name) {
+              countMap[name] = (countMap[name] || 0) + 1;
+            }
+          });
+          appData.locationCount = countMap;
+        }
+
+        function renderDateList() {
+          const dates = appData.dates;
+          if (!dates || dates.length === 0) {
+            dateListContainer.innerHTML = `<div class="empty-message">❤️ 还没有记录，点击上方按钮</div>`;
+            return;
+          }
+          const sorted = [...dates].sort((a, b) => (a.date < b.date ? 1 : -1));
+          let html = "";
+          sorted.forEach((item, idx) => {
+            const locationPart = item.location ? `📍 ${item.location}` : "";
+            html += `
+                        <div class="date-item" data-index="${idx}">
+                            <span>📆 ${item.date} ${locationPart}</span>
+                            <button class="delete-btn" data-date="${item.date}" data-location="${item.location || ""}" aria-label="删除">✕</button>
+                        </div>
+                    `;
+          });
+          dateListContainer.innerHTML = html;
+          dateListContainer.querySelectorAll(".delete-btn").forEach((btn) => {
+            btn.addEventListener("click", function (e) {
+              e.stopPropagation();
+              const dateStr = this.getAttribute("data-date");
+              const location = this.getAttribute("data-location") || "";
+              deleteRecord(dateStr, location);
+            });
+          });
+        }
+
+        function renderLocationStats() {
+          const locs = appData.locations;
+          if (!locs || locs.length === 0) {
+            locationStatsContainer.innerHTML = `<div class="empty-message" style="padding: 8px 0;">还没有地点，添加一条吧</div>`;
+            return;
+          }
+          const sorted = [...locs].sort((a, b) => (a.date < b.date ? 1 : -1));
+          let html = "";
+          sorted.forEach((item, index) => {
+            html += `
+                        <div class="location-item" data-index="${index}">
+                            <div class="loc-info">
+                                <span class="loc-name">📍 ${item.name}</span>
+                                <span class="loc-date">📅 ${item.date}</span>
+                            </div>
+                            <button class="loc-del" data-name="${item.name}" data-date="${item.date}" aria-label="删除">✕</button>
+                        </div>
+                    `;
+          });
+          locationStatsContainer.innerHTML = html;
+          locationStatsContainer.querySelectorAll(".loc-del").forEach((btn) => {
+            btn.addEventListener("click", function (e) {
+              e.stopPropagation();
+              const name = this.getAttribute("data-name");
+              const date = this.getAttribute("data-date");
+              deleteLocationItem(name, date);
+            });
+          });
+        }
+
+        function updateCounters() {
+          const total = appData.dates.length;
+          recordCountLabel.textContent = `${total} 条`;
+          const locKeys = Object.keys(appData.locationCount);
+          locationCountSpan.textContent = locKeys.length;
+        }
+
+        function updateSummary() {
+          const total = appData.dates.length;
+          totalDatesEl.textContent = total;
+
+          const locKeys = Object.keys(appData.locationCount);
+          uniqueLocationsEl.textContent = locKeys.length;
+
+          if (locKeys.length === 0) {
+            mostFreqLocEl.textContent = "-";
+            return;
+          }
+          let maxCount = 0;
+          let maxLoc = "";
+          for (let key of locKeys) {
+            if (appData.locationCount[key] > maxCount) {
+              maxCount = appData.locationCount[key];
+              maxLoc = key;
+            }
+          }
+          mostFreqLocEl.textContent = maxLoc || "-";
+        }
+
+        // 操作
+        function addRecord(dateStr, location) {
+          const exists = appData.dates.some(
+            (d) => d.date === dateStr && d.location === location,
+          );
+          if (exists) {
+            alert(`📌 已存在 ${dateStr} 在 ${location || "未命名地点"} 的记录`);
+            return false;
+          }
+          appData.dates.push({ date: dateStr, location: location || "" });
+          if (location && location.trim() !== "") {
+            const key = location.trim();
+            appData.locationCount[key] = (appData.locationCount[key] || 0) + 1;
+          }
+          saveData(appData);
+          renderAll();
+          return true;
+        }
+
+        function deleteRecord(dateStr, location) {
+          const index = appData.dates.findIndex(
+            (d) => d.date === dateStr && d.location === location,
+          );
+          if (index === -1) return;
+          const removed = appData.dates.splice(index, 1)[0];
+          if (removed.location && removed.location.trim() !== "") {
+            const key = removed.location.trim();
+            if (appData.locationCount[key]) {
+              appData.locationCount[key] -= 1;
+              if (appData.locationCount[key] <= 0)
+                delete appData.locationCount[key];
+            }
+          }
+          saveData(appData);
+          renderAll();
+        }
+
+        function addLocationItem(name, date) {
+          if (!name || name.trim() === "") {
+            alert("请输入地点名称");
+            return false;
+          }
+          name = name.trim();
+          if (!date) date = getTodayStr();
+          const exists = appData.locations.some(
+            (item) => item.name === name && item.date === date,
+          );
+          if (exists) {
+            alert(`已存在 ${name} 在 ${date} 的记录`);
+            return false;
+          }
+          appData.locations.push({ name, date });
+          appData.locationCount[name] = (appData.locationCount[name] || 0) + 1;
+          saveData(appData);
+          renderAll();
+          return true;
+        }
+
+        function deleteLocationItem(name, date) {
+          const index = appData.locations.findIndex(
+            (item) => item.name === name && item.date === date,
+          );
+          if (index === -1) return;
+          appData.locations.splice(index, 1);
+          rebuildLocationCount();
+          saveData(appData);
+          renderAll();
+        }
+
+        function recordToday() {
+          const today = getTodayStr();
+          const locationInput = prompt(
+            "📍 输入地点名称 (例如：杭州)  \n留空则不统计地点",
+            "",
+          );
+          if (locationInput === null) return;
+          const location = locationInput.trim();
+          if (location === "") {
+            const hasEmpty = appData.dates.some(
+              (d) => d.date === today && d.location === "",
+            );
+            if (hasEmpty) {
+              alert("今天已有一条无地点记录");
+              return;
+            }
+          } else {
+            const exists = appData.dates.some(
+              (d) => d.date === today && d.location === location,
+            );
+            if (exists) {
+              alert(`今天已记录 ${today} 在 ${location}`);
+              return;
+            }
+          }
+          addRecord(today, location);
+          if (location && location.trim() !== "") {
+            const locExists = appData.locations.some(
+              (l) => l.name === location && l.date === today,
+            );
+            if (!locExists) {
+              appData.locations.push({ name: location, date: today });
+              rebuildLocationCount();
+              saveData(appData);
+              renderAll();
+            }
+          }
+        }
+
+        // 事件绑定
+        recordBtn.addEventListener("click", recordToday);
+
+        addLocationBtn.addEventListener("click", function () {
+          const name = newLocationInput.value.trim();
+          const date = newLocationDate.value || getTodayStr();
+          if (addLocationItem(name, date)) {
+            newLocationInput.value = "";
+            newLocationDate.value = "";
+          }
+        });
+
+        newLocationDate.value = getTodayStr();
+
+        renderAll();
+        console.log("❤️ Love 轨迹 v4 启动", appData);
+      })();
+    </script>
+  </body>
+</html>
