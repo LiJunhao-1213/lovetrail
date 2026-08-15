@@ -28,7 +28,6 @@
           Roboto,
           sans-serif;
       }
-
       html,
       body {
         height: 100%;
@@ -48,7 +47,6 @@
         overflow-y: auto;
         padding-bottom: max(70px, env(safe-area-inset-bottom, 20px));
       }
-
       .app-container {
         width: 100%;
         display: flex;
@@ -56,7 +54,6 @@
         gap: 10px;
         min-height: 100%;
       }
-
       .card {
         background: #ffffff;
         border-radius: 10px;
@@ -91,7 +88,6 @@
         color: #e08078;
         margin-top: 2px;
       }
-
       .tab-bar {
         position: fixed;
         bottom: 0;
@@ -143,7 +139,6 @@
         transform: scale(0.94);
         background: #fcd8d0;
       }
-
       .btn {
         display: inline-flex;
         align-items: center;
@@ -186,65 +181,90 @@
         background: #fde8e4;
         min-height: 32px;
       }
-
-      .date-range-group {
+      .date-with-days {
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 8px;
+        background: #fefaf8;
+        border: 1px solid #f5dcd8;
+        border-radius: 10px;
+        padding: 12px;
         margin-bottom: 8px;
-            background: #fefaf8;
-    border: 1px solid #f5dcd8;
-    border-radius: 10px;
-    padding: 8px 12px;
       }
-      .date-range-row {
+      .date-with-days .date-row {
         display: flex;
         align-items: center;
         gap: 4px;
         justify-content: space-between;
         flex-wrap: wrap;
-        margin-top: 8px;
       }
-      .date-range-row .label {
+      .date-row .label {
         font-size: 13px;
         font-weight: 500;
         color: #c08078;
-        width: 32px;
+        width: 40px;
         flex-shrink: 0;
         text-align: right;
       }
-      .date-range-row select {
+      .date-row select {
         flex: 0 1 auto;
         min-width: 48px;
         max-width: 70px;
-        border: none;
+        border: 1px solid #f5dcd8;
         border-radius: 10px;
         padding: 5px 7px;
         font-size: 14px;
-        background: none;
+        background: #ffffff;
         outline: none;
         color: #4a2a2a;
         appearance: auto;
         text-align: center;
         text-align-last: center;
       }
-      .date-range-row select:focus {
+      .date-row select:focus {
         border-color: #f0c8c0;
       }
-      .date-range-row .sep {
+      .date-row .sep {
         color: #d0a098;
         font-size: 13px;
         padding: 0 2px;
         flex-shrink: 0;
       }
-
-      .date-place-input {
+      .days-input-row {
         display: flex;
+        align-items: center;
         gap: 8px;
+        justify-content: center;
+      }
+      .days-input-row label {
+        font-size: 13px;
+        color: #c08078;
+        font-weight: 500;
+      }
+      .days-input-row input[type="number"] {
+        width: 60px;
+        border: 1px solid #f5dcd8;
+        border-radius: 10px;
+        padding: 6px 8px;
+        font-size: 14px;
+        background: #ffffff;
+        outline: none;
+        color: #4a2a2a;
+        text-align: center;
+      }
+      .days-input-row input[type="number"]:focus {
+        border-color: #f0c8c0;
+      }
+      .days-input-row .result-date {
+        font-size: 13px;
+        color: #e08078;
+        margin-left: 4px;
+      }
+      .place-input-group {
         margin-bottom: 8px;
       }
-      .date-place-input input {
-        flex: 1;
+      .place-input-group input {
+        width: 100%;
         border: 1px solid #f5dcd8;
         border-radius: 10px;
         padding: 8px 14px;
@@ -254,10 +274,9 @@
         color: #4a2a2a;
         min-height: 40px;
       }
-      .date-place-input input:focus {
+      .place-input-group input:focus {
         border-color: #f0c8c0;
       }
-
       .date-btn-group {
         display: flex;
         gap: 8px;
@@ -266,8 +285,6 @@
       .date-btn-group .btn {
         flex: 1;
       }
-
-      /* ===== 独立编辑页面 - 卡片式弹窗 ===== */
       .edit-overlay {
         position: fixed;
         top: 0;
@@ -337,21 +354,22 @@
         margin-bottom: 4px;
         margin-top: 8px;
       }
-      .edit-card .date-range-group {
+      .edit-card .date-with-days {
         background: #ffffff;
+        border: 1px solid #f5dcd8;
         border-radius: 10px;
         padding: 12px;
-        border: 1px solid #f5dcd8;
         margin-bottom: 8px;
       }
-      .edit-card .date-place-input input {
+      .edit-card .date-row select {
         background: #ffffff;
       }
-      .edit-card .date-range-row select {
+      .edit-card .days-input-row input {
         background: #ffffff;
       }
-
-      /* 旅行 - 支持开始/结束日期下拉选择 */
+      .edit-card .place-input-group input {
+        background: #ffffff;
+      }
       .trip-add-area {
         display: flex;
         flex-direction: column;
@@ -364,8 +382,11 @@
         gap: 8px;
         width: 100%;
       }
-      .trip-add-area .trip-inputs input[type="text"] {
-        flex: 1;
+      .trip-add-area .trip-inputs .place-input-group {
+        margin-bottom: 0;
+      }
+      .trip-add-area .trip-inputs .place-input-group input {
+        width: 100%;
         border: 1px solid #f5dcd8;
         border-radius: 10px;
         padding: 8px 14px;
@@ -374,69 +395,10 @@
         outline: none;
         color: #4a2a2a;
         min-height: 40px;
-        min-width: 0;
-        width: 100%;
       }
-      .trip-add-area .trip-inputs input[type="text"]:focus {
+      .trip-add-area .trip-inputs .place-input-group input:focus {
         border-color: #f0c8c0;
       }
-      .trip-date-group {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        width: 100%;
-        background: #fefaf8;
-        border: 1px solid #f5dcd8;
-        border-radius: 10px;
-        padding: 8px 12px;
-      }
-      .trip-date-row {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        margin-top:8px;
-      }
-      .trip-date-row .label {
-        font-size: 13px;
-        font-weight: 500;
-        color: #c08078;
-        width: 32px;
-        flex-shrink: 0;
-        text-align: right;
-      }
-      .trip-date-row select {
-        flex: 0 1 auto;
-        min-width: 44px;
-        max-width: 65px;
-        border: none;
-        background: transparent;
-        padding: 4px 2px;
-        font-size: 14px;
-        color: #4a2a2a;
-        outline: none;
-        appearance: auto;
-        text-align: center;
-        text-align-last: center;
-        min-height: 30px;
-      }
-      .trip-date-row select:focus {
-        border-color: #f0c8c0;
-      }
-      .trip-date-row .sep {
-        color: #d0a098;
-        font-size: 13px;
-        padding: 0 1px;
-        flex-shrink: 0;
-      }
-      .trip-add-area .btn {
-        width: 100%;
-        min-height: 40px;
-        padding: 8px 20px;
-        border-radius: 10px;
-      }
-
       .list-container {
         margin-top: 8px;
         display: flex;
@@ -481,7 +443,6 @@
         padding: 12px 0 6px;
         font-size: 13px;
       }
-
       .stat-summary {
         display: flex;
         justify-content: space-around;
@@ -504,7 +465,6 @@
         color: #e08078;
         margin-top: 0px;
       }
-
       .sort-area {
         display: flex;
         justify-content: flex-end;
@@ -522,7 +482,6 @@
         outline: none;
         height: 28px;
       }
-
       .love-field {
         display: flex;
         align-items: center;
@@ -551,11 +510,9 @@
         border-color: #f0c8c0;
         background: #fff;
       }
-
       .love-field.hidden {
         display: none;
       }
-
       .name-card {
         background: #fefaf8;
         border-radius: 14px;
@@ -586,7 +543,18 @@
         margin-top: 3px;
         font-weight: 400;
       }
-
+      .name-card .end-date {
+        font-size: 13px;
+        color: #c08078;
+        margin-top: 2px;
+        font-weight: 400;
+      }
+      .name-card .days-info {
+        font-size: 13px;
+        color: #e74c3c;
+        margin-top: 3px;
+        font-weight: 500;
+      }
       #saveLoveBtn {
         width: 100%;
         border-radius: 12px;
@@ -601,7 +569,6 @@
       #saveLoveBtn:active {
         background: #f5c8c0 !important;
       }
-
       .anniversary-add {
         display: flex;
         gap: 6px;
@@ -647,7 +614,6 @@
         border-radius: 10px;
         border: 1px solid #f5c8c0;
       }
-
       .overview-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -672,19 +638,22 @@
         font-weight: 700;
         color: #e74c3c;
       }
+      .overview-item .num-small {
+        font-size: 18px;
+        font-weight: 600;
+        color: #e74c3c;
+      }
       .overview-item .lbl {
         font-size: 11px;
         color: #e08078;
         margin-top: 2px;
       }
-
       .tab-content {
         display: none;
       }
       .tab-content.active {
         display: block;
       }
-
       @supports (padding: max(0px)) {
         body {
           padding-bottom: 0;
@@ -698,18 +667,12 @@
           max-width: 400px;
         }
       }
-
       @media (max-width: 430px) {
-        .date-range-row select {
-          text-align: center;
-          text-align-last: center;
-        }
-        .trip-date-row select {
+        .date-row select {
           text-align: center;
           text-align-last: center;
         }
       }
-
       .anniversary-card {
         display: flex !important;
         align-items: flex-start !important;
@@ -746,6 +709,171 @@
         align-self: center !important;
         line-height: 1 !important;
       }
+      .period-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin: 8px 0;
+      }
+      .period-stat-item {
+        background: #fefaf8;
+        border-radius: 10px;
+        padding: 10px 6px;
+        text-align: center;
+        border: 1px solid #f5dcd8;
+        cursor: default;
+        transition: 0.1s;
+      }
+      .period-stat-item:active {
+        background: #fde8e4;
+        transform: scale(0.96);
+      }
+      .period-stat-item .num {
+        font-size: 22px;
+        font-weight: 700;
+        color: #e74c3c;
+      }
+      .period-stat-item .lbl {
+        font-size: 11px;
+        color: #e08078;
+        margin-top: 2px;
+      }
+      .period-stat-item .sub-lbl {
+        font-size: 10px;
+        color: #d0a098;
+        margin-top: 1px;
+      }
+      .period-card {
+        background: #fefaf8;
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin: 6px 0;
+        border: 1px solid #f5dcd8;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: default;
+        transition: 0.1s;
+      }
+      .period-card:active {
+        background: #fde8e4;
+        transform: scale(0.98);
+      }
+      .period-card .info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .period-card .date-range {
+        font-size: 14px;
+        color: #4a2a2a;
+      }
+      .period-card .detail {
+        font-size: 12px;
+        color: #c08078;
+      }
+      .period-card .del {
+        background: none;
+        border: none;
+        font-size: 16px;
+        color: #dbb0a8;
+        padding: 0 4px;
+        cursor: default;
+      }
+      .period-card .del:active {
+        color: #c08078;
+        transform: scale(0.9);
+      }
+      .period-edit-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 1001;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        max-width: 390px;
+        margin: 0 auto;
+      }
+      .period-edit-overlay.active {
+        display: flex;
+      }
+      .period-edit-card {
+        background: #f7f1ef;
+        border-radius: 10px;
+        width: 100%;
+        max-width: 360px;
+        padding: 20px 16px 16px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        border: 1px solid #f5dcd8;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+      .period-edit-card .edit-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #f5dcd8;
+      }
+      .period-edit-card .edit-header h3 {
+        font-size: 18px;
+        color: #e74c3c;
+        font-weight: 600;
+      }
+      .period-edit-card .edit-header .close-btn {
+        background: none;
+        border: none;
+        font-size: 24px;
+        color: #c08078;
+        padding: 4px 8px;
+        cursor: default;
+      }
+      .period-edit-card .edit-header .close-btn:active {
+        color: #a06058;
+        transform: scale(0.9);
+      }
+      .period-edit-card .edit-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 16px;
+      }
+      .period-edit-card .edit-actions .btn {
+        flex: 1;
+      }
+      .period-edit-card .date-with-days {
+        background: #ffffff;
+        border: 1px solid #f5dcd8;
+        border-radius: 10px;
+        padding: 12px;
+        margin-bottom: 8px;
+      }
+      .period-edit-card .date-row select {
+        background: #ffffff;
+      }
+      .period-edit-card .days-input-row input {
+        background: #ffffff;
+      }
+
+      /* 总览中恋爱天数特殊样式 */
+      .love-days-display {
+        font-size: 14px;
+        color: #e74c3c;
+        font-weight: 600;
+        margin-top: 2px;
+      }
+      .love-days-display .together {
+        color: #e74c3c;
+      }
+      .love-days-display .broken {
+        color: #c0392b;
+        font-size: 12px;
+      }
     </style>
   </head>
   <body>
@@ -756,7 +884,7 @@
           <div class="subhead">记录每一次心动 · 珍藏地点</div>
         </div>
 
-        <!-- ===== Tab1: 快乐日期 ===== -->
+        <!-- Tab1: 快乐日期 -->
         <div id="tab-date" class="tab-content active">
           <div class="card">
             <div
@@ -777,13 +905,12 @@
                 >0 条</span
               >
             </div>
-              <div class="date-place-input">
+            <div class="place-input-group">
               <input type="text" id="newDatePlace" placeholder="地点（可选）" />
             </div>
-
-            <div class="date-range-group">
-              <div class="date-range-row">
-                <span class="label">起始</span>
+            <div class="date-with-days">
+              <div class="date-row">
+                <span class="label">开始</span>
                 <select id="startYear"></select>
                 <span class="sep">年</span>
                 <select id="startMonth"></select>
@@ -791,24 +918,23 @@
                 <select id="startDay"></select>
                 <span class="sep">日</span>
               </div>
-              <div class="date-range-row">
-                <span class="label">结束</span>
-                <select id="endYear"></select>
-                <span class="sep">年</span>
-                <select id="endMonth"></select>
-                <span class="sep">月</span>
-                <select id="endDay"></select>
-                <span class="sep">日</span>
+              <div class="days-input-row">
+                <label>持续</label>
+                <input
+                  type="number"
+                  id="dateDuration"
+                  value="1"
+                  min="1"
+                  max="365"
+                />
+                <label>天</label>
+                <span class="result-date" id="dateEndResult">→ 结束: --</span>
               </div>
             </div>
-
-          
-
             <div class="date-btn-group">
               <button class="btn btn-primary" id="addDateBtn">➕ 添加</button>
               <button class="btn btn-primary" id="quickDateBtn">📆 今天</button>
             </div>
-
             <div class="list-container" id="dateListContainer">
               <div class="empty-message">还没有记录</div>
             </div>
@@ -825,7 +951,7 @@
           </div>
         </div>
 
-        <!-- ===== Tab2: 旅行 ===== -->
+        <!-- Tab2: 旅行 -->
         <div id="tab-trip" class="tab-content">
           <div class="card">
             <div
@@ -848,15 +974,17 @@
             </div>
             <div class="trip-add-area">
               <div class="trip-inputs">
-                <input
-                  type="text"
-                  id="newTripPlace"
-                  placeholder="地点名称"
-                  maxlength="30"
-                />
-                <div class="trip-date-group">
-                  <div class="trip-date-row">
-                    <span class="label">起始</span>
+                <div class="place-input-group">
+                  <input
+                    type="text"
+                    id="newTripPlace"
+                    placeholder="地点名称（可选）"
+                    maxlength="30"
+                  />
+                </div>
+                <div class="date-with-days">
+                  <div class="date-row">
+                    <span class="label">开始</span>
                     <select id="tripStartYear"></select>
                     <span class="sep">年</span>
                     <select id="tripStartMonth"></select>
@@ -864,14 +992,19 @@
                     <select id="tripStartDay"></select>
                     <span class="sep">日</span>
                   </div>
-                  <div class="trip-date-row">
-                    <span class="label">结束</span>
-                    <select id="tripEndYear"></select>
-                    <span class="sep">年</span>
-                    <select id="tripEndMonth"></select>
-                    <span class="sep">月</span>
-                    <select id="tripEndDay"></select>
-                    <span class="sep">日</span>
+                  <div class="days-input-row">
+                    <label>持续</label>
+                    <input
+                      type="number"
+                      id="tripDuration"
+                      value="1"
+                      min="1"
+                      max="365"
+                    />
+                    <label>天</label>
+                    <span class="result-date" id="tripEndResult"
+                      >→ 结束: --</span
+                    >
                   </div>
                 </div>
               </div>
@@ -901,7 +1034,7 @@
           </div>
         </div>
 
-        <!-- ===== Tab3: 总览 ===== -->
+        <!-- Tab3: 总览 -->
         <div id="tab-overview" class="tab-content">
           <div class="card">
             <div
@@ -934,8 +1067,19 @@
                 <div class="lbl">不同城市</div>
               </div>
               <div class="overview-item" data-tab="tab-love">
-                <div class="num" id="ovLoveDays">-</div>
-                <div class="lbl">恋爱天数</div>
+                <div id="ovLoveDisplay">
+                  <div class="num" id="ovLoveDays">-</div>
+                  <div class="lbl">恋爱天数</div>
+                  <div class="love-days-display" id="ovLoveDetail"></div>
+                </div>
+              </div>
+              <div
+                class="overview-item"
+                data-tab="tab-period"
+                style="grid-column: span 2"
+              >
+                <div class="num" id="ovPeriodDays">-</div>
+                <div class="lbl">上一次月经时间</div>
               </div>
             </div>
             <div
@@ -951,7 +1095,83 @@
           </div>
         </div>
 
-        <!-- ===== Tab4: Love ===== -->
+        <!-- Tab4: 月经 -->
+        <div id="tab-period" class="tab-content">
+          <div class="card">
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                margin-bottom: 4px;
+              "
+            >
+              <span style="font-size: 18px">🩸</span>
+              <span style="font-weight: 600; font-size: 16px; color: #e74c3c"
+                >啊~难受</span
+              >
+              <span
+                style="margin-left: auto; font-size: 12px; color: #e08078"
+                id="periodCountLabel"
+                >0 条</span
+              >
+            </div>
+            <div class="date-with-days">
+              <div class="date-row">
+                <span class="label">开始</span>
+                <select id="periodStartYear"></select>
+                <span class="sep">年</span>
+                <select id="periodStartMonth"></select>
+                <span class="sep">月</span>
+                <select id="periodStartDay"></select>
+                <span class="sep">日</span>
+              </div>
+              <div class="days-input-row">
+                <label>持续</label>
+                <input
+                  type="number"
+                  id="periodDuration"
+                  value="5"
+                  min="1"
+                  max="365"
+                />
+                <label>天</label>
+                <span class="result-date" id="periodEndResult">→ 结束: --</span>
+              </div>
+            </div>
+            <div class="date-btn-group">
+              <button class="btn btn-primary" id="addPeriodBtn">➕ 添加</button>
+              <button class="btn btn-primary" id="quickPeriodBtn">
+                📆 今天
+              </button>
+            </div>
+            <div class="period-stats">
+              <div class="period-stat-item" data-stat="cycle">
+                <div class="num" id="periodCycleDays">-</div>
+                <div class="lbl">周期</div>
+                <div class="sub-lbl" id="periodCycleCompare">相比上月 -</div>
+              </div>
+              <div class="period-stat-item" data-stat="delay">
+                <div class="num" id="periodDelayDays">-</div>
+                <div class="lbl">推迟</div>
+                <div class="sub-lbl" id="periodDelayCompare">相比上月 -</div>
+              </div>
+              <div class="period-stat-item" data-stat="avgCycle">
+                <div class="num" id="periodAvgCycle">-</div>
+                <div class="lbl">平均周期</div>
+              </div>
+              <div class="period-stat-item" data-stat="avgDelay">
+                <div class="num" id="periodAvgDelay">-</div>
+                <div class="lbl">平均推迟</div>
+              </div>
+            </div>
+            <div class="list-container" id="periodListContainer">
+              <div class="empty-message">还没有记录</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab5: Love -->
         <div id="tab-love" class="tab-content">
           <div class="card">
             <div
@@ -967,17 +1187,21 @@
                 >恋爱档案</span
               >
             </div>
-
             <div id="nameCard" class="name-card" style="display: none">
               <div class="names">
                 <span id="displayMyName">我</span>
                 <span class="heart">💗</span>
                 <span id="displayHerName">她</span>
               </div>
-              <div class="sub">❤️ 在一起</div>
+              <div class="sub" id="displayStatus">❤️ 在一起</div>
               <div class="start-date" id="displayStartDate"></div>
+              <div
+                class="end-date"
+                id="displayEndDate"
+                style="display: none"
+              ></div>
+              <div class="days-info" id="displayDaysInfo"></div>
             </div>
-
             <div class="love-field" id="myNameField">
               <label>我</label
               ><input type="text" id="loveMyName" placeholder="我的名字" />
@@ -989,7 +1213,11 @@
             <div class="love-field">
               <label>开始</label><input type="date" id="loveStartDate" />
             </div>
-
+            <div class="love-field">
+              <label>结束</label
+              ><input type="date" id="loveEndDate" placeholder="选填" />
+              <span style="font-size: 11px; color: #dbb0a8">选填</span>
+            </div>
             <div
               style="
                 font-weight: 500;
@@ -1016,7 +1244,6 @@
               </button>
             </div>
             <div id="anniversaryContainer" style="margin-top: 4px"></div>
-
             <button class="btn btn-primary" id="saveLoveBtn">
               💾 保存档案
             </button>
@@ -1033,7 +1260,7 @@
           </div>
         </div>
 
-        <!-- 底部 Tab -->
+        <!-- 底部Tab -->
         <div class="tab-bar">
           <button class="tab-btn active" data-tab="tab-date">
             <span class="icon">📅</span><span class="label">快乐</span>
@@ -1044,6 +1271,9 @@
           <button class="tab-btn" data-tab="tab-overview">
             <span class="icon">📊</span><span class="label">总览</span>
           </button>
+          <button class="tab-btn" data-tab="tab-period">
+            <span class="icon">🩸</span><span class="label">啊~难受</span>
+          </button>
           <button class="tab-btn" data-tab="tab-love">
             <span class="icon">💕</span><span class="label">Love</span>
           </button>
@@ -1051,17 +1281,19 @@
       </div>
     </div>
 
-    <!-- ===== 独立编辑页面 - 卡片式弹窗（快乐日期和旅行共用） ===== -->
+    <!-- 编辑弹窗 -->
     <div id="editOverlay" class="edit-overlay">
       <div class="edit-card">
         <div class="edit-header">
           <h3 id="editTitle">✏️ 编辑记录</h3>
           <button class="close-btn" id="closeEditBtn">✕</button>
         </div>
-
-        <div class="date-range-group">
-          <div class="date-range-row">
-            <span class="label">起始</span>
+        <div class="place-input-group">
+          <input type="text" id="editPlace" placeholder="地点（可选）" />
+        </div>
+        <div class="date-with-days">
+          <div class="date-row">
+            <span class="label">开始</span>
             <select id="editStartYear"></select>
             <span class="sep">年</span>
             <select id="editStartMonth"></select>
@@ -1069,21 +1301,19 @@
             <select id="editStartDay"></select>
             <span class="sep">日</span>
           </div>
-          <div class="date-range-row">
-            <span class="label">结束</span>
-            <select id="editEndYear"></select>
-            <span class="sep">年</span>
-            <select id="editEndMonth"></select>
-            <span class="sep">月</span>
-            <select id="editEndDay"></select>
-            <span class="sep">日</span>
+          <div class="days-input-row">
+            <label>持续</label>
+            <input
+              type="number"
+              id="editDuration"
+              value="1"
+              min="1"
+              max="365"
+            />
+            <label>天</label>
+            <span class="result-date" id="editEndResult">→ 结束: --</span>
           </div>
         </div>
-
-        <div class="date-place-input">
-          <input type="text" id="editPlace" placeholder="地点（可选）" />
-        </div>
-
         <div class="edit-actions">
           <button class="btn btn-danger" id="deleteEditBtn">🗑️ 删除</button>
           <button class="btn btn-primary" id="saveEditBtn">💾 保存</button>
@@ -1092,16 +1322,65 @@
       </div>
     </div>
 
+    <!-- 月经编辑弹窗 -->
+    <div id="periodEditOverlay" class="period-edit-overlay">
+      <div class="period-edit-card">
+        <div class="edit-header">
+          <h3>✏️ 编辑月经记录</h3>
+          <button class="close-btn" id="closePeriodEditBtn">✕</button>
+        </div>
+        <div class="date-with-days">
+          <div class="date-row">
+            <span class="label">开始</span>
+            <select id="periodEditStartYear"></select>
+            <span class="sep">年</span>
+            <select id="periodEditStartMonth"></select>
+            <span class="sep">月</span>
+            <select id="periodEditStartDay"></select>
+            <span class="sep">日</span>
+          </div>
+          <div class="days-input-row">
+            <label>持续</label>
+            <input
+              type="number"
+              id="periodEditDuration"
+              value="5"
+              min="1"
+              max="365"
+            />
+            <label>天</label>
+            <span class="result-date" id="periodEditEndResult">→ 结束: --</span>
+          </div>
+        </div>
+        <div class="edit-actions">
+          <button class="btn btn-danger" id="deletePeriodEditBtn">
+            🗑️ 删除
+          </button>
+          <button class="btn btn-primary" id="savePeriodEditBtn">
+            💾 保存
+          </button>
+          <button class="btn" id="cancelPeriodEditBtn">取消</button>
+        </div>
+      </div>
+    </div>
+
     <script>
       (function () {
         "use strict";
-        const STORAGE_KEY = "love_trail_v21";
+        const STORAGE_KEY = "love_trail_v23";
 
         function getDefault() {
           return {
             dates: [],
             trips: [],
-            love: { myName: "", herName: "", startDate: "", anniversaries: [] },
+            periods: [],
+            love: {
+              myName: "",
+              herName: "",
+              startDate: "",
+              endDate: "",
+              anniversaries: [],
+            },
           };
         }
 
@@ -1112,14 +1391,17 @@
               const p = JSON.parse(raw);
               if (!p.dates) p.dates = [];
               if (!p.trips) p.trips = [];
+              if (!p.periods) p.periods = [];
               if (!p.love)
                 p.love = {
                   myName: "",
                   herName: "",
                   startDate: "",
+                  endDate: "",
                   anniversaries: [],
                 };
               if (!p.love.anniversaries) p.love.anniversaries = [];
+              if (!p.love.endDate) p.love.endDate = "";
               return p;
             }
           } catch (e) {}
@@ -1138,9 +1420,8 @@
         const startYear = document.getElementById("startYear");
         const startMonth = document.getElementById("startMonth");
         const startDay = document.getElementById("startDay");
-        const endYear = document.getElementById("endYear");
-        const endMonth = document.getElementById("endMonth");
-        const endDay = document.getElementById("endDay");
+        const dateDuration = document.getElementById("dateDuration");
+        const dateEndResult = document.getElementById("dateEndResult");
         const newDatePlace = document.getElementById("newDatePlace");
         const addDateBtn = document.getElementById("addDateBtn");
         const quickDateBtn = document.getElementById("quickDateBtn");
@@ -1155,9 +1436,27 @@
         const tripStartYear = document.getElementById("tripStartYear");
         const tripStartMonth = document.getElementById("tripStartMonth");
         const tripStartDay = document.getElementById("tripStartDay");
-        const tripEndYear = document.getElementById("tripEndYear");
-        const tripEndMonth = document.getElementById("tripEndMonth");
-        const tripEndDay = document.getElementById("tripEndDay");
+        const tripDuration = document.getElementById("tripDuration");
+        const tripEndResult = document.getElementById("tripEndResult");
+
+        // 月经
+        const periodStartYear = document.getElementById("periodStartYear");
+        const periodStartMonth = document.getElementById("periodStartMonth");
+        const periodStartDay = document.getElementById("periodStartDay");
+        const periodDuration = document.getElementById("periodDuration");
+        const periodEndResult = document.getElementById("periodEndResult");
+        const addPeriodBtn = document.getElementById("addPeriodBtn");
+        const quickPeriodBtn = document.getElementById("quickPeriodBtn");
+        const periodList = document.getElementById("periodListContainer");
+        const periodCountLabel = document.getElementById("periodCountLabel");
+        const periodCycleDays = document.getElementById("periodCycleDays");
+        const periodDelayDays = document.getElementById("periodDelayDays");
+        const periodCycleCompare =
+          document.getElementById("periodCycleCompare");
+        const periodDelayCompare =
+          document.getElementById("periodDelayCompare");
+        const periodAvgCycle = document.getElementById("periodAvgCycle");
+        const periodAvgDelay = document.getElementById("periodAvgDelay");
 
         // 编辑页面
         const editOverlay = document.getElementById("editOverlay");
@@ -1165,18 +1464,42 @@
         const editStartYear = document.getElementById("editStartYear");
         const editStartMonth = document.getElementById("editStartMonth");
         const editStartDay = document.getElementById("editStartDay");
-        const editEndYear = document.getElementById("editEndYear");
-        const editEndMonth = document.getElementById("editEndMonth");
-        const editEndDay = document.getElementById("editEndDay");
+        const editDuration = document.getElementById("editDuration");
+        const editEndResult = document.getElementById("editEndResult");
         const editPlace = document.getElementById("editPlace");
         const saveEditBtn = document.getElementById("saveEditBtn");
         const cancelEditBtn = document.getElementById("cancelEditBtn");
         const deleteEditBtn = document.getElementById("deleteEditBtn");
         const closeEditBtn = document.getElementById("closeEditBtn");
 
-        // 编辑状态
+        // 月经编辑
+        const periodEditOverlay = document.getElementById("periodEditOverlay");
+        const periodEditStartYear = document.getElementById(
+          "periodEditStartYear",
+        );
+        const periodEditStartMonth = document.getElementById(
+          "periodEditStartMonth",
+        );
+        const periodEditStartDay =
+          document.getElementById("periodEditStartDay");
+        const periodEditDuration =
+          document.getElementById("periodEditDuration");
+        const periodEditEndResult = document.getElementById(
+          "periodEditEndResult",
+        );
+        const savePeriodEditBtn = document.getElementById("savePeriodEditBtn");
+        const cancelPeriodEditBtn = document.getElementById(
+          "cancelPeriodEditBtn",
+        );
+        const deletePeriodEditBtn = document.getElementById(
+          "deletePeriodEditBtn",
+        );
+        const closePeriodEditBtn =
+          document.getElementById("closePeriodEditBtn");
+
         let editingIndex = -1;
-        let editingType = ""; // 'date' 或 'trip'
+        let editingType = "";
+        let editingPeriodIndex = -1;
 
         // 旅行
         const tripList = document.getElementById("tripListContainer");
@@ -1191,6 +1514,7 @@
         const loveMyName = document.getElementById("loveMyName");
         const loveHerName = document.getElementById("loveHerName");
         const loveStartDate = document.getElementById("loveStartDate");
+        const loveEndDate = document.getElementById("loveEndDate");
         const saveLoveBtn = document.getElementById("saveLoveBtn");
         const anniversaryContainer = document.getElementById(
           "anniversaryContainer",
@@ -1205,6 +1529,9 @@
         const displayMyName = document.getElementById("displayMyName");
         const displayHerName = document.getElementById("displayHerName");
         const displayStartDate = document.getElementById("displayStartDate");
+        const displayEndDate = document.getElementById("displayEndDate");
+        const displayStatus = document.getElementById("displayStatus");
+        const displayDaysInfo = document.getElementById("displayDaysInfo");
         const myNameField = document.getElementById("myNameField");
         const herNameField = document.getElementById("herNameField");
 
@@ -1213,6 +1540,69 @@
         const ovTotalTrips = document.getElementById("ovTotalTrips");
         const ovTotalCities = document.getElementById("ovTotalCities");
         const ovLoveDays = document.getElementById("ovLoveDays");
+        const ovLoveDetail = document.getElementById("ovLoveDetail");
+        const ovPeriodDays = document.getElementById("ovPeriodDays");
+
+        // ========== 工具函数 ==========
+        function formatDateDisplay(dateStr) {
+          if (!dateStr) return "";
+          const parts = dateStr.split("-");
+          return `${parts[0]}年${parseInt(parts[1])}月${parseInt(parts[2])}日`;
+        }
+
+        function dateDiff(date1, date2) {
+          const d1 = new Date(date1);
+          const d2 = new Date(date2);
+          return Math.floor((d2 - d1) / (1000 * 60 * 60 * 24));
+        }
+
+        function addDays(dateStr, days) {
+          const d = new Date(dateStr);
+          d.setDate(d.getDate() + days);
+          const y = d.getFullYear();
+          const m = String(d.getMonth() + 1).padStart(2, "0");
+          const day = String(d.getDate()).padStart(2, "0");
+          return `${y}-${m}-${day}`;
+        }
+
+        function getTodayStr() {
+          const now = new Date();
+          const y = now.getFullYear();
+          const m = String(now.getMonth() + 1).padStart(2, "0");
+          const day = String(now.getDate()).padStart(2, "0");
+          return `${y}-${m}-${day}`;
+        }
+
+        function calcLoveDays(startDate, endDate) {
+          if (!startDate) return { total: 0, broken: 0 };
+          const start = new Date(startDate);
+          const now = new Date();
+          let end = now;
+          let isBroken = false;
+          if (endDate) {
+            end = new Date(endDate);
+            isBroken = true;
+          }
+          const total = Math.floor((end - start) / (1000 * 60 * 60 * 24));
+          if (total < 0) return { total: 0, broken: 0 };
+          let broken = 0;
+          if (isBroken) {
+            const today = new Date();
+            broken = Math.floor((today - end) / (1000 * 60 * 60 * 24));
+            if (broken < 0) broken = 0;
+          }
+          return { total, broken };
+        }
+
+        function calcDaysFrom(dateStr) {
+          if (!dateStr) return "";
+          const d = new Date(dateStr);
+          const now = new Date();
+          const diff = Math.floor((now - d) / (1000 * 60 * 60 * 24));
+          if (diff === 0) return "今天";
+          if (diff > 0) return `已过 ${diff} 天`;
+          return `还有 ${Math.abs(diff)} 天`;
+        }
 
         // ========== 下拉列表填充 ==========
         function populateSelects() {
@@ -1231,11 +1621,10 @@
             }
           };
           yearOpts(startYear, currentYear);
-          yearOpts(endYear, currentYear);
           yearOpts(editStartYear, currentYear);
-          yearOpts(editEndYear, currentYear);
           yearOpts(tripStartYear, currentYear);
-          yearOpts(tripEndYear, currentYear);
+          yearOpts(periodStartYear, currentYear);
+          yearOpts(periodEditStartYear, currentYear);
 
           const monthOpts = (sel, def) => {
             sel.innerHTML = "";
@@ -1248,27 +1637,135 @@
             }
           };
           monthOpts(startMonth, currentMonth);
-          monthOpts(endMonth, currentMonth);
           monthOpts(editStartMonth, currentMonth);
-          monthOpts(editEndMonth, currentMonth);
           monthOpts(tripStartMonth, currentMonth);
-          monthOpts(tripEndMonth, currentMonth);
+          monthOpts(periodStartMonth, currentMonth);
+          monthOpts(periodEditStartMonth, currentMonth);
 
-          updateDays();
-          updateTripDays();
+          updateDateSelects(startYear, startMonth, startDay, currentDay);
+          updateDateSelects(
+            editStartYear,
+            editStartMonth,
+            editStartDay,
+            currentDay,
+          );
+          updateDateSelects(
+            tripStartYear,
+            tripStartMonth,
+            tripStartDay,
+            currentDay,
+          );
+          updateDateSelects(
+            periodStartYear,
+            periodStartMonth,
+            periodStartDay,
+            currentDay,
+          );
+          updateDateSelects(
+            periodEditStartYear,
+            periodEditStartMonth,
+            periodEditStartDay,
+            currentDay,
+          );
 
-          startYear.addEventListener("change", updateDays);
-          startMonth.addEventListener("change", updateDays);
-          endYear.addEventListener("change", updateDays);
-          endMonth.addEventListener("change", updateDays);
-          editStartYear.addEventListener("change", updateEditDays);
-          editStartMonth.addEventListener("change", updateEditDays);
-          editEndYear.addEventListener("change", updateEditDays);
-          editEndMonth.addEventListener("change", updateEditDays);
-          tripStartYear.addEventListener("change", updateTripDays);
-          tripStartMonth.addEventListener("change", updateTripDays);
-          tripEndYear.addEventListener("change", updateTripDays);
-          tripEndMonth.addEventListener("change", updateTripDays);
+          startYear.addEventListener("change", function () {
+            updateDateSelects(startYear, startMonth, startDay);
+            updateEndDate("date");
+          });
+          startMonth.addEventListener("change", function () {
+            updateDateSelects(startYear, startMonth, startDay);
+            updateEndDate("date");
+          });
+          startDay.addEventListener("change", function () {
+            updateEndDate("date");
+          });
+          dateDuration.addEventListener("input", function () {
+            updateEndDate("date");
+          });
+
+          editStartYear.addEventListener("change", function () {
+            updateDateSelects(editStartYear, editStartMonth, editStartDay);
+            updateEditEndDate();
+          });
+          editStartMonth.addEventListener("change", function () {
+            updateDateSelects(editStartYear, editStartMonth, editStartDay);
+            updateEditEndDate();
+          });
+          editStartDay.addEventListener("change", function () {
+            updateEditEndDate();
+          });
+          editDuration.addEventListener("input", function () {
+            updateEditEndDate();
+          });
+
+          tripStartYear.addEventListener("change", function () {
+            updateDateSelects(tripStartYear, tripStartMonth, tripStartDay);
+            updateTripEndDate();
+          });
+          tripStartMonth.addEventListener("change", function () {
+            updateDateSelects(tripStartYear, tripStartMonth, tripStartDay);
+            updateTripEndDate();
+          });
+          tripStartDay.addEventListener("change", function () {
+            updateTripEndDate();
+          });
+          tripDuration.addEventListener("input", function () {
+            updateTripEndDate();
+          });
+
+          periodStartYear.addEventListener("change", function () {
+            updateDateSelects(
+              periodStartYear,
+              periodStartMonth,
+              periodStartDay,
+            );
+            updatePeriodEndDate();
+          });
+          periodStartMonth.addEventListener("change", function () {
+            updateDateSelects(
+              periodStartYear,
+              periodStartMonth,
+              periodStartDay,
+            );
+            updatePeriodEndDate();
+          });
+          periodStartDay.addEventListener("change", function () {
+            updatePeriodEndDate();
+          });
+          periodDuration.addEventListener("input", function () {
+            updatePeriodEndDate();
+          });
+
+          periodEditStartYear.addEventListener("change", function () {
+            updateDateSelects(
+              periodEditStartYear,
+              periodEditStartMonth,
+              periodEditStartDay,
+            );
+            updatePeriodEditEndDate();
+          });
+          periodEditStartMonth.addEventListener("change", function () {
+            updateDateSelects(
+              periodEditStartYear,
+              periodEditStartMonth,
+              periodEditStartDay,
+            );
+            updatePeriodEditEndDate();
+          });
+          periodEditStartDay.addEventListener("change", function () {
+            updatePeriodEditEndDate();
+          });
+          periodEditDuration.addEventListener("input", function () {
+            updatePeriodEditEndDate();
+          });
+
+          setTimeout(function () {
+            updateEndDate("date");
+            updateEditEndDate();
+            updateTripEndDate();
+            updatePeriodEndDate();
+            updatePeriodEditEndDate();
+          }, 100);
         }
 
         function isLeapYear(year) {
@@ -1281,62 +1778,82 @@
           return days[month];
         }
 
-        function updateDays() {
-          updateDaysForSelects(startYear, startMonth, startDay);
-          updateDaysForSelects(endYear, endMonth, endDay);
-        }
-
-        function updateEditDays() {
-          updateDaysForSelects(editStartYear, editStartMonth, editStartDay);
-          updateDaysForSelects(editEndYear, editEndMonth, editEndDay);
-        }
-
-        function updateTripDays() {
-          updateDaysForSelects(tripStartYear, tripStartMonth, tripStartDay);
-          updateDaysForSelects(tripEndYear, tripEndMonth, tripEndDay);
-        }
-
-        function updateDaysForSelects(yearSel, monthSel, daySel) {
+        function updateDateSelects(yearSel, monthSel, daySel, defaultDay) {
           const y = parseInt(yearSel.value);
           const m = parseInt(monthSel.value);
-          const d = parseInt(daySel.value) || 1;
           const max = getDaysInMonth(y, m);
+          const currentDay = parseInt(daySel.value) || defaultDay || 1;
           daySel.innerHTML = "";
           for (let day = 1; day <= max; day++) {
             const opt = document.createElement("option");
             opt.value = day;
             opt.textContent = day;
-            if (day === Math.min(d, max)) opt.selected = true;
+            if (day === Math.min(currentDay, max)) opt.selected = true;
             daySel.appendChild(opt);
           }
         }
 
-        function getSelectedDate() {
-          const y = startYear.value;
-          const m = String(startMonth.value).padStart(2, "0");
-          const d = String(startDay.value).padStart(2, "0");
+        function getDateFromSelects(yearSel, monthSel, daySel) {
+          const y = yearSel.value;
+          const m = String(monthSel.value).padStart(2, "0");
+          const d = String(daySel.value).padStart(2, "0");
           return `${y}-${m}-${d}`;
         }
 
-        function getSelectedEndDate() {
-          const y = endYear.value;
-          const m = String(endMonth.value).padStart(2, "0");
-          const d = String(endDay.value).padStart(2, "0");
-          return `${y}-${m}-${d}`;
+        function updateEndDate(type) {
+          let start, duration, resultEl;
+          if (type === "date") {
+            start = getDateFromSelects(startYear, startMonth, startDay);
+            duration = parseInt(dateDuration.value) || 1;
+            resultEl = dateEndResult;
+          }
+          if (!start) return;
+          const end = addDays(start, duration - 1);
+          resultEl.textContent = `→ 结束: ${formatDateDisplay(end)}`;
         }
 
-        function getTripStartDate() {
-          const y = tripStartYear.value;
-          const m = String(tripStartMonth.value).padStart(2, "0");
-          const d = String(tripStartDay.value).padStart(2, "0");
-          return `${y}-${m}-${d}`;
+        function updateEditEndDate() {
+          const start = getDateFromSelects(
+            editStartYear,
+            editStartMonth,
+            editStartDay,
+          );
+          const duration = parseInt(editDuration.value) || 1;
+          const end = addDays(start, duration - 1);
+          editEndResult.textContent = `→ 结束: ${formatDateDisplay(end)}`;
         }
 
-        function getTripEndDate() {
-          const y = tripEndYear.value;
-          const m = String(tripEndMonth.value).padStart(2, "0");
-          const d = String(tripEndDay.value).padStart(2, "0");
-          return `${y}-${m}-${d}`;
+        function updateTripEndDate() {
+          const start = getDateFromSelects(
+            tripStartYear,
+            tripStartMonth,
+            tripStartDay,
+          );
+          const duration = parseInt(tripDuration.value) || 1;
+          const end = addDays(start, duration - 1);
+          tripEndResult.textContent = `→ 结束: ${formatDateDisplay(end)}`;
+        }
+
+        function updatePeriodEndDate() {
+          const start = getDateFromSelects(
+            periodStartYear,
+            periodStartMonth,
+            periodStartDay,
+          );
+          const duration = parseInt(periodDuration.value) || 1;
+          const end = addDays(start, duration - 1);
+          periodEndResult.textContent = `→ 结束: ${formatDateDisplay(end)}`;
+        }
+
+        function updatePeriodEditEndDate() {
+          const start = getDateFromSelects(
+            periodEditStartYear,
+            periodEditStartMonth,
+            periodEditStartDay,
+          );
+          const duration = parseInt(periodEditDuration.value) || 1;
+          const end = addDays(start, duration - 1);
+          periodEditEndResult.textContent = `→ 结束: ${formatDateDisplay(end)}`;
         }
 
         function setToday() {
@@ -1346,11 +1863,10 @@
           const d = now.getDate();
           startYear.value = y;
           startMonth.value = m;
-          endYear.value = y;
-          endMonth.value = m;
-          updateDays();
+          updateDateSelects(startYear, startMonth, startDay, d);
           startDay.value = d;
-          endDay.value = d;
+          dateDuration.value = 1;
+          updateEndDate("date");
         }
 
         function setTripToday() {
@@ -1360,43 +1876,28 @@
           const d = now.getDate();
           tripStartYear.value = y;
           tripStartMonth.value = m;
-          tripEndYear.value = y;
-          tripEndMonth.value = m;
-          updateTripDays();
+          updateDateSelects(tripStartYear, tripStartMonth, tripStartDay, d);
           tripStartDay.value = d;
-          tripEndDay.value = d;
+          tripDuration.value = 1;
+          updateTripEndDate();
         }
 
-        function getTodayStr() {
+        function setPeriodToday() {
           const now = new Date();
           const y = now.getFullYear();
-          const m = String(now.getMonth() + 1).padStart(2, "0");
-          const day = String(now.getDate()).padStart(2, "0");
-          return `${y}-${m}-${day}`;
-        }
-
-        function formatDateDisplay(dateStr) {
-          if (!dateStr) return "";
-          const parts = dateStr.split("-");
-          return `${parts[0]}年${parseInt(parts[1])}月${parseInt(parts[2])}日`;
-        }
-
-        function calcLoveDays(startDate) {
-          if (!startDate) return "-";
-          const start = new Date(startDate);
-          const now = new Date();
-          const diff = Math.floor((now - start) / (1000 * 60 * 60 * 24));
-          return diff >= 0 ? diff + "天" : "-";
-        }
-
-        function calcDaysFrom(dateStr) {
-          if (!dateStr) return "";
-          const d = new Date(dateStr);
-          const now = new Date();
-          const diff = Math.floor((now - d) / (1000 * 60 * 60 * 24));
-          if (diff === 0) return "今天";
-          if (diff > 0) return `已过 ${diff} 天`;
-          return `还有 ${Math.abs(diff)} 天`;
+          const m = now.getMonth() + 1;
+          const d = now.getDate();
+          periodStartYear.value = y;
+          periodStartMonth.value = m;
+          updateDateSelects(
+            periodStartYear,
+            periodStartMonth,
+            periodStartDay,
+            d,
+          );
+          periodStartDay.value = d;
+          periodDuration.value = 5;
+          updatePeriodEndDate();
         }
 
         // ===== 编辑页面通用函数 =====
@@ -1417,21 +1918,20 @@
           const startParts = item.date.split("-");
           editStartYear.value = parseInt(startParts[0]);
           editStartMonth.value = parseInt(startParts[1]);
-          updateEditDays();
+          updateDateSelects(
+            editStartYear,
+            editStartMonth,
+            editStartDay,
+            parseInt(startParts[2]),
+          );
           editStartDay.value = parseInt(startParts[2]);
 
+          let duration = 1;
           if (item.endDate && item.endDate !== item.date) {
-            const endParts = item.endDate.split("-");
-            editEndYear.value = parseInt(endParts[0]);
-            editEndMonth.value = parseInt(endParts[1]);
-            updateEditDays();
-            editEndDay.value = parseInt(endParts[2]);
-          } else {
-            editEndYear.value = parseInt(startParts[0]);
-            editEndMonth.value = parseInt(startParts[1]);
-            updateEditDays();
-            editEndDay.value = parseInt(startParts[2]);
+            duration = dateDiff(item.date, item.endDate) + 1;
           }
+          editDuration.value = duration;
+          updateEditEndDate();
 
           editPlace.value = item.place || item.name || "";
 
@@ -1449,28 +1949,21 @@
         function saveEdit() {
           if (editingIndex < 0 || !editingType) return;
 
-          const startY = editStartYear.value;
-          const startM = String(editStartMonth.value).padStart(2, "0");
-          const startD = String(editStartDay.value).padStart(2, "0");
-          const startDate = `${startY}-${startM}-${startD}`;
-
-          let endDate = "";
-          const endY = editEndYear.value;
-          const endM = String(editEndMonth.value).padStart(2, "0");
-          const endD = String(editEndDay.value).padStart(2, "0");
-          const endDateStr = `${endY}-${endM}-${endD}`;
-          if (endDateStr !== startDate) {
-            endDate = endDateStr;
-          }
-
+          const start = getDateFromSelects(
+            editStartYear,
+            editStartMonth,
+            editStartDay,
+          );
+          const duration = parseInt(editDuration.value) || 1;
+          const end = addDays(start, duration - 1);
           const place = editPlace.value.trim();
 
           if (editingType === "date") {
             const conflict = appData.dates.some((x, idx) => {
               if (idx === editingIndex) return false;
               return (
-                x.date === startDate &&
-                (x.endDate || "") === (endDate || "") &&
+                x.date === start &&
+                (x.endDate || "") === (end === start ? "" : end) &&
                 (x.place || "") === place
               );
             });
@@ -1479,8 +1972,8 @@
               return;
             }
             appData.dates[editingIndex] = {
-              date: startDate,
-              endDate: endDate || "",
+              date: start,
+              endDate: end === start ? "" : end,
               place,
             };
           } else if (editingType === "trip") {
@@ -1492,8 +1985,8 @@
               if (idx === editingIndex) return false;
               return (
                 x.name === place &&
-                x.date === startDate &&
-                (x.endDate || "") === (endDate || "")
+                x.date === start &&
+                (x.endDate || "") === (end === start ? "" : end)
               );
             });
             if (conflict) {
@@ -1502,8 +1995,8 @@
             }
             appData.trips[editingIndex] = {
               name: place,
-              date: startDate,
-              endDate: endDate || "",
+              date: start,
+              endDate: end === start ? "" : end,
             };
           }
 
@@ -1574,22 +2067,17 @@
           uniqueDateLocations.textContent = places.size;
         }
 
-        function addDateRange(startDate, endDate, place) {
-          if (!startDate) {
+        function addDateRange(start, duration) {
+          if (!start) {
             alert("请选择开始日期");
             return false;
           }
-          if (!endDate || endDate === startDate) {
-            endDate = null;
-          } else if (startDate > endDate) {
-            alert("开始日期不能晚于结束日期");
-            return false;
-          }
-          place = (place || "").trim();
+          const end = addDays(start, duration - 1);
+          const place = newDatePlace.value.trim();
           const exists = appData.dates.some(
             (x) =>
-              x.date === startDate &&
-              (x.endDate || "") === (endDate || "") &&
+              x.date === start &&
+              (x.endDate || "") === (end === start ? "" : end) &&
               (x.place || "") === place,
           );
           if (exists) {
@@ -1597,8 +2085,8 @@
             return false;
           }
           appData.dates.push({
-            date: startDate,
-            endDate: endDate || "",
+            date: start,
+            endDate: end === start ? "" : end,
             place,
           });
           saveData();
@@ -1659,35 +2147,271 @@
           uniqueTrips.textContent = cities.size;
         }
 
-        function addTrip(name, startDate, endDate) {
+        function addTrip(name, start, duration) {
           name = name.trim();
-          if (!name) {
-            alert("请输入地点名称");
-            return false;
-          }
-          if (!startDate) {
+          if (!start) {
             alert("请选择开始日期");
             return false;
           }
-          if (endDate && startDate > endDate) {
-            alert("开始日期不能晚于结束日期");
-            return false;
-          }
+          const end = addDays(start, duration - 1);
           if (
             appData.trips.some(
               (x) =>
                 x.name === name &&
-                x.date === startDate &&
-                (x.endDate || "") === (endDate || ""),
+                x.date === start &&
+                (x.endDate || "") === (end === start ? "" : end),
             )
           ) {
             alert("该地点已存在相同日期范围");
             return false;
           }
-          appData.trips.push({ name, date: startDate, endDate: endDate || "" });
+          appData.trips.push({
+            name: name || "未命名",
+            date: start,
+            endDate: end === start ? "" : end,
+          });
           saveData();
           renderAll();
           return true;
+        }
+
+        // ===== 月经 =====
+        function renderPeriods() {
+          const d = appData.periods;
+          if (!d || d.length === 0) {
+            periodList.innerHTML = `<div class="empty-message">还没有记录</div>`;
+            periodCycleDays.textContent = "-";
+            periodDelayDays.textContent = "-";
+            periodCycleCompare.textContent = "相比上月 -";
+            periodDelayCompare.textContent = "相比上月 -";
+            periodAvgCycle.textContent = "-";
+            periodAvgDelay.textContent = "-";
+            return;
+          }
+
+          const sorted = [...d].sort((a, b) =>
+            a.startDate < b.startDate ? 1 : -1,
+          );
+
+          let html = "";
+          sorted.forEach((item, idx) => {
+            const endDisplay =
+              item.endDate && item.endDate !== item.startDate
+                ? ` ~ ${formatDateDisplay(item.endDate)}`
+                : "";
+            const duration =
+              item.endDate && item.endDate !== item.startDate
+                ? dateDiff(item.startDate, item.endDate) + 1
+                : 1;
+            html += `<div class="period-card" data-idx="${idx}">
+                    <div class="info">
+                        <div class="date-range">🩸 ${formatDateDisplay(item.startDate)}${endDisplay}</div>
+                        <div class="detail">持续 ${duration} 天</div>
+                    </div>
+                    <button class="del" data-idx="${idx}">✕</button>
+                </div>`;
+          });
+          periodList.innerHTML = html;
+
+          periodList.querySelectorAll(".del").forEach((btn) => {
+            btn.addEventListener("click", function (e) {
+              e.stopPropagation();
+              const idx = parseInt(this.dataset.idx);
+              if (confirm("确定要删除这条记录吗？")) {
+                appData.periods.splice(idx, 1);
+                saveData();
+                renderAll();
+              }
+            });
+          });
+
+          periodList.querySelectorAll(".period-card").forEach((el) => {
+            const idx = parseInt(el.dataset.idx);
+            el.addEventListener("click", function () {
+              openPeriodEdit(idx);
+            });
+          });
+
+          calculatePeriodStats();
+          periodCountLabel.textContent = `${d.length} 条`;
+        }
+
+        function calculatePeriodStats() {
+          const periods = appData.periods;
+          if (periods.length < 2) {
+            periodCycleDays.textContent = "-";
+            periodDelayDays.textContent = "-";
+            periodCycleCompare.textContent = "相比上月 -";
+            periodDelayCompare.textContent = "相比上月 -";
+            periodAvgCycle.textContent = "-";
+            periodAvgDelay.textContent = "-";
+            return;
+          }
+
+          const sorted = [...periods].sort((a, b) =>
+            a.startDate < b.startDate ? -1 : 1,
+          );
+
+          let cycles = [];
+          let delays = [];
+
+          for (let i = 1; i < sorted.length; i++) {
+            const prev = sorted[i - 1];
+            const curr = sorted[i];
+
+            // 周期 = 本次第一天 - 上次第一天
+            let cycle = dateDiff(prev.startDate, curr.startDate);
+            if (cycle < 0) cycle = 0;
+            cycles.push(cycle);
+
+            // 推迟 = 本次开始 - 上次开始 - 周期
+            let delay = cycle - (cycle || 0);
+            // 更准确的推迟：本次开始日期 - 上次开始日期 - 预期周期（28天为标准）
+            // 这里使用：推迟 = 本次开始 - 上次开始 - 上次周期
+            if (i >= 2) {
+              const prevPrev = sorted[i - 2];
+              const prevCycle = dateDiff(prevPrev.startDate, prev.startDate);
+              delay = cycle - prevCycle;
+            } else {
+              delay = cycle - 28; // 默认周期28天
+            }
+            delays.push(delay);
+          }
+
+          const lastCycle = cycles[cycles.length - 1];
+          const lastDelay = delays[delays.length - 1];
+
+          const avgCycle = cycles.reduce((a, b) => a + b, 0) / cycles.length;
+          const avgDelay = delays.reduce((a, b) => a + b, 0) / delays.length;
+
+          periodCycleDays.textContent = lastCycle + "天";
+          periodDelayDays.textContent =
+            (lastDelay > 0 ? "+" : "") + lastDelay + "天";
+
+          if (cycles.length >= 2) {
+            const prevCycle = cycles[cycles.length - 2];
+            const prevDelay = delays[delays.length - 2];
+            const cycleDiff = lastCycle - prevCycle;
+            const delayDiff = lastDelay - prevDelay;
+            periodCycleCompare.textContent =
+              cycleDiff > 0
+                ? `相比上月 +${cycleDiff}天`
+                : cycleDiff < 0
+                  ? `相比上月 ${cycleDiff}天`
+                  : "相比上月 持平";
+            periodDelayCompare.textContent =
+              delayDiff > 0
+                ? `相比上月 +${delayDiff}天`
+                : delayDiff < 0
+                  ? `相比上月 ${delayDiff}天`
+                  : "相比上月 持平";
+          } else {
+            periodCycleCompare.textContent = "相比上月 -";
+            periodDelayCompare.textContent = "相比上月 -";
+          }
+
+          periodAvgCycle.textContent = Math.round(avgCycle) + "天";
+          periodAvgDelay.textContent =
+            (Math.round(avgDelay) > 0 ? "+" : "") + Math.round(avgDelay) + "天";
+        }
+
+        function addPeriod(start, duration) {
+          if (!start) {
+            alert("请选择开始日期");
+            return false;
+          }
+          const end = addDays(start, duration - 1);
+          const exists = appData.periods.some(
+            (x) =>
+              x.startDate === start &&
+              (x.endDate || "") === (end === start ? "" : end),
+          );
+          if (exists) {
+            alert("该记录已存在");
+            return false;
+          }
+          appData.periods.push({
+            startDate: start,
+            endDate: end === start ? "" : end,
+          });
+          saveData();
+          renderAll();
+          return true;
+        }
+
+        function openPeriodEdit(index) {
+          const item = appData.periods[index];
+          if (!item) return;
+          editingPeriodIndex = index;
+
+          const startParts = item.startDate.split("-");
+          periodEditStartYear.value = parseInt(startParts[0]);
+          periodEditStartMonth.value = parseInt(startParts[1]);
+          updateDateSelects(
+            periodEditStartYear,
+            periodEditStartMonth,
+            periodEditStartDay,
+            parseInt(startParts[2]),
+          );
+          periodEditStartDay.value = parseInt(startParts[2]);
+
+          let duration = 1;
+          if (item.endDate && item.endDate !== item.startDate) {
+            duration = dateDiff(item.startDate, item.endDate) + 1;
+          }
+          periodEditDuration.value = duration;
+          updatePeriodEditEndDate();
+
+          periodEditOverlay.classList.add("active");
+          document.body.style.overflow = "hidden";
+        }
+
+        function closePeriodEdit() {
+          periodEditOverlay.classList.remove("active");
+          document.body.style.overflow = "";
+          editingPeriodIndex = -1;
+        }
+
+        function savePeriodEdit() {
+          if (editingPeriodIndex < 0) return;
+
+          const start = getDateFromSelects(
+            periodEditStartYear,
+            periodEditStartMonth,
+            periodEditStartDay,
+          );
+          const duration = parseInt(periodEditDuration.value) || 1;
+          const end = addDays(start, duration - 1);
+
+          const exists = appData.periods.some((x, idx) => {
+            if (idx === editingPeriodIndex) return false;
+            return (
+              x.startDate === start &&
+              (x.endDate || "") === (end === start ? "" : end)
+            );
+          });
+          if (exists) {
+            alert("该记录已存在");
+            return;
+          }
+
+          appData.periods[editingPeriodIndex] = {
+            startDate: start,
+            endDate: end === start ? "" : end,
+          };
+          saveData();
+          closePeriodEdit();
+          renderAll();
+        }
+
+        function deletePeriodEdit() {
+          if (editingPeriodIndex < 0) return;
+          if (confirm("确定要删除这条记录吗？")) {
+            appData.periods.splice(editingPeriodIndex, 1);
+            saveData();
+            closePeriodEdit();
+            renderAll();
+          }
         }
 
         // ===== Love =====
@@ -1726,13 +2450,27 @@
           const my = appData.love.myName.trim();
           const her = appData.love.herName.trim();
           const start = appData.love.startDate;
-          if (my && her) {
+          const end = appData.love.endDate;
+
+          if (my && her && start) {
             nameCard.style.display = "block";
             displayMyName.textContent = my;
             displayHerName.textContent = her;
-            displayStartDate.textContent = start
-              ? `开始: ${formatDateDisplay(start)}`
-              : "";
+
+            const days = calcLoveDays(start, end);
+
+            if (end) {
+              displayStatus.textContent = "💔 已分手";
+              displayEndDate.style.display = "block";
+              displayEndDate.textContent = `结束: ${formatDateDisplay(end)}`;
+              displayDaysInfo.textContent = `💕 共在一起 ${days.total} 天 · 已分手 ${days.broken} 天`;
+            } else {
+              displayStatus.textContent = "❤️ 在一起";
+              displayEndDate.style.display = "none";
+              displayDaysInfo.textContent = `💕 在一起 ${days.total} 天`;
+            }
+            displayStartDate.textContent = `开始: ${formatDateDisplay(start)}`;
+
             myNameField.classList.add("hidden");
             herNameField.classList.add("hidden");
           } else {
@@ -1747,6 +2485,7 @@
           loveMyName.value = l.myName || "";
           loveHerName.value = l.herName || "";
           loveStartDate.value = l.startDate || "";
+          loveEndDate.value = l.endDate || "";
           renderAnniversaries();
           updateNameCard();
           newAnniversaryDate.value = getTodayStr();
@@ -1757,6 +2496,7 @@
           appData.love.myName = loveMyName.value.trim();
           appData.love.herName = loveHerName.value.trim();
           appData.love.startDate = loveStartDate.value;
+          appData.love.endDate = loveEndDate.value || "";
           saveData();
           renderAll();
           alert("💕 恋爱档案已保存");
@@ -1774,11 +2514,24 @@
             return;
           }
           if (!appData.love.anniversaries) appData.love.anniversaries = [];
+          const exists = appData.love.anniversaries.some(
+            (x) => x.date === date && x.event === event,
+          );
+          if (exists) {
+            alert("该纪念日已存在");
+            return;
+          }
           appData.love.anniversaries.push({ date, event });
+          // 同时保存档案
+          appData.love.myName = loveMyName.value.trim();
+          appData.love.herName = loveHerName.value.trim();
+          appData.love.startDate = loveStartDate.value;
+          appData.love.endDate = loveEndDate.value || "";
           saveData();
           renderAll();
           newAnniversaryDate.value = getTodayStr();
           newAnniversaryEvent.value = "";
+          alert("✅ 纪念日已添加，档案已保存");
         }
 
         // ===== 总览 =====
@@ -1787,7 +2540,32 @@
           ovTotalTrips.textContent = appData.trips.length;
           const cities = new Set(appData.trips.map((x) => x.name.trim()));
           ovTotalCities.textContent = cities.size;
-          ovLoveDays.textContent = calcLoveDays(appData.love.startDate);
+
+          // 恋爱天数
+          const love = appData.love;
+          if (love.startDate) {
+            const days = calcLoveDays(love.startDate, love.endDate);
+            ovLoveDays.textContent = days.total + "天";
+            if (love.endDate) {
+              ovLoveDetail.innerHTML = `<span class="broken">已分手 ${days.broken} 天</span> · <span class="together">共 ${days.total} 天</span>`;
+            } else {
+              ovLoveDetail.innerHTML = `<span class="together">在一起 ${days.total} 天</span>`;
+            }
+          } else {
+            ovLoveDays.textContent = "-";
+            ovLoveDetail.textContent = "";
+          }
+
+          // 上一次月经时间
+          if (appData.periods.length > 0) {
+            const sorted = [...appData.periods].sort((a, b) =>
+              a.startDate < b.startDate ? -1 : 1,
+            );
+            const last = sorted[sorted.length - 1];
+            ovPeriodDays.textContent = formatDateDisplay(last.startDate);
+          } else {
+            ovPeriodDays.textContent = "-";
+          }
         }
 
         // ===== 全部渲染 =====
@@ -1798,6 +2576,7 @@
             if (id === "tab-date") renderDates();
             else if (id === "tab-trip") renderTrips();
             else if (id === "tab-love") loadLoveData();
+            else if (id === "tab-period") renderPeriods();
             else if (id === "tab-overview") renderOverview();
           }
           renderOverview();
@@ -1819,6 +2598,7 @@
           if (tabId === "tab-date") renderDates();
           else if (tabId === "tab-trip") renderTrips();
           else if (tabId === "tab-love") loadLoveData();
+          else if (tabId === "tab-period") renderPeriods();
           else if (tabId === "tab-overview") renderOverview();
         }
 
@@ -1830,28 +2610,30 @@
         });
 
         addDateBtn.addEventListener("click", function () {
-          const start = getSelectedDate();
-          const end = getSelectedEndDate();
-          const place = newDatePlace.value;
-          if (addDateRange(start, end, place)) {
+          const start = getDateFromSelects(startYear, startMonth, startDay);
+          const duration = parseInt(dateDuration.value) || 1;
+          if (addDateRange(start, duration)) {
             newDatePlace.value = "";
           }
         });
 
         quickDateBtn.addEventListener("click", function () {
           setToday();
-          const start = getSelectedDate();
-          const end = getSelectedEndDate();
-          const place = newDatePlace.value;
-          if (addDateRange(start, end, place)) {
+          const start = getDateFromSelects(startYear, startMonth, startDay);
+          const duration = parseInt(dateDuration.value) || 1;
+          if (addDateRange(start, duration)) {
             newDatePlace.value = "";
           }
         });
 
         addTripBtn.addEventListener("click", function () {
-          const start = getTripStartDate();
-          const end = getTripEndDate();
-          if (addTrip(newTripPlace.value, start, end)) {
+          const start = getDateFromSelects(
+            tripStartYear,
+            tripStartMonth,
+            tripStartDay,
+          );
+          const duration = parseInt(tripDuration.value) || 1;
+          if (addTrip(newTripPlace.value, start, duration)) {
             newTripPlace.value = "";
             setTripToday();
           }
@@ -1859,8 +2641,71 @@
 
         tripSortOrder.addEventListener("change", renderTrips);
 
-        saveLoveBtn.addEventListener("click", saveLove);
-        addAnniversaryBtn.addEventListener("click", addAnniversary);
+        addPeriodBtn.addEventListener("click", function () {
+          const start = getDateFromSelects(
+            periodStartYear,
+            periodStartMonth,
+            periodStartDay,
+          );
+          const duration = parseInt(periodDuration.value) || 1;
+          if (addPeriod(start, duration)) {
+            setPeriodToday();
+          }
+        });
+
+        quickPeriodBtn.addEventListener("click", function () {
+          setPeriodToday();
+          const start = getDateFromSelects(
+            periodStartYear,
+            periodStartMonth,
+            periodStartDay,
+          );
+          const duration = parseInt(periodDuration.value) || 1;
+          if (addPeriod(start, duration)) {
+            setPeriodToday();
+          }
+        });
+
+        saveLoveBtn.addEventListener("click", function () {
+          appData.love.myName = loveMyName.value.trim();
+          appData.love.herName = loveHerName.value.trim();
+          appData.love.startDate = loveStartDate.value;
+          appData.love.endDate = loveEndDate.value || "";
+          saveData();
+          renderAll();
+          alert("💕 恋爱档案已保存");
+        });
+
+        addAnniversaryBtn.addEventListener("click", function () {
+          const date = newAnniversaryDate.value;
+          const event = newAnniversaryEvent.value.trim();
+          if (!date) {
+            alert("请选择日期");
+            return;
+          }
+          if (!event) {
+            alert("请填写纪念日事件");
+            return;
+          }
+          if (!appData.love.anniversaries) appData.love.anniversaries = [];
+          const exists = appData.love.anniversaries.some(
+            (x) => x.date === date && x.event === event,
+          );
+          if (exists) {
+            alert("该纪念日已存在");
+            return;
+          }
+          appData.love.anniversaries.push({ date, event });
+          appData.love.myName = loveMyName.value.trim();
+          appData.love.herName = loveHerName.value.trim();
+          appData.love.startDate = loveStartDate.value;
+          appData.love.endDate = loveEndDate.value || "";
+          saveData();
+          renderAll();
+          newAnniversaryDate.value = getTodayStr();
+          newAnniversaryEvent.value = "";
+          alert("✅ 纪念日已添加，档案已保存");
+        });
 
         document.querySelectorAll(".overview-item").forEach((el) => {
           el.addEventListener("click", function () {
@@ -1869,22 +2714,29 @@
           });
         });
 
-        // 编辑页面事件
         saveEditBtn.addEventListener("click", saveEdit);
         cancelEditBtn.addEventListener("click", closeEditPage);
         closeEditBtn.addEventListener("click", closeEditPage);
         deleteEditBtn.addEventListener("click", deleteEdit);
-        // 点击背景关闭
         editOverlay.addEventListener("click", function (e) {
           if (e.target === this) closeEditPage();
+        });
+
+        savePeriodEditBtn.addEventListener("click", savePeriodEdit);
+        cancelPeriodEditBtn.addEventListener("click", closePeriodEdit);
+        closePeriodEditBtn.addEventListener("click", closePeriodEdit);
+        deletePeriodEditBtn.addEventListener("click", deletePeriodEdit);
+        periodEditOverlay.addEventListener("click", function (e) {
+          if (e.target === this) closePeriodEdit();
         });
 
         // ===== 初始化 =====
         populateSelects();
         setToday();
         setTripToday();
-        switchTab("tab-love");
-        console.log("❤️ Love 轨迹 v21", appData);
+        setPeriodToday();
+        switchTab("tab-date");
+        console.log("❤️ Love 轨迹 v23", appData);
       })();
     </script>
   </body>
