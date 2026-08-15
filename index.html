@@ -1153,7 +1153,7 @@
               </div>
               <div class="period-stat-item" data-stat="delay">
                 <div class="num" id="periodDelayDays">-</div>
-                <div class="lbl">推迟</div>
+                <div class="lbl">推迟/提前</div>
                 <div class="sub-lbl" id="periodDelayCompare">相比上月 -</div>
               </div>
               <div class="period-stat-item" data-stat="avgCycle">
@@ -1162,7 +1162,7 @@
               </div>
               <div class="period-stat-item" data-stat="avgDelay">
                 <div class="num" id="periodAvgDelay">-</div>
-                <div class="lbl">平均推迟</div>
+                <div class="lbl">平均推迟/提前</div>
               </div>
             </div>
             <div class="list-container" id="periodListContainer">
@@ -1367,7 +1367,7 @@
     <script>
       (function () {
         "use strict";
-        const STORAGE_KEY = "love_trail_v23";
+        const STORAGE_KEY = "love_trail_v24";
 
         function getDefault() {
           return {
@@ -2236,6 +2236,7 @@
           periodCountLabel.textContent = `${d.length} 条`;
         }
 
+        // ===== 核心：月经周期和推迟计算（根据用户提供的公式） =====
         function calculatePeriodStats() {
           const periods = appData.periods;
           if (periods.length < 2) {
@@ -2248,71 +2249,121 @@
             return;
           }
 
+          // 按开始日期排序（从旧到新）
           const sorted = [...periods].sort((a, b) =>
             a.startDate < b.startDate ? -1 : 1,
           );
 
+          // 1. 计算每次的周期（本次首日 - 上次首日）
           let cycles = [];
-          let delays = [];
-
           for (let i = 1; i < sorted.length; i++) {
             const prev = sorted[i - 1];
             const curr = sorted[i];
-
-            // 周期 = 本次第一天 - 上次第一天
-            let cycle = dateDiff(prev.startDate, curr.startDate);
-            if (cycle < 0) cycle = 0;
-            cycles.push(cycle);
-
-            // 推迟 = 本次开始 - 上次开始 - 周期
-            let delay = cycle - (cycle || 0);
-            // 更准确的推迟：本次开始日期 - 上次开始日期 - 预期周期（28天为标准）
-            // 这里使用：推迟 = 本次开始 - 上次开始 - 上次周期
-            if (i >= 2) {
-              const prevPrev = sorted[i - 2];
-              const prevCycle = dateDiff(prevPrev.startDate, prev.startDate);
-              delay = cycle - prevCycle;
-            } else {
-              delay = cycle - 28; // 默认周期28天
-            }
-            delays.push(delay);
+            const cycle = dateDiff(prev.startDate, curr.startDate);
+            if (cycle > 0) cycles.push(cycle);
           }
 
-          const lastCycle = cycles[cycles.length - 1];
-          const lastDelay = delays[delays.length - 1];
-
-          const avgCycle = cycles.reduce((a, b) => a + b, 0) / cycles.length;
-          const avgDelay = delays.reduce((a, b) => a + b, 0) / delays.length;
-
-          periodCycleDays.textContent = lastCycle + "天";
-          periodDelayDays.textContent =
-            (lastDelay > 0 ? "+" : "") + lastDelay + "天";
-
-          if (cycles.length >= 2) {
-            const prevCycle = cycles[cycles.length - 2];
-            const prevDelay = delays[delays.length - 2];
-            const cycleDiff = lastCycle - prevCycle;
-            const delayDiff = lastDelay - prevDelay;
-            periodCycleCompare.textContent =
-              cycleDiff > 0
-                ? `相比上月 +${cycleDiff}天`
-                : cycleDiff < 0
-                  ? `相比上月 ${cycleDiff}天`
-                  : "相比上月 持平";
-            periodDelayCompare.textContent =
-              delayDiff > 0
-                ? `相比上月 +${delayDiff}天`
-                : delayDiff < 0
-                  ? `相比上月 ${delayDiff}天`
-                  : "相比上月 持平";
-          } else {
+          if (cycles.length === 0) {
+            periodCycleDays.textContent = "-";
+            periodDelayDays.textContent = "-";
             periodCycleCompare.textContent = "相比上月 -";
             periodDelayCompare.textContent = "相比上月 -";
+            periodAvgCycle.textContent = "-";
+            periodAvgDelay.textContent = "-";
+            return;
           }
 
+          // 2. 计算平均周期（使用所有可用周期）
+          const avgCycle = cycles.reduce((a, b) => a + b, 0) / cycles.length;
+
+          // 3. 最近一次周期（用于显示"本次周期"）
+          const lastCycle = cycles[cycles.length - 1];
+          periodCycleDays.textContent = lastCycle + "天";
+
+          // 4. 计算最近一次的推迟/提前天数
+          // 预估来潮日 = 上次首日 + 平均周期
+          let lastDelay = 0;
+          let lastDelayText = "-";
+          if (sorted.length >= 2) {
+            const prev = sorted[sorted.length - 2];
+            const curr = sorted[sorted.length - 1];
+            // 预估来潮日 = 上次首日 + 平均周期
+            const predictedDate = addDays(prev.startDate, Math.round(avgCycle));
+            // 实际来潮日 - 预估来潮日（正=推迟，负=提前）
+            lastDelay = dateDiff(predictedDate, curr.startDate);
+            if (lastDelay > 0) {
+              lastDelayText = `推迟 ${lastDelay} 天`;
+            } else if (lastDelay < 0) {
+              lastDelayText = `提前 ${Math.abs(lastDelay)} 天`;
+            } else {
+              lastDelayText = "准时";
+            }
+          }
+          periodDelayDays.textContent = lastDelayText;
+
+          // 5. 计算上一次的推迟/提前（用于"相比上月"对比）
+          let prevDelayText = "-";
+          let cycleDiffText = "-";
+          if (sorted.length >= 3 && cycles.length >= 2) {
+            // 上一次的预估来潮日
+            const prevPrev = sorted[sorted.length - 3];
+            const prev = sorted[sorted.length - 2];
+            // 用除去最后一次的周期计算平均
+            const prevCycles = cycles.slice(0, -1);
+            const prevAvg =
+              prevCycles.reduce((a, b) => a + b, 0) / prevCycles.length;
+            const predictedPrevDate = addDays(
+              prevPrev.startDate,
+              Math.round(prevAvg),
+            );
+            const prevDelay = dateDiff(predictedPrevDate, prev.startDate);
+
+            if (prevDelay > 0) {
+              prevDelayText = `上次推迟 ${prevDelay} 天`;
+            } else if (prevDelay < 0) {
+              prevDelayText = `上次提前 ${Math.abs(prevDelay)} 天`;
+            } else {
+              prevDelayText = "上次准时";
+            }
+
+            // 周期相比上月
+            const cycleDiff = lastCycle - cycles[cycles.length - 2];
+            if (cycleDiff > 0) {
+              cycleDiffText = `比上月 +${cycleDiff}天`;
+            } else if (cycleDiff < 0) {
+              cycleDiffText = `比上月 ${cycleDiff}天`;
+            } else {
+              cycleDiffText = "比上月 持平";
+            }
+          } else if (sorted.length >= 2 && cycles.length >= 1) {
+            // 只有两个周期时，无法计算"相比上月"
+            cycleDiffText = "相比上月 -";
+            prevDelayText = "相比上月 -";
+          }
+
+          periodCycleCompare.textContent = cycleDiffText;
+          periodDelayCompare.textContent = prevDelayText;
+
+          // 6. 平均周期和平均推迟/提前
           periodAvgCycle.textContent = Math.round(avgCycle) + "天";
-          periodAvgDelay.textContent =
-            (Math.round(avgDelay) > 0 ? "+" : "") + Math.round(avgDelay) + "天";
+
+          // 计算平均推迟/提前：所有周期相对平均周期的偏差
+          if (cycles.length > 0) {
+            let totalDeviation = 0;
+            for (let i = 0; i < cycles.length; i++) {
+              totalDeviation += cycles[i] - avgCycle;
+            }
+            const avgDeviation = totalDeviation / cycles.length;
+            if (Math.abs(avgDeviation) < 0.5) {
+              periodAvgDelay.textContent = "准时";
+            } else if (avgDeviation > 0) {
+              periodAvgDelay.textContent = `平均推迟 ${Math.round(avgDeviation)} 天`;
+            } else {
+              periodAvgDelay.textContent = `平均提前 ${Math.round(Math.abs(avgDeviation))} 天`;
+            }
+          } else {
+            periodAvgDelay.textContent = "-";
+          }
         }
 
         function addPeriod(start, duration) {
@@ -2736,7 +2787,7 @@
         setTripToday();
         setPeriodToday();
         switchTab("tab-date");
-        console.log("❤️ Love 轨迹 v23", appData);
+        console.log("❤️ Love 轨迹 v24 - 月经周期标准计算", appData);
       })();
     </script>
   </body>
