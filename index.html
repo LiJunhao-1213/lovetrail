@@ -388,13 +388,13 @@
         pointer-events: none;
       }
 
-      /* ===== 列表项 - 支持单击编辑和媒体点击查看 ===== */
+      /* ===== 列表项 ===== */
       .list-container {
         margin-top: 8px;
         display: flex;
         flex-direction: column;
         gap: 8px;
-        max-height: 300px;
+        max-height: 400px;
         overflow-y: auto;
       }
       .list-item {
@@ -458,7 +458,38 @@
         transform: scale(1.2);
       }
 
-      /* 媒体缩略图 - 等比缩放显示在记录下方 */
+      /* 旅行记录 - 日期另起一行 */
+      .list-item .trip-date-line {
+        display: block;
+        font-size: 12px;
+        color: #b0a098;
+        margin-top: 2px;
+      }
+
+      /* 旅行统计 - 放在最上方 */
+      .trip-stats-top {
+        display: flex;
+        justify-content: space-around;
+        background: #fefaf8;
+        border-radius: 10px;
+        padding: 8px 4px;
+        border: 1px solid #f5dcd8;
+        margin-bottom: 8px;
+      }
+      .trip-stats-top .stat-item {
+        text-align: center;
+      }
+      .trip-stats-top .stat-item .number {
+        font-size: 18px;
+        font-weight: 700;
+        color: #e74c3c;
+      }
+      .trip-stats-top .stat-item .label {
+        font-size: 10px;
+        color: #e08078;
+      }
+
+      /* 媒体缩略图 */
       .item-media-row {
         display: flex;
         gap: 6px;
@@ -508,28 +539,8 @@
         font-size: 28px;
         text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
       }
-      .item-media-row .media-thumb .media-count-badge {
-        position: absolute;
-        top: -4px;
-        right: -4px;
-        background: #e74c3c;
-        color: #fff;
-        border-radius: 50%;
-        width: 20px;
-        height: 20px;
-        font-size: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 600;
-      }
-      .item-media-row .no-media {
-        font-size: 12px;
-        color: #dbb0a8;
-        padding: 4px 0;
-      }
 
-      /* 媒体查看弹窗 */
+      /* 媒体查看器 */
       .media-viewer {
         position: fixed;
         top: 0;
@@ -654,6 +665,46 @@
         color: #c0392b;
         outline: none;
         height: 28px;
+      }
+
+      /* ===== 分页样式 ===== */
+      .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+        margin-top: 8px;
+        padding: 4px 0;
+        flex-wrap: wrap;
+      }
+      .pagination button {
+        background: #fde8e4;
+        border: 1px solid #f5dcd8;
+        border-radius: 30px;
+        padding: 4px 12px;
+        font-size: 12px;
+        color: #c0392b;
+        cursor: default;
+        min-height: 28px;
+        min-width: 32px;
+      }
+      .pagination button:active {
+        background: #fcd8d0;
+        transform: scale(0.94);
+      }
+      .pagination button.active {
+        background: #fcd8d0;
+        border-color: #f5c8c0;
+        font-weight: 600;
+      }
+      .pagination button:disabled {
+        opacity: 0.4;
+        pointer-events: none;
+      }
+      .pagination .page-info {
+        font-size: 12px;
+        color: #c08078;
+        padding: 0 8px;
       }
 
       .love-field {
@@ -835,6 +886,60 @@
         font-size: 10px;
         color: #d0a098;
         margin-top: 1px;
+      }
+
+      /* ===== 月经分析模块 ===== */
+      .period-analysis {
+        margin: 8px 0;
+        background: #fefaf8;
+        border-radius: 10px;
+        padding: 12px;
+        border: 1px solid #f5dcd8;
+      }
+      .period-analysis .analysis-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: #e08078;
+        text-align: center;
+        margin-bottom: 8px;
+      }
+      .period-analysis .analysis-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 6px;
+      }
+      .period-analysis .analysis-item {
+        text-align: center;
+        background: #fff;
+        border-radius: 8px;
+        padding: 8px 4px;
+        border: 1px solid #f5dcd8;
+      }
+      .period-analysis .analysis-item .a-num {
+        font-size: 16px;
+        font-weight: 700;
+        color: #e74c3c;
+      }
+      .period-analysis .analysis-item .a-label {
+        font-size: 9px;
+        color: #c08078;
+        margin-top: 1px;
+      }
+      .period-analysis .analysis-detail {
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 1px solid #f5dcd8;
+      }
+      .period-analysis .analysis-detail .detail-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        color: #4a2a2a;
+        padding: 2px 0;
+      }
+      .period-analysis .analysis-detail .detail-row .val {
+        color: #e74c3c;
+        font-weight: 600;
       }
 
       .period-card {
@@ -1246,6 +1351,13 @@
         gap: 8px;
       }
 
+      .btn-clickable {
+        cursor: pointer;
+      }
+      .btn-clickable:active {
+        transform: scale(0.95);
+      }
+
       @media (max-width: 430px) {
         .date-row select {
           text-align: center;
@@ -1257,6 +1369,14 @@
         .item-media-row .media-thumb {
           width: 60px;
           height: 60px;
+        }
+        .period-analysis .analysis-grid {
+          grid-template-columns: 1fr 1fr 1fr;
+        }
+        .pagination button {
+          padding: 2px 10px;
+          font-size: 11px;
+          min-width: 28px;
         }
       }
       @media (min-width: 430px) {
@@ -1313,14 +1433,14 @@
                 >0 条</span
               >
               <button
-                class="btn btn-small"
+                class="btn btn-small btn-clickable"
                 id="dateManageBtn"
                 style="background: #fde8e4; min-height: 28px; padding: 0 10px"
               >
                 ⚙️
               </button>
               <button
-                class="btn btn-small"
+                class="btn btn-small btn-clickable"
                 id="dateRandomBtn"
                 style="background: #fde8e4; min-height: 28px; padding: 0 12px"
               >
@@ -1381,9 +1501,11 @@
               <button class="btn btn-primary" id="addDateBtn">➕ 添加</button>
               <button class="btn btn-primary" id="quickDateBtn">📆 今天</button>
             </div>
-            <div class="list-container" id="dateListContainer">
+            <div id="dateListContainer" class="list-container">
               <div class="empty-message">还没有记录</div>
             </div>
+            <!-- 快乐日期分页 -->
+            <div class="pagination" id="datePagination"></div>
             <div class="stat-summary">
               <div class="stat-item">
                 <div class="number" id="totalDates">0</div>
@@ -1419,19 +1541,29 @@
                 >0 条</span
               >
               <button
-                class="btn btn-small"
+                class="btn btn-small btn-clickable"
                 id="tripManageBtn"
                 style="background: #fde8e4; min-height: 28px; padding: 0 10px"
               >
                 ⚙️
               </button>
               <button
-                class="btn btn-small"
+                class="btn btn-small btn-clickable"
                 id="tripRandomBtn"
                 style="background: #fde8e4; min-height: 28px; padding: 0 12px"
               >
                 🎲
               </button>
+            </div>
+            <div class="trip-stats-top">
+              <div class="stat-item">
+                <div class="number" id="totalTrips">0</div>
+                <div class="label">总地点</div>
+              </div>
+              <div class="stat-item">
+                <div class="number" id="uniqueTrips">0</div>
+                <div class="label">不同城市</div>
+              </div>
             </div>
             <div class="search-filter-area section-gap">
               <div class="search-row">
@@ -1494,27 +1626,19 @@
             >
               ➕ 添加
             </button>
-            <div class="sort-area section-gap-small">
+            <!-- <div class="sort-area section-gap-small">
               <label style="font-size: 11px; color: #e08078">排序：</label>
               <select id="tripSortOrder">
                 <option value="desc">最新优先</option>
                 <option value="asc">最早优先</option>
                 <option value="name">按名称</option>
               </select>
-            </div>
-            <div class="list-container" id="tripListContainer">
+            </div> -->
+            <div id="tripListContainer" class="list-container">
               <div class="empty-message">还没有地点</div>
             </div>
-            <div class="stat-summary">
-              <div class="stat-item">
-                <div class="number" id="totalTrips">0</div>
-                <div class="label">总地点</div>
-              </div>
-              <div class="stat-item">
-                <div class="number" id="uniqueTrips">0</div>
-                <div class="label">不同城市</div>
-              </div>
-            </div>
+            <!-- 旅行分页 -->
+            <div class="pagination" id="tripPagination"></div>
           </div>
         </div>
 
@@ -1652,9 +1776,42 @@
                 <div class="lbl">平均推迟/提前</div>
               </div>
             </div>
-            <div class="list-container" id="periodListContainer">
+            <div class="period-analysis" id="periodAnalysis">
+              <div class="analysis-title">📊 月经分析</div>
+              <div class="analysis-grid">
+                <div class="analysis-item">
+                  <div class="a-num" id="analysisTotal">0</div>
+                  <div class="a-label">总记录</div>
+                </div>
+                <div class="analysis-item">
+                  <div class="a-num" id="analysisAvgDuration">-</div>
+                  <div class="a-label">平均持续</div>
+                </div>
+                <div class="analysis-item">
+                  <div class="a-num" id="analysisMostCommon">-</div>
+                  <div class="a-label">最常见持续</div>
+                </div>
+              </div>
+              <div class="analysis-detail">
+                <div class="detail-row">
+                  <span>📈 最长持续</span
+                  ><span class="val" id="analysisMaxDuration">-</span>
+                </div>
+                <div class="detail-row">
+                  <span>📉 最短持续</span
+                  ><span class="val" id="analysisMinDuration">-</span>
+                </div>
+                <div class="detail-row">
+                  <span>📊 持续天数分布</span
+                  ><span class="val" id="analysisDistribution">-</span>
+                </div>
+              </div>
+            </div>
+            <div id="periodListContainer" class="list-container">
               <div class="empty-message">还没有记录</div>
             </div>
+            <!-- 月经分页 -->
+            <div class="pagination" id="periodPagination"></div>
           </div>
         </div>
 
@@ -1905,7 +2062,11 @@
         </div>
         <div class="manage-actions">
           <div class="manage-row">
-            <button class="btn btn-danger" id="manageClearAll" style="flex: 1">
+            <button
+              class="btn btn-danger btn-clickable"
+              id="manageClearAll"
+              style="flex: 1"
+            >
               🗑️ 清空所有记录
             </button>
           </div>
@@ -1914,7 +2075,7 @@
               <option value="">选择标签</option>
             </select>
             <button
-              class="btn btn-danger"
+              class="btn btn-danger btn-clickable"
               id="manageDeleteByTag"
               style="flex: 1"
             >
@@ -1965,15 +2126,20 @@
       (function () {
         "use strict";
 
-        const STORAGE_KEY = "love_trail_v37";
+        const STORAGE_KEY = "love_trail_v39";
         const DB_NAME = "love_media_db";
         const STORE_NAME = "media";
+        const PAGE_SIZE = 5;
         let db = null;
 
-        // 媒体查看器状态
+        // 分页状态
+        let datePage = 0;
+        let tripPage = 0;
+        let periodPage = 0;
+
         let viewerMediaIds = [];
         let viewerCurrentIndex = 0;
-        let viewerType = "date"; // 'date' or 'trip'
+        let viewerType = "date";
 
         function openDB() {
           return new Promise((resolve, reject) => {
@@ -2208,6 +2374,56 @@
           });
         }
 
+        // ========== 分页工具 ==========
+        function renderPagination(
+          containerId,
+          currentPage,
+          totalItems,
+          pageSize,
+          callback,
+        ) {
+          const container = document.getElementById(containerId);
+          if (!container) return;
+          const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+          if (totalPages <= 1) {
+            container.innerHTML = "";
+            return;
+          }
+          let html = "";
+          // 上一页
+          html += `<button class="btn-clickable" data-page="prev" ${currentPage === 0 ? "disabled" : ""}>‹</button>`;
+          // 页码
+          const maxVisible = 5;
+          let startPage = Math.max(0, currentPage - Math.floor(maxVisible / 2));
+          let endPage = Math.min(totalPages - 1, startPage + maxVisible - 1);
+          if (endPage - startPage < maxVisible - 1) {
+            startPage = Math.max(0, endPage - maxVisible + 1);
+          }
+          for (let i = startPage; i <= endPage; i++) {
+            html += `<button class="btn-clickable ${i === currentPage ? "active" : ""}" data-page="${i}">${i + 1}</button>`;
+          }
+          // 下一页
+          html += `<button class="btn-clickable" data-page="next" ${currentPage >= totalPages - 1 ? "disabled" : ""}>›</button>`;
+          // 信息
+          html += `<span class="page-info">${currentPage + 1}/${totalPages}</span>`;
+          container.innerHTML = html;
+
+          container.querySelectorAll("button").forEach((btn) => {
+            btn.addEventListener("click", function (e) {
+              e.stopPropagation();
+              const page = this.dataset.page;
+              let newPage = currentPage;
+              if (page === "prev") newPage = Math.max(0, currentPage - 1);
+              else if (page === "next")
+                newPage = Math.min(totalPages - 1, currentPage + 1);
+              else newPage = parseInt(page);
+              if (newPage !== currentPage) {
+                callback(newPage);
+              }
+            });
+          });
+        }
+
         // ========== 图表绘制 ==========
         function drawChart(year) {
           const canvas = document.getElementById("trendChart");
@@ -2330,7 +2546,6 @@
         function closeMediaViewer() {
           document.getElementById("mediaViewer").classList.remove("active");
           document.body.style.overflow = "";
-          // 释放视频资源
           const display = document.getElementById("viewerDisplay");
           display.innerHTML = "";
         }
@@ -2371,7 +2586,9 @@
           });
         }
 
-        // ========== 渲染列表（单击编辑，媒体缩略图等比缩放） ==========
+        // ========== 渲染函数（带分页） ==========
+
+        // 渲染快乐日期列表
         function renderDateList() {
           const items = appData.dates;
           const search = document.getElementById("dateSearchInput").value;
@@ -2381,12 +2598,19 @@
             (a, b) => (b.star ? 1 : 0) - (a.star ? 1 : 0),
           );
 
+          const totalItems = filtered.length;
+          const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
+          if (datePage >= totalPages) datePage = totalPages - 1;
+          const start = datePage * PAGE_SIZE;
+          const end = Math.min(start + PAGE_SIZE, totalItems);
+          const pageItems = filtered.slice(start, end);
+
           const container = document.getElementById("dateListContainer");
-          if (filtered.length === 0) {
+          if (pageItems.length === 0) {
             container.innerHTML = `<div class="empty-message">还没有记录</div>`;
           } else {
             let html = "";
-            filtered.forEach((item, idx) => {
+            pageItems.forEach((item, idx) => {
               const realIdx = appData.dates.indexOf(item);
               const placePart = item.place ? ` · ${item.place}` : "";
               let rangePart = "";
@@ -2407,7 +2631,6 @@
                 const showMedia = item.mediaIds.slice(0, 6);
                 mediaRowHtml = `<div class="item-media-row">`;
                 showMedia.forEach((mid, mi) => {
-                  // 使用data属性存储mediaId，点击时查看
                   mediaRowHtml += `<div class="media-thumb" data-media-id="${mid}" data-all-media='${JSON.stringify(item.mediaIds)}' data-type="date" data-index="${mi}">
                             <div class="media-loading" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;color:#dbb0a8;font-size:12px;">加载中</div>
                         </div>`;
@@ -2433,11 +2656,8 @@
             });
             container.innerHTML = html;
 
-            // 绑定点击事件
             container.querySelectorAll(".list-item").forEach((el) => {
-              // 单击进入编辑页面
               el.addEventListener("click", function (e) {
-                // 如果点击的是星标按钮或媒体缩略图，不触发展开编辑
                 if (
                   e.target.closest(".star-btn") ||
                   e.target.closest(".media-thumb")
@@ -2448,7 +2668,6 @@
               });
             });
 
-            // 星标按钮
             container.querySelectorAll(".star-btn").forEach((el) => {
               el.addEventListener("click", function (e) {
                 e.stopPropagation();
@@ -2464,7 +2683,6 @@
               });
             });
 
-            // 媒体缩略图点击 - 查看大图/视频
             container.querySelectorAll(".media-thumb").forEach((el) => {
               el.addEventListener("click", function (e) {
                 e.stopPropagation();
@@ -2478,12 +2696,10 @@
                     openMediaViewer(allMedia, type, index);
                   }
                 } catch (e) {
-                  // 如果解析失败，只打开当前媒体
                   openMediaViewer([mediaId], type, 0);
                 }
               });
 
-              // 加载媒体缩略图
               const mediaId = parseInt(el.dataset.mediaId);
               const loadingEl = el.querySelector(".media-loading");
               if (loadingEl) {
@@ -2514,7 +2730,6 @@
                     video.onloadeddata = function () {
                       el.innerHTML = "";
                       el.appendChild(video);
-                      // 添加播放图标
                       const overlay = document.createElement("div");
                       overlay.className = "play-overlay";
                       overlay.innerHTML = '<span class="play-icon">▶</span>';
@@ -2536,8 +2751,20 @@
           );
           document.getElementById("uniqueDateLocations").textContent =
             places.size;
+
+          renderPagination(
+            "datePagination",
+            datePage,
+            totalItems,
+            PAGE_SIZE,
+            function (newPage) {
+              datePage = newPage;
+              renderDateList();
+            },
+          );
         }
 
+        // 渲染旅行列表（日期另起一行）
         function renderTripList() {
           const items = appData.trips;
           const search = document.getElementById("tripSearchInput").value;
@@ -2547,12 +2774,19 @@
             (a, b) => (b.star ? 1 : 0) - (a.star ? 1 : 0),
           );
 
+          const totalItems = filtered.length;
+          const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
+          if (tripPage >= totalPages) tripPage = totalPages - 1;
+          const start = tripPage * PAGE_SIZE;
+          const end = Math.min(start + PAGE_SIZE, totalItems);
+          const pageItems = filtered.slice(start, end);
+
           const container = document.getElementById("tripListContainer");
-          if (filtered.length === 0) {
+          if (pageItems.length === 0) {
             container.innerHTML = `<div class="empty-message">还没有地点</div>`;
           } else {
             let html = "";
-            filtered.forEach((item, idx) => {
+            pageItems.forEach((item, idx) => {
               const realIdx = appData.trips.indexOf(item);
               let rangePart = "";
               if (item.endDate && item.endDate !== item.date) {
@@ -2585,7 +2819,8 @@
               html += `<div class="list-item" data-idx="${realIdx}" data-type="trip">
                     <div class="item-header">
                         <div class="item-info">
-                            <div class="date-text">📍 ${item.name || "未命名"} · ${formatDateDisplay(item.date)}${rangePart}</div>
+                            <div class="date-text">📍 ${item.name || "未命名"}</div>
+                            <div class="trip-date-line">📅 ${formatDateDisplay(item.date)}${rangePart}</div>
                             ${tagHtml ? `<div class="tags">${tagHtml}</div>` : ""}
                         </div>
                         <div class="item-actions">
@@ -2689,6 +2924,179 @@
           document.getElementById("totalTrips").textContent = items.length;
           const cities = new Set(items.map((x) => x.name.trim()));
           document.getElementById("uniqueTrips").textContent = cities.size;
+
+          renderPagination(
+            "tripPagination",
+            tripPage,
+            totalItems,
+            PAGE_SIZE,
+            function (newPage) {
+              tripPage = newPage;
+              renderTripList();
+            },
+          );
+        }
+
+        // ========== 月经分析 ==========
+        function renderPeriodAnalysis() {
+          const periods = appData.periods;
+          if (periods.length === 0) {
+            document.getElementById("analysisTotal").textContent = "0";
+            document.getElementById("analysisAvgDuration").textContent = "-";
+            document.getElementById("analysisMostCommon").textContent = "-";
+            document.getElementById("analysisMaxDuration").textContent = "-";
+            document.getElementById("analysisMinDuration").textContent = "-";
+            document.getElementById("analysisDistribution").textContent = "-";
+            return;
+          }
+
+          const durations = periods.map((item) => {
+            if (item.endDate && item.endDate !== item.startDate) {
+              return dateDiff(item.startDate, item.endDate) + 1;
+            }
+            return 1;
+          });
+
+          const total = durations.length;
+          const sum = durations.reduce((a, b) => a + b, 0);
+          const avg = sum / total;
+
+          const freq = {};
+          durations.forEach((d) => {
+            freq[d] = (freq[d] || 0) + 1;
+          });
+
+          let mostCommon = 0;
+          let mostCommonCount = 0;
+          let maxDur = 0;
+          let minDur = Infinity;
+          const distParts = [];
+
+          Object.keys(freq).forEach((key) => {
+            const d = parseInt(key);
+            const count = freq[key];
+            if (count > mostCommonCount) {
+              mostCommonCount = count;
+              mostCommon = d;
+            }
+            if (d > maxDur) maxDur = d;
+            if (d < minDur) minDur = d;
+            distParts.push(`${d}天×${count}次`);
+          });
+
+          document.getElementById("analysisTotal").textContent = total;
+          document.getElementById("analysisAvgDuration").textContent =
+            avg.toFixed(1) + "天";
+          document.getElementById("analysisMostCommon").textContent =
+            mostCommon + "天";
+          document.getElementById("analysisMaxDuration").textContent =
+            maxDur + "天";
+          document.getElementById("analysisMinDuration").textContent =
+            minDur + "天";
+          document.getElementById("analysisDistribution").textContent =
+            distParts.join("、");
+        }
+
+        // ========== 月经列表渲染（带分页） ==========
+        function renderPeriodList() {
+          const periods = appData.periods;
+          const totalItems = periods.length;
+          const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
+          if (periodPage >= totalPages) periodPage = totalPages - 1;
+          const start = periodPage * PAGE_SIZE;
+          const end = Math.min(start + PAGE_SIZE, totalItems);
+          const pageItems = periods.slice(start, end);
+
+          const container = document.getElementById("periodListContainer");
+          if (pageItems.length === 0) {
+            container.innerHTML = `<div class="empty-message">还没有记录</div>`;
+          } else {
+            let html = "";
+            const sorted = [...pageItems].sort((a, b) =>
+              a.startDate < b.startDate ? 1 : -1,
+            );
+            sorted.forEach((item, idx) => {
+              const realIdx = appData.periods.indexOf(item);
+              const endDisplay =
+                item.endDate && item.endDate !== item.startDate
+                  ? ` ~ ${formatDateDisplay(item.endDate)}`
+                  : "";
+              const duration =
+                item.endDate && item.endDate !== item.startDate
+                  ? dateDiff(item.startDate, item.endDate) + 1
+                  : 1;
+              html += `<div class="period-card" data-idx="${realIdx}">
+                    <div class="info">
+                        <div class="date-range">🩸 ${formatDateDisplay(item.startDate)}${endDisplay}</div>
+                        <div class="detail">持续 ${duration} 天</div>
+                    </div>
+                    <button class="del" data-idx="${realIdx}">✕</button>
+                </div>`;
+            });
+            container.innerHTML = html;
+            container.querySelectorAll(".del").forEach((el) => {
+              el.addEventListener("click", function (e) {
+                e.stopPropagation();
+                const idx = parseInt(this.dataset.idx);
+                if (confirm("确定删除吗？")) {
+                  appData.periods.splice(idx, 1);
+                  saveData();
+                  renderAll();
+                }
+              });
+            });
+            container.querySelectorAll(".period-card").forEach((el) => {
+              el.addEventListener("click", function (e) {
+                if (e.target.closest(".del")) return;
+                const idx = parseInt(this.dataset.idx);
+                const item = appData.periods[idx];
+                if (!item) return;
+                const parts = item.startDate.split("-");
+                document.getElementById("periodEditStartYear").value = parseInt(
+                  parts[0],
+                );
+                document.getElementById("periodEditStartMonth").value =
+                  parseInt(parts[1]);
+                updateDateSelects(
+                  document.getElementById("periodEditStartYear"),
+                  document.getElementById("periodEditStartMonth"),
+                  document.getElementById("periodEditStartDay"),
+                  parseInt(parts[2]),
+                );
+                document.getElementById("periodEditStartDay").value = parseInt(
+                  parts[2],
+                );
+                let duration = 1;
+                if (item.endDate && item.endDate !== item.startDate) {
+                  duration = dateDiff(item.startDate, item.endDate) + 1;
+                }
+                document.getElementById("periodEditDuration").value = duration;
+                const end = addDays(item.startDate, duration - 1);
+                document.getElementById("periodEditEndResult").textContent =
+                  `→ 结束: ${formatDateDisplay(end)}`;
+                document.getElementById("savePeriodEditBtn").dataset.idx = idx;
+                document.getElementById("deletePeriodEditBtn").dataset.idx =
+                  idx;
+                document
+                  .getElementById("periodEditOverlay")
+                  .classList.add("active");
+                document.body.style.overflow = "hidden";
+              });
+            });
+          }
+          document.getElementById("periodCountLabel").textContent =
+            `${periods.length} 条`;
+
+          renderPagination(
+            "periodPagination",
+            periodPage,
+            totalItems,
+            PAGE_SIZE,
+            function (newPage) {
+              periodPage = newPage;
+              renderPeriodList();
+            },
+          );
         }
 
         // ========== 编辑弹窗 ==========
@@ -3016,50 +3424,8 @@
         function renderAll() {
           renderDateList();
           renderTripList();
+          renderPeriodList();
           updateOverview();
-
-          // 月经渲染
-          const periods = appData.periods;
-          const container = document.getElementById("periodListContainer");
-          if (periods.length === 0) {
-            container.innerHTML = `<div class="empty-message">还没有记录</div>`;
-          } else {
-            let html = "";
-            const sorted = [...periods].sort((a, b) =>
-              a.startDate < b.startDate ? 1 : -1,
-            );
-            sorted.forEach((item, idx) => {
-              const endDisplay =
-                item.endDate && item.endDate !== item.startDate
-                  ? ` ~ ${formatDateDisplay(item.endDate)}`
-                  : "";
-              const duration =
-                item.endDate && item.endDate !== item.startDate
-                  ? dateDiff(item.startDate, item.endDate) + 1
-                  : 1;
-              html += `<div class="period-card" data-idx="${idx}">
-                    <div class="info">
-                        <div class="date-range">🩸 ${formatDateDisplay(item.startDate)}${endDisplay}</div>
-                        <div class="detail">持续 ${duration} 天</div>
-                    </div>
-               
-                </div>`;
-            });
-            container.innerHTML = html;
-            container.querySelectorAll(".del").forEach((el) => {
-              el.addEventListener("click", function (e) {
-                e.stopPropagation();
-                const idx = parseInt(this.dataset.idx);
-                if (confirm("确定删除吗？")) {
-                  appData.periods.splice(idx, 1);
-                  saveData();
-                  renderAll();
-                }
-              });
-            });
-          }
-          document.getElementById("periodCountLabel").textContent =
-            `${periods.length} 条`;
 
           // 月经统计
           const periodsData = appData.periods;
@@ -3141,6 +3507,9 @@
             }
           }
 
+          // 月经分析
+          renderPeriodAnalysis();
+
           // 恋爱档案
           const love = appData.love;
           document.getElementById("loveMyName").value = love.myName || "";
@@ -3211,6 +3580,174 @@
           document.getElementById("newAnniversaryEvent").value = "";
 
           updateTagFilters();
+        }
+
+        // ========== 更新标签下拉 ==========
+        function updateTagFilters() {
+          const tags = getAllTags();
+          ["manageTagSelect"].forEach((id) => {
+            const sel = document.getElementById(id);
+            if (!sel) return;
+            const current = sel.value;
+            sel.innerHTML = `<option value="">选择标签</option>`;
+            tags.forEach((t) => {
+              const opt = document.createElement("option");
+              opt.value = t;
+              opt.textContent = t;
+              sel.appendChild(opt);
+            });
+            if (current && tags.includes(current)) sel.value = current;
+          });
+        }
+
+        // ========== 随机回忆 ==========
+        function showRandomContent(item, type) {
+          const overlay = document.getElementById("randomOverlay");
+          document.getElementById("randomIcon").textContent =
+            type === "date" ? "🎉" : "🗺️";
+          document.getElementById("randomTitle").textContent =
+            type === "date" ? "✨ 快乐回忆 ✨" : "🌍 旅行回忆 🌍";
+
+          const displayDate = formatDateDisplay(item.date);
+          let rangePart = "";
+          if (item.endDate && item.endDate !== item.date) {
+            rangePart = ` ~ ${formatDateDisplay(item.endDate)}`;
+          }
+          document.getElementById("randomDate").textContent =
+            `📅 ${displayDate}${rangePart}`;
+          document.getElementById("randomPlace").textContent =
+            `📍 ${item.place || item.name || "未命名地点"}`;
+
+          const tagsEl = document.getElementById("randomTags");
+          tagsEl.innerHTML = "";
+          if (item.tags && item.tags.length > 0) {
+            item.tags.forEach((tag) => {
+              const span = document.createElement("span");
+              span.className = "tag";
+              span.textContent = `#${tag}`;
+              tagsEl.appendChild(span);
+            });
+          } else {
+            const span = document.createElement("span");
+            span.style.cssText = "font-size:12px; color:#dbb0a8;";
+            span.textContent = "没有标签";
+            tagsEl.appendChild(span);
+          }
+
+          const mediaEl = document.getElementById("randomMedia");
+          mediaEl.innerHTML = "";
+          if (item.mediaIds && item.mediaIds.length > 0) {
+            item.mediaIds.slice(0, 6).forEach((id) => {
+              getMediaFromDB(id).then((media) => {
+                if (!media) return;
+                const div = document.createElement("div");
+                div.className = "media-item";
+                div.style.position = "relative";
+                if (media.type.startsWith("image/")) {
+                  const img = document.createElement("img");
+                  img.src = getMediaURL(media);
+                  div.appendChild(img);
+                } else if (media.type.startsWith("video/")) {
+                  const vid = document.createElement("video");
+                  vid.src = getMediaURL(media);
+                  vid.muted = true;
+                  vid.preload = "metadata";
+                  div.appendChild(vid);
+                  const icon = document.createElement("span");
+                  icon.className = "play-icon";
+                  icon.textContent = "▶";
+                  div.appendChild(icon);
+                }
+                mediaEl.appendChild(div);
+              });
+            });
+          } else {
+            const span = document.createElement("span");
+            span.style.cssText = "font-size:12px; color:#dbb0a8;";
+            span.textContent = "没有媒体";
+            mediaEl.appendChild(span);
+          }
+
+          overlay.classList.add("active");
+          document.body.style.overflow = "hidden";
+        }
+
+        // ========== 日历 ==========
+        let calendarYear, calendarMonth;
+        function renderCalendar(year, month) {
+          calendarYear = year;
+          calendarMonth = month;
+          document.getElementById("calendarMonthYear").textContent =
+            `${year}年${month + 1}月`;
+
+          const grid = document.getElementById("calendarGrid");
+          grid.innerHTML = "";
+
+          const firstDay = new Date(year, month, 1).getDay();
+          const daysInMonth = new Date(year, month + 1, 0).getDate();
+          const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+          ["日", "一", "二", "三", "四", "五", "六"].forEach((d) => {
+            const div = document.createElement("div");
+            div.style.cssText =
+              "font-size:11px; color:#d0a098; padding:4px 0; font-weight:600;";
+            div.textContent = d;
+            grid.appendChild(div);
+          });
+
+          const dateStr = (d) =>
+            `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+          const hasEvent = (d) => {
+            const ds = dateStr(d);
+            return (
+              appData.dates.some((item) => item.date === ds) ||
+              appData.trips.some((item) => item.date === ds) ||
+              appData.periods.some((item) => item.startDate === ds)
+            );
+          };
+
+          for (let i = firstDay - 1; i >= 0; i--) {
+            const div = document.createElement("div");
+            div.className = "day other-month";
+            div.textContent = daysInPrevMonth - i;
+            grid.appendChild(div);
+          }
+
+          for (let d = 1; d <= daysInMonth; d++) {
+            const div = document.createElement("div");
+            div.className = "day" + (hasEvent(d) ? " has-event" : "");
+            div.textContent = d;
+            div.dataset.date = dateStr(d);
+            div.addEventListener("click", function () {
+              const date = this.dataset.date;
+              let msg = `📅 ${formatDateDisplay(date)}\n`;
+              const dates = appData.dates.filter((item) => item.date === date);
+              const trips = appData.trips.filter((item) => item.date === date);
+              const periods = appData.periods.filter(
+                (item) => item.startDate === date,
+              );
+              if (dates.length) msg += `\n❤️ 快乐记录 ${dates.length} 条`;
+              if (trips.length) msg += `\n🗺️ 旅行记录 ${trips.length} 条`;
+              if (periods.length) msg += `\n🩸 月经开始`;
+              if (
+                dates.length === 0 &&
+                trips.length === 0 &&
+                periods.length === 0
+              )
+                msg += "\n没有记录";
+              alert(msg);
+            });
+            grid.appendChild(div);
+          }
+
+          const totalCells = firstDay + daysInMonth;
+          const remaining = (7 - (totalCells % 7)) % 7;
+          for (let i = 1; i <= remaining; i++) {
+            const div = document.createElement("div");
+            div.className = "day other-month";
+            div.textContent = i;
+            grid.appendChild(div);
+          }
         }
 
         // ========== 初始化 ==========
@@ -3467,9 +4004,11 @@
           setupFilter("dateSearchInput", renderDateList);
           setupFilter("tripSearchInput", renderTripList);
 
+          // 按钮事件
           document
             .getElementById("dateRandomBtn")
-            .addEventListener("click", function () {
+            .addEventListener("click", function (e) {
+              e.stopPropagation();
               if (appData.dates.length === 0) {
                 alert("还没有快乐记录，快去添加吧！❤️");
                 return;
@@ -3478,9 +4017,11 @@
                 appData.dates[Math.floor(Math.random() * appData.dates.length)];
               showRandomContent(random, "date");
             });
+
           document
             .getElementById("tripRandomBtn")
-            .addEventListener("click", function () {
+            .addEventListener("click", function (e) {
+              e.stopPropagation();
               if (appData.trips.length === 0) {
                 alert("还没有旅行记录，快去添加吧！❤️");
                 return;
@@ -3488,6 +4029,20 @@
               const random =
                 appData.trips[Math.floor(Math.random() * appData.trips.length)];
               showRandomContent(random, "trip");
+            });
+
+          document
+            .getElementById("dateManageBtn")
+            .addEventListener("click", function (e) {
+              e.stopPropagation();
+              openManage("date");
+            });
+
+          document
+            .getElementById("tripManageBtn")
+            .addEventListener("click", function (e) {
+              e.stopPropagation();
+              openManage("trip");
             });
 
           // 媒体查看器事件
@@ -3516,7 +4071,6 @@
                 (viewerCurrentIndex + 1) % viewerMediaIds.length;
               renderViewerItem();
             });
-          // 键盘左右键
           document.addEventListener("keydown", function (e) {
             if (
               !document
@@ -3535,7 +4089,6 @@
             }
           });
 
-          // 随机回忆关闭
           document
             .getElementById("randomCloseBtn")
             .addEventListener("click", function () {
@@ -3553,16 +4106,6 @@
               }
             });
 
-          document
-            .getElementById("dateManageBtn")
-            .addEventListener("click", function () {
-              openManage("date");
-            });
-          document
-            .getElementById("tripManageBtn")
-            .addEventListener("click", function () {
-              openManage("trip");
-            });
           document
             .getElementById("closeManageBtn")
             .addEventListener("click", closeManage);
@@ -3857,45 +4400,6 @@
               renderAll();
             });
 
-          document.addEventListener("click", function (e) {
-            const card = e.target.closest(".period-card");
-            if (card && !e.target.closest(".del")) {
-              const idx = parseInt(card.dataset.idx);
-              const item = appData.periods[idx];
-              if (!item) return;
-              const parts = item.startDate.split("-");
-              document.getElementById("periodEditStartYear").value = parseInt(
-                parts[0],
-              );
-              document.getElementById("periodEditStartMonth").value = parseInt(
-                parts[1],
-              );
-              updateDateSelects(
-                document.getElementById("periodEditStartYear"),
-                document.getElementById("periodEditStartMonth"),
-                document.getElementById("periodEditStartDay"),
-                parseInt(parts[2]),
-              );
-              document.getElementById("periodEditStartDay").value = parseInt(
-                parts[2],
-              );
-              let duration = 1;
-              if (item.endDate && item.endDate !== item.startDate) {
-                duration = dateDiff(item.startDate, item.endDate) + 1;
-              }
-              document.getElementById("periodEditDuration").value = duration;
-              const end = addDays(item.startDate, duration - 1);
-              document.getElementById("periodEditEndResult").textContent =
-                `→ 结束: ${formatDateDisplay(end)}`;
-              document.getElementById("savePeriodEditBtn").dataset.idx = idx;
-              document.getElementById("deletePeriodEditBtn").dataset.idx = idx;
-              document
-                .getElementById("periodEditOverlay")
-                .classList.add("active");
-              document.body.style.overflow = "hidden";
-            }
-          });
-
           document
             .querySelectorAll(".tag-input-group")
             .forEach((el) => (el.style.display = "none"));
@@ -3909,7 +4413,7 @@
             Notification.requestPermission();
           }
 
-          console.log("❤️ Love 轨迹 v37 - 媒体等比缩略图 + 单击编辑 + 查看器");
+          console.log("❤️ Love 轨迹 v39 - 添加分页功能（每页5条）");
           console.log("📊 当前数据:", appData);
         }
 
