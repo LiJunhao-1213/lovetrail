@@ -5,21 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Love 轨迹 · 编辑页面</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <!-- 【修复1】不使用black-translucent，改为default避免状态栏悬浮遮挡；同时保留兼容 -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Love轨迹">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>❤️</text></svg>">
     <style>
         * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; font-family: system-ui, -apple-system, 'Helvetica Neue', 'Segoe UI', Roboto, sans-serif; }
-        /* 关键修改：为 body 增加安全区顶部边距，解决主屏幕全屏模式状态栏遮盖问题 */
+
+        /* 【修复2】改用min()/env组合 + 强制顶部安全区，分离滚动容器，禁止body滚动 */
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            background:#f7f1ef;
+        }
         body { 
-            background:#f7f1ef; 
             display:flex; 
             justify-content:center; 
             align-items:flex-start; 
-            min-height:100vh; 
-            padding: env(safe-area-inset-top, 12px) 12px 70px; 
+            /* 核心：顶部强制安全区，兜底16px；左右12px；底部预留tab+底部安全区 */
+            padding: env(safe-area-inset-top, 16px) 12px 0; 
         }
-        .app-container { max-width:390px; width:100%; display:flex; flex-direction:column; gap:10px; min-height:calc(100vh - 100px); }
+        /* 新增外层滚动容器！所有内容放在里面滚动，不要让body滚动 */
+        .page-scroll-wrap {
+            width:100%;
+            max-width:390px;
+            height:100%;
+            overflow-y: auto;
+            padding-bottom: max(70px, env(safe-area-inset-bottom, 20px));
+        }
+
+        .app-container { 
+            width:100%; 
+            display:flex; 
+            flex-direction:column; 
+            gap:10px; 
+            min-height:100%;
+        }
 
         .card { background:#ffffff; border-radius:16px; padding:16px 14px; box-shadow:0 2px 10px rgba(200,50,50,0.06); border:1px solid #f5dcd8; }
         .header-card { padding:12px 14px 10px; background:#ffffff; border-bottom:1px solid #f5dcd8; border-radius:16px; }
@@ -117,7 +138,7 @@
         }
         .date-btn-group .btn { flex: 1; }
 
-        /* 编辑页面 - 全屏覆盖，增加顶部安全区 */
+        /* 编辑页面 - 【修复3】编辑页同样增加顶部安全区适配独立模式 */
         .edit-page {
             position: fixed;
             top: 0;
@@ -126,7 +147,7 @@
             bottom: 0;
             background: #f7f1ef;
             z-index: 1000;
-            padding: env(safe-area-inset-top, 20px) 16px 80px;
+            padding: env(safe-area-inset-top, 20px) 16px max(80px, env(safe-area-inset-bottom,20px));
             max-width: 390px;
             margin: 0 auto;
             overflow-y: auto;
@@ -274,8 +295,13 @@
             padding-bottom: 20px;
         }
 
-        @supports (padding: max(0px)) { body { padding-bottom: max(12px, env(safe-area-inset-bottom)); } }
-        @media (min-width:430px) { .tab-bar { max-width:400px; } .edit-page { max-width:400px; } }
+        @supports (padding: max(0px)) { 
+            body { padding-bottom:0; }
+        }
+        @media (min-width:430px) { 
+            .tab-bar { max-width:400px; } 
+            .edit-page { max-width:400px; } 
+        }
 
         @media (max-width: 430px) {
             .date-range-row select {
@@ -286,6 +312,8 @@
     </style>
 </head>
 <body>
+<!-- 【修复4】新增滚动外层容器，把app-container包进去！ -->
+<div class="page-scroll-wrap">
 <div class="app-container">
 
     <div class="card header-card">
@@ -293,7 +321,7 @@
         <div class="subhead">记录每一次心动 · 珍藏地点</div>
     </div>
 
-    <!-- ===== Tab1: 开房 ===== -->
+    <!-- ===== Tab1: 快乐日期 ===== -->
     <div id="tab-date" class="tab-content active">
         <div class="card">
             <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px;">
@@ -432,6 +460,7 @@
         <button class="tab-btn" data-tab="tab-overview"><span class="icon">📊</span><span class="label">总览</span></button>
         <button class="tab-btn" data-tab="tab-love"><span class="icon">💕</span><span class="label">Love</span></button>
     </div>
+</div>
 </div>
 
 <!-- ===== 独立编辑页面 ===== -->
