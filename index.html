@@ -32,7 +32,6 @@
         --radius: 8px;
         --tab-height: 56px;
         --nav-height: 52px;
-        --status-height: 44px;
         --shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
       }
       body {
@@ -60,22 +59,17 @@
         position: relative;
         overflow: hidden;
       }
-      /* ===== 状态栏 & 导航 ===== */
-      .status-bar {
-        height: var(--status-height);
-        background: var(--bg);
-        flex-shrink: 0;
-      }
+      /* ===== 导航栏（与状态栏融合） ===== */
       .nav-bar {
-        height: var(--nav-height);
-        min-height: var(--nav-height);
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0 16px;
+        padding: env(safe-area-inset-top, 0) 16px 0 16px;
+        min-height: calc(var(--nav-height) + env(safe-area-inset-top, 0));
         background: var(--primary);
         border-bottom: 0.5px solid rgba(255, 255, 255, 0.2);
         flex-shrink: 0;
+        box-sizing: border-box;
       }
       .nav-title {
         font-size: 17px;
@@ -261,17 +255,17 @@
         transform: scale(0.96);
         opacity: 0.85;
       }
-      /* ===== Tab栏 ===== */
+      /* ===== Tab栏（适配底部安全区域） ===== */
       .tab-bar {
-        height: var(--tab-height);
-        min-height: var(--tab-height);
+        height: auto;
+        min-height: calc(var(--tab-height) + env(safe-area-inset-bottom, 0));
         display: flex;
         align-items: stretch;
         background: var(--bg);
         border-top: 0.5px solid var(--border);
         flex-shrink: 0;
-        padding: 0 4px;
-        padding-bottom: env(safe-area-inset-bottom, 0);
+        padding: 0 4px env(safe-area-inset-bottom, 0) 4px;
+        box-sizing: border-box;
       }
       .tab-item {
         flex: 1;
@@ -2443,7 +2437,7 @@
   </head>
   <body>
     <div id="app">
-      <div class="status-bar"></div>
+      <!-- 状态栏占位已移除，导航栏直接贴顶 -->
       <nav class="nav-bar" id="mainNav">
         <div class="nav-title">❤️Love·轨迹 <span>520.1314</span></div>
         <div class="nav-actions">
