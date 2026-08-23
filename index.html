@@ -27,9 +27,9 @@
         --bg: #f2f2f7;
         --card: #ffffff;
         --text: #1c1c1e;
-        --text2: #8e8e93;
+        --text2: #414141;
         --border: #e5e5ea;
-        --radius: 12px;
+        --radius: 8px;
         --tab-height: 56px;
         --nav-height: 52px;
         --status-height: 44px;
@@ -145,7 +145,7 @@
         -webkit-backdrop-filter: saturate(180%) blur(12px);
       }
       .back-btn {
-        font-size: 17px;
+        font-size: 22px;
         color: var(--primary);
         cursor: pointer;
         background: none;
@@ -170,6 +170,11 @@
       /* ===== 表单通用 ===== */
       .form-group {
         margin-bottom: 14px;
+        background: #ffffff;
+        padding: 12px;
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        border: none;
       }
       .form-group label {
         font-size: 13px;
@@ -2114,6 +2119,7 @@
         border-radius: 6px;
         cursor: default;
         position: relative;
+        color: var(--text);
       }
       .cal-grid .cal-day.has-event {
         font-weight: 600;
@@ -2330,7 +2336,7 @@
       }
       .search-input {
         flex: 1;
-        height: 36px;
+        height: 44px;
         border-radius: var(--radius);
         border: 0.5px solid var(--border);
         background: var(--card);
@@ -2348,8 +2354,8 @@
         color: var(--text2);
       }
       .search-btn {
-        height: 36px;
-        width: 36px;
+        height: 44px;
+        width: 56px;
         border-radius: var(--radius);
         border: none;
         background: var(--primary);
@@ -2407,6 +2413,32 @@
       .stats-row .card-stats {
         margin-bottom: 0;
       }
+      /* ===== 经验值规则 ===== */
+      .exp-rules {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-top: 12px;
+        padding: 12px 0;
+        border-top: 0.5px solid var(--border);
+      }
+      .exp-rules .rule-item {
+        background: var(--bg);
+        padding: 8px 10px;
+        border-radius: 8px;
+        text-align: center;
+        font-size: 13px;
+        color: var(--text2);
+      }
+      .exp-rules .rule-item .rule-emoji {
+        font-size: 18px;
+        display: block;
+        margin-bottom: 2px;
+      }
+      .exp-rules .rule-item .rule-label {
+        font-weight: 500;
+        color: var(--text);
+      }
     </style>
   </head>
   <body>
@@ -2419,6 +2451,9 @@
           <button class="nav-btn" id="reminderBtn">⏰</button>
           <button class="nav-btn" id="calendarBtn">📅</button>
           <button class="nav-btn" id="randomBtn">🎲</button>
+          <button class="nav-btn" id="clearDataBtn" style="font-size: 16px">
+            🗑️
+          </button>
         </div>
       </nav>
       <div class="main-content" id="mainContent">
@@ -2475,11 +2510,11 @@
           </div>
           <div class="stats-row" id="travelStats">
             <div class="card-stats">
-              <div class="label">总旅行次数</div>
+              <div class="label">✈️总旅行次数</div>
               <div class="value">0 <span class="unit">次</span></div>
             </div>
             <div class="card-stats">
-              <div class="label">最近一次</div>
+              <div class="label">⏰最近一次</div>
               <div class="value" id="travelRecent" style="font-size: 16px">
                 -
               </div>
@@ -2497,8 +2532,8 @@
         </div>
         <div class="form-page" id="pageTravelForm">
           <div class="form-nav">
-            <button class="back-btn" id="travelFormBack">‹ 返回</button>
-            <div class="form-title" id="travelFormTitle">旅行记录</div>
+            <button class="back-btn" id="travelFormBack">👈</button>
+            <div class="form-title" id="travelFormTitle">📒旅行记录</div>
           </div>
           <div id="travelFormBody"></div>
         </div>
@@ -2531,15 +2566,15 @@
         </div>
         <div class="form-page" id="pageMenstrualForm">
           <div class="form-nav">
-            <button class="back-btn" id="menstrualFormBack">‹ 返回</button>
-            <div class="form-title" id="menstrualFormTitle">月经记录</div>
+            <button class="back-btn" id="menstrualFormBack">👈</button>
+            <div class="form-title" id="menstrualFormTitle">🩸月经记录</div>
           </div>
           <div id="menstrualFormBody"></div>
         </div>
         <!-- 功能页面 -->
         <div class="page-container" id="pageAnniversary">
           <div class="form-nav">
-            <button class="back-btn" id="anniversaryListBack">‹ 返回</button>
+            <button class="back-btn" id="anniversaryListBack">👈</button>
             <div class="form-title">纪念日</div>
           </div>
           <div id="anniversaryList"></div>
@@ -2554,14 +2589,14 @@
         </div>
         <div class="form-page" id="pageAnniversaryForm">
           <div class="form-nav">
-            <button class="back-btn" id="anniversaryFormBack">‹ 返回</button>
+            <button class="back-btn" id="anniversaryFormBack">👈</button>
             <div class="form-title" id="anniversaryFormTitle">纪念日</div>
           </div>
           <div id="anniversaryFormBody"></div>
         </div>
         <div class="page-container" id="pageFight">
           <div class="form-nav">
-            <button class="back-btn" id="fightListBack">‹ 返回</button>
+            <button class="back-btn" id="fightListBack">👈</button>
             <div class="form-title">吵架/和好</div>
           </div>
           <div id="fightList"></div>
@@ -2576,28 +2611,28 @@
         </div>
         <div class="form-page" id="pageFightForm">
           <div class="form-nav">
-            <button class="back-btn" id="fightFormBack">‹ 返回</button>
+            <button class="back-btn" id="fightFormBack">👈</button>
             <div class="form-title" id="fightFormTitle">吵架/和好</div>
           </div>
           <div id="fightFormBody"></div>
         </div>
         <div class="page-container" id="pageBreakup">
           <div class="form-nav">
-            <button class="back-btn" id="breakupListBack">‹ 返回</button>
+            <button class="back-btn" id="breakupListBack">👈</button>
             <div class="form-title">分手了</div>
           </div>
           <div id="breakupContent"></div>
         </div>
         <div class="form-page" id="pageBreakupForm">
           <div class="form-nav">
-            <button class="back-btn" id="breakupFormBack">‹ 返回</button>
+            <button class="back-btn" id="breakupFormBack">👈</button>
             <div class="form-title" id="breakupFormTitle">分手了</div>
           </div>
           <div id="breakupFormBody"></div>
         </div>
         <div class="page-container" id="pageLetter">
           <div class="form-nav">
-            <button class="back-btn" id="letterListBack">‹ 返回</button>
+            <button class="back-btn" id="letterListBack">👈</button>
             <div class="form-title">情书日记</div>
           </div>
           <div id="letterList"></div>
@@ -2612,21 +2647,21 @@
         </div>
         <div class="form-page" id="pageLetterForm">
           <div class="form-nav">
-            <button class="back-btn" id="letterFormBack">‹ 返回</button>
+            <button class="back-btn" id="letterFormBack">👈</button>
             <div class="form-title" id="letterFormTitle">情书日记</div>
           </div>
           <div id="letterFormBody"></div>
         </div>
         <div class="page-container" id="pageTree">
           <div class="form-nav">
-            <button class="back-btn" id="treeListBack">‹ 返回</button>
+            <button class="back-btn" id="treeListBack">👈</button>
             <div class="form-title">爱情树</div>
           </div>
           <div id="treeContent"></div>
         </div>
         <div class="page-container" id="pageChallenge">
           <div class="form-nav">
-            <button class="back-btn" id="challengeListBack">‹ 返回</button>
+            <button class="back-btn" id="challengeListBack">👈</button>
             <div class="form-title">打卡挑战</div>
           </div>
           <div id="challengeList"></div>
@@ -2641,7 +2676,7 @@
         </div>
         <div class="form-page" id="pageChallengeForm">
           <div class="form-nav">
-            <button class="back-btn" id="challengeFormBack">‹ 返回</button>
+            <button class="back-btn" id="challengeFormBack">👈</button>
             <div class="form-title" id="challengeFormTitle">打卡挑战</div>
           </div>
           <div id="challengeFormBody"></div>
@@ -2649,14 +2684,14 @@
         <!-- 足迹 & 年度报告 -->
         <div class="page-container" id="pageFootprint">
           <div class="form-nav">
-            <button class="back-btn" id="footprintListBack">‹ 返回</button>
+            <button class="back-btn" id="footprintListBack">👈</button>
             <div class="form-title">足迹</div>
           </div>
           <div id="footprintContent"></div>
         </div>
         <div class="page-container" id="pageYearlyReport">
           <div class="form-nav">
-            <button class="back-btn" id="yearlyReportListBack">‹ 返回</button>
+            <button class="back-btn" id="yearlyReportListBack">👈</button>
             <div class="form-title">年度报告</div>
           </div>
           <div id="yearlyReportContent"></div>
@@ -2664,7 +2699,7 @@
         <!-- 恋爱档案 (无卡片风格) -->
         <div class="page-container" id="pageArchive">
           <div class="form-nav">
-            <button class="back-btn" id="archiveListBack">‹ 返回</button>
+            <button class="back-btn" id="archiveListBack">👈</button>
             <div class="form-title">恋爱档案</div>
           </div>
           <div id="archiveContent"></div>
@@ -3294,45 +3329,33 @@
         }
       }
 
-      // ===== 滑动切换 =====
+      // ===== iOS风格左滑返回 =====
       let touchStartX = 0,
-        touchStartY = 0,
-        isSwiping = false;
+        touchStartY = 0;
       document.addEventListener(
         "touchstart",
         function (e) {
           touchStartX = e.touches[0].clientX;
           touchStartY = e.touches[0].clientY;
-          isSwiping = true;
         },
         { passive: true },
       );
       document.addEventListener(
         "touchmove",
         function (e) {
-          if (!isSwiping) return;
           const dx = e.touches[0].clientX - touchStartX;
           const dy = e.touches[0].clientY - touchStartY;
-          if (Math.abs(dx) > 30 && Math.abs(dx) > Math.abs(dy) * 1.5) {
-            isSwiping = false;
-            const tabs = document.querySelectorAll(".tab-item");
-            let idx = 0;
-            tabs.forEach((t, i) => {
-              if (t.classList.contains("active")) idx = i;
-            });
-            if (dx < 0) idx = Math.min(idx + 1, tabs.length - 1);
-            else idx = Math.max(idx - 1, 0);
-            tabs[idx].click();
+          if (
+            touchStartX < 30 &&
+            dx > 50 &&
+            Math.abs(dx) > Math.abs(dy) * 1.5
+          ) {
+            e.preventDefault();
+            goBack();
+            touchStartX = 0;
           }
         },
-        { passive: true },
-      );
-      document.addEventListener(
-        "touchend",
-        function () {
-          isSwiping = false;
-        },
-        { passive: true },
+        { passive: false },
       );
 
       // ===== 长按 =====
@@ -4168,7 +4191,7 @@
         const moods = item.moods || [];
         const tags = item.tags || [];
         const images = item.images || [];
-        const typeEmojiMap = { 啪啪啪: "❤️", 看电影: "📹", 约会: "🎥" };
+        const typeEmojiMap = { 啪啪啪: "❤️", 看电影: "📺", 约会: "🎉" };
         const moodEmojiMap = {
           开心: "😊",
           高兴: "😄",
@@ -4246,8 +4269,8 @@
         ];
         const typeList = [
           { val: "啪啪啪", emoji: "❤️" },
-          { val: "看电影", emoji: "📹" },
-          { val: "约会", emoji: "🎥" },
+          { val: "看电影", emoji: "📺" },
+          { val: "约会", emoji: "🎉" },
         ];
         let thumbHtml = images
           .map(
@@ -4258,11 +4281,11 @@
         const html = `
                 <div class="form-group"><label>开始时间</label><input type="date" id="hfDate" value="${startDate}" onchange="updateHappyEndDate()" /></div>
                 <div class="form-row"><div class="form-group"><label>天数</label><input type="number" id="hfDays" value="${days}" min="1" onchange="updateHappyEndDate()" oninput="updateHappyEndDate()" /></div>
-                <div class="form-group"><label>结束时间</label><input type="date" id="hfEndDate" value="${isEdit ? item.endDate : ""}" readonly style="background:#f5f5f5;" /></div></div>
+                <div class="form-group"><label>结束时间</label><input type="date" id="hfEndDate" value="${isEdit ? item.endDate : ""}" readonly /></div></div>
                 <div class="form-group"><label>地点（可选）</label><input type="text" id="hfLocation" value="${location}" placeholder="地点（可选）" /></div>
-                <hr class="form-divider" />
+
                 <div class="form-group"><label>备注/日记（可选）</label><textarea id="hfContent" placeholder="写下今天的故事" rows="3">${content}</textarea></div>
-                <hr class="form-divider" />
+
                 <div class="form-group"><label>快乐类型</label><div class="type-tags" id="hfTypeTags">${typeList.map((t) => `<span class="type-tag ${tags.includes(t.val) ? "active" : ""}" data-value="${t.val}">${t.emoji} ${t.val}</span>`).join("")}</div></div>
                 <div class="form-group"><label>心情</label><div class="mood-options" id="hfMoodOptions">${moodList.map((m) => `<span class="mood-option ${moods.includes(m.val) ? "active" : ""}" data-value="${m.val}">${m.emoji} ${m.val}</span>`).join("")}</div></div>
                 <div class="form-group"><label>快乐照片（可多选）</label><div class="photo-upload"><div class="upload-area"><button class="upload-btn" id="hfPhotoBtn">📷 点击上传图片</button><input type="file" id="hfPhotoInput" accept="image/*" multiple /></div><div class="thumbnails" id="hfThumbnails">${thumbHtml}</div></div></div>
@@ -4542,7 +4565,8 @@
           { value: "飞机", emoji: "✈️", label: "飞机" },
           { value: "高铁", emoji: "🚄", label: "高铁" },
           { value: "自驾", emoji: "🚗", label: "自驾" },
-          { value: "大巴", emoji: "🚌", label: "大巴" },
+          { value: "火车", emoji: "🚄", label: "火车" },
+          { value: "地铁", emoji: "🚇", label: "地铁" },
           { value: "轮船", emoji: "🚢", label: "轮船" },
         ];
         document.getElementById("travelFormTitle").textContent = isEdit
@@ -4557,7 +4581,7 @@
         const html = `
                 <div class="form-group"><label>开始时间</label><input type="date" id="tfDate" value="${startDate}" onchange="updateTravelEndDate()" /></div>
                 <div class="form-row"><div class="form-group"><label>天数</label><input type="number" id="tfDays" value="${days}" min="1" onchange="updateTravelEndDate()" oninput="updateTravelEndDate()" /></div>
-                <div class="form-group"><label>结束时间</label><input type="date" id="tfEndDate" value="${isEdit ? item.endDate : ""}" readonly style="background:#f5f5f5;" /></div></div>
+                <div class="form-group"><label>结束时间</label><input type="date" id="tfEndDate" value="${isEdit ? item.endDate : ""}" readonly" /></div></div>
                 <div class="form-group"><label>目的地（可选）</label><input type="text" id="tfLocation" value="${location}" placeholder="目的地（可选）" /></div>
                 <hr class="form-divider" />
                 <div class="form-group"><label>交通方式</label><div class="type-tags" id="tfTransportTags">${transportOptions.map((t) => `<span class="type-tag ${transport === t.value ? "active" : ""}" data-value="${t.value}">${t.emoji} ${t.label}</span>`).join("")}</div></div>
@@ -5201,10 +5225,10 @@
 
         const flowOptions = ["🩸少量", "🩸🩸中量", "🩸🩸🩸大量"];
         const symptomOptions = [
-          "✅无",
-          "😣腹疼",
-          "😫疲惫",
-          "😦情绪波动",
+          "😌无",
+          "😣腹痛",
+          "😮‍💨疲惫",
+          "😤情绪波动",
           "🤱乳房肿胀",
           "🤢恶心",
         ];
@@ -5213,7 +5237,7 @@
                 <div class="form-group"><label>开始时间</label><input type="date" id="mfStartDate" value="${startDate}" /></div>
                 <div class="form-group"><label>持续天数</label><input type="number" id="mfDays" value="${days}" min="1" max="20" /></div>
                 <hr class="form-divider" />
-                <div style="font-size:14px;font-weight:500;color:var(--text2);margin-bottom:12px;">每天症状与流量（点击标签选择，流量单选，症状可多选）</div>
+                <div style="font-size:14px;font-weight:500;color:var(--text2);margin-bottom:12px;">📓每天症状与流量（点击标签选择，流量单选，症状可多选）</div>
                 <div id="mfDayCards"></div>
                 ${isEdit ? `<div class="btn-row"><button class="btn-primary" id="mfSave">💾 更新</button><button class="btn-danger" id="mfDelete">🗑 删除</button></div>` : `<button class="btn-primary" id="mfSave">💾 保存</button>`}
             `;
@@ -5976,6 +6000,24 @@
       // ============================================================
       // 爱情树
       // ============================================================
+      // 升级检查 + 经验添加
+      function checkTreeLevelUp() {
+        let tree = data.love.loveTree;
+        while (tree.exp >= tree.level * 10) {
+          tree.exp -= tree.level * 10;
+          tree.level++;
+        }
+        saveData();
+      }
+
+      function addTreeExp(amount) {
+        data.love.loveTree.exp += amount;
+        checkTreeLevelUp();
+        renderTree();
+        if (document.getElementById("pageLove").classList.contains("active"))
+          renderLove();
+      }
+
       function renderTree() {
         const tree = data.love.loveTree || { level: 1, exp: 0 };
         const expNeeded = tree.level * 10;
@@ -5983,17 +6025,18 @@
           100,
           Math.round((tree.exp / expNeeded) * 100),
         );
+        // 成长阶段 emoji: 种子→发芽→生长→开花
         const emojis = [
-          "🌱",
-          "🌿",
-          "🌲",
-          "🌳",
-          "🌴",
-          "🎄",
-          "🌺",
-          "🌸",
-          "🌻",
-          "🌹",
+          "🌰", // 1级 - 种子
+          "🌱", // 2级 - 发芽
+          "🌿", // 3级 - 幼苗
+          "🌲", // 4级 - 小树
+          "🌳", // 5级 - 大树
+          "🌴", // 6级 - 生长中
+          "🎄", // 7级 - 成长中
+          "🌺", // 8级 - 开花
+          "🌸", // 9级 - 盛开
+          "🌹", // 10级 - 满级
         ];
         const emoji =
           emojis[Math.min(tree.level - 1, emojis.length - 1)] || "🌳";
@@ -6010,10 +6053,16 @@
                         </div>
                         <div style="font-size:16px;font-weight:600;color:var(--text);">${name} + ${herName}</div>
                         <div style="font-size:20px;font-weight:700;color:var(--primary);margin-top:2px;">${tree.exp} / ${expNeeded} 经验</div>
-                        <div style="font-size:13px;color:var(--text2);margin-top:4px;">💡 获取经验：快乐(+1) 旅行(+1) 情书(+1) 打卡(+1) 纪念日(+2)</div>
-                        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:16px;">
-                            <button class="btn-primary" id="treeAddExp" style="width:auto;padding:10px 20px;">🌱 +1</button>
-                            <button class="btn-primary" id="treeAddExp5" style="width:auto;padding:10px 20px;">🌿 +5</button>
+                        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:8px;">
+                            <button class="btn-primary" id="treeAddExp" style="width:auto;padding:8px 20px;">🌱 +1</button>
+                            <button class="btn-primary" id="treeAddExp5" style="width:auto;padding:8px 20px;">🌿 +5</button>
+                        </div>
+                        <div class="exp-rules">
+                            <div class="rule-item"><span class="rule-emoji">😊</span><span class="rule-label">快乐 +1</span></div>
+                            <div class="rule-item"><span class="rule-emoji">✈️</span><span class="rule-label">旅行 +1</span></div>
+                            <div class="rule-item"><span class="rule-emoji">💌</span><span class="rule-label">情书 +1</span></div>
+                            <div class="rule-item"><span class="rule-emoji">✅</span><span class="rule-label">打卡 +1</span></div>
+                            <div class="rule-item"><span class="rule-emoji">🎉</span><span class="rule-label">纪念日 +2</span></div>
                         </div>
                     </div>
                 </div>
@@ -6021,24 +6070,12 @@
         document
           .getElementById("treeAddExp")
           .addEventListener("click", function () {
-            data.love.loveTree.exp = (data.love.loveTree.exp || 0) + 1;
-            saveData();
-            renderTree();
-            if (
-              document.getElementById("pageLove").classList.contains("active")
-            )
-              renderLove();
+            addTreeExp(1);
           });
         document
           .getElementById("treeAddExp5")
           .addEventListener("click", function () {
-            data.love.loveTree.exp = (data.love.loveTree.exp || 0) + 5;
-            saveData();
-            renderTree();
-            if (
-              document.getElementById("pageLove").classList.contains("active")
-            )
-              renderLove();
+            addTreeExp(5);
           });
       }
       document.getElementById("treeListBack").addEventListener("click", goBack);
@@ -6680,7 +6717,7 @@
         .addEventListener("click", showReminderModal);
 
       // ============================================================
-      // 日历
+      // 日历 (修复日期显示)
       // ============================================================
       let calYear = new Date().getFullYear();
       let calMonth = new Date().getMonth() + 1;
@@ -6728,7 +6765,9 @@
           const has = events[key] || [];
           let bg = "";
           let dot = "";
+          let classStr = "cal-day";
           if (has.length > 0) {
+            classStr += " has-event";
             if (has.length === 1) {
               const t = has[0];
               if (t === "😊") bg = "background:#34C759;";
@@ -6741,7 +6780,7 @@
             }
             dot = `<span class="event-dot"></span>`;
           }
-          grid += `<div class="cal-day has-event" style="${bg}" data-date="${key}">${i}${dot}</div>`;
+          grid += `<div class="${classStr}" style="${bg}" data-date="${key}">${i}${dot}</div>`;
         }
 
         const html = `
@@ -6789,7 +6828,7 @@
         .addEventListener("click", showCalendarModal);
 
       // ============================================================
-      // 随机回忆
+      // 随机回忆 (修正 emoji)
       // ============================================================
       document
         .getElementById("randomBtn")
@@ -6825,7 +6864,7 @@
             detailHtml += `<div class="rd-row"><span class="rd-label">😊 心情</span><span class="rd-value">${moodsStr}</span></div>`;
           }
           if (r.tags && r.tags.length > 0) {
-            const typeEmojiMap = { 啪啪啪: "❤️", 看电影: "📹", 约会: "🎥" };
+            const typeEmojiMap = { 啪啪啪: "❤️", 看电影: "📺", 约会: "🎉" };
             const tagsStr = r.tags
               .map((t) => `${typeEmojiMap[t] || "📌"} ${t}`)
               .join("  ");
@@ -7053,6 +7092,25 @@
       // ============================================================
       // 初始化
       // ============================================================
+      // ============================================================
+      // 一键清除数据
+      // ============================================================
+      document
+        .getElementById("clearDataBtn")
+        .addEventListener("click", function () {
+          if (
+            confirm("⚠️ 确定要清除所有数据吗？此操作不可撤销！") &&
+            confirm("再次确认：删除所有本地数据？")
+          ) {
+            try {
+              localStorage.removeItem(STORAGE_KEY);
+              alert("✅ 数据已清除，页面即将刷新。");
+              location.reload();
+            } catch (e) {
+              alert("清除数据失败，请稍后重试。");
+            }
+          }
+        });
       function init() {
         loadTheme();
         updateAchievements();
