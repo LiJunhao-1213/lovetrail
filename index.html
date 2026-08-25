@@ -117,7 +117,6 @@
         transform: scale(0.88);
         background: rgba(255, 255, 255, 0.2);
       }
-      /* 更多弹窗 - 居中 */
       .more-overlay {
         position: fixed;
         top: 0;
@@ -416,7 +415,6 @@
         transform: scale(0.96);
         opacity: 0.85;
       }
-      /* 占卜按钮两端对齐 */
       .fortune-btn-row {
         display: flex;
         gap: 10px;
@@ -573,36 +571,6 @@
         opacity: 0.3;
         cursor: not-allowed;
       }
-      .fixed-add-btn {
-        bottom: 0;
-        left: 0;
-        right: 0;
-        padding: 12px 0 8px 0;
-        z-index: 10;
-        display: flex;
-        justify-content: center;
-        margin-top: 4px;
-        background: var(--bg);
-      }
-      .fixed-add-btn button {
-        background: var(--primary);
-        color: #fff;
-        border: none;
-        border-radius: var(--radius);
-        padding: 10px 28px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        box-shadow: 0 4px 16px rgba(255, 107, 138, 0.3);
-      }
-      .fixed-add-btn button:active {
-        transform: scale(0.94);
-        opacity: 0.85;
-      }
       .list-item-card {
         background: var(--card);
         border-radius: var(--radius);
@@ -698,22 +666,31 @@
         color: var(--text2);
         margin-bottom: 16px;
       }
-      .empty-state .empty-btn {
+      /* 顶部添加按钮样式 */
+      .top-add-btn-wrap {
+        padding: 8px 0 12px 0;
+        display: flex;
+        justify-content: center;
+      }
+      .top-add-btn-wrap button {
         background: var(--primary);
         color: #fff;
         border: none;
         border-radius: var(--radius);
-        padding: 10px 24px;
-        font-size: 15px;
+        padding: 10px 28px;
+        font-size: 16px;
         font-weight: 600;
         cursor: pointer;
         transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 16px rgba(255, 107, 138, 0.3);
       }
-      .empty-state .empty-btn:active {
+      .top-add-btn-wrap button:active {
         transform: scale(0.94);
-        opacity: 0.8;
+        opacity: 0.85;
       }
-      /* 主卡片 - 新布局 */
       .love-profile-card {
         background: #ffffff;
         border-radius: var(--radius);
@@ -3256,7 +3233,6 @@
         color: var(--primary);
         font-weight: 700;
       }
-      /* 独立页面通用返回 - 已废弃，改用 .form-nav */
       .page-back-btn {
         background: none;
         border: none;
@@ -3301,7 +3277,6 @@
         padding: 4px;
         line-height: 1;
       }
-      /* 长按菜单 */
       .longpress-menu {
         position: fixed;
         background: var(--card);
@@ -3348,6 +3323,38 @@
         background: var(--border);
         margin: 4px 12px;
       }
+      .love-setup-form {
+        background: #fff;
+        border-radius: var(--radius);
+        padding: 20px 16px;
+        margin: 14px 0 16px 0;
+        box-shadow: var(--shadow);
+        border: 0.5px solid var(--border);
+      }
+      .love-setup-form .setup-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--primary);
+        text-align: center;
+        margin-bottom: 12px;
+      }
+      .love-setup-form .setup-desc {
+        font-size: 14px;
+        color: var(--text2);
+        text-align: center;
+        margin-bottom: 16px;
+      }
+      /* 修复日期选择器溢出 */
+      input[type="date"] {
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        min-width: 0 !important;
+      }
+      .form-group input[type="date"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+      }
     </style>
   </head>
   <body>
@@ -3393,7 +3400,6 @@
         </div>
       </nav>
 
-      <!-- 更多弹窗 - 居中 -->
       <div class="more-overlay" id="moreOverlay">
         <div class="more-sheet">
           <div class="more-item" data-action="theme">
@@ -3442,7 +3448,8 @@
             ><span id="happyPageInfo">1 / 1</span
             ><button id="happyNext">›</button>
           </div>
-          <div class="fixed-add-btn">
+          <!-- 顶部添加按钮（原来在底部的功能移到这里） -->
+          <div class="top-add-btn-wrap">
             <button id="addHappyBtn">🎉 再快乐一次</button>
           </div>
         </div>
@@ -3483,7 +3490,7 @@
             ><span id="travelPageInfo">1 / 1</span
             ><button id="travelNext">›</button>
           </div>
-          <div class="fixed-add-btn">
+          <div class="top-add-btn-wrap">
             <button id="addTravelBtn">✈️ 再次旅行</button>
           </div>
         </div>
@@ -3519,7 +3526,7 @@
             ><span id="menstrualPageInfo">1 / 1</span
             ><button id="menstrualNext">›</button>
           </div>
-          <div class="fixed-add-btn">
+          <div class="top-add-btn-wrap">
             <button id="addMenstrualBtn">🩸 添加记录</button>
           </div>
         </div>
@@ -3543,7 +3550,7 @@
             ><span id="anniversaryPageInfo">1 / 1</span
             ><button id="anniversaryNext">›</button>
           </div>
-          <div class="fixed-add-btn">
+          <div class="top-add-btn-wrap">
             <button id="addAnniversaryBtn">🎉 添加纪念日</button>
           </div>
         </div>
@@ -3567,7 +3574,7 @@
             ><span id="fightPageInfo">1 / 1</span
             ><button id="fightNext">›</button>
           </div>
-          <div class="fixed-add-btn">
+          <div class="top-add-btn-wrap">
             <button id="addFightBtn">💢 添加吵架</button>
           </div>
         </div>
@@ -3607,7 +3614,7 @@
             ><span id="letterPageInfo">1 / 1</span
             ><button id="letterNext">›</button>
           </div>
-          <div class="fixed-add-btn">
+          <div class="top-add-btn-wrap">
             <button id="addLetterBtn">💌 写情书</button>
           </div>
         </div>
@@ -3640,7 +3647,7 @@
             ><span id="challengePageInfo">1 / 1</span
             ><button id="challengeNext">›</button>
           </div>
-          <div class="fixed-add-btn">
+          <div class="top-add-btn-wrap">
             <button id="addChallengeBtn">✅ 添加打卡</button>
           </div>
         </div>
@@ -3679,7 +3686,7 @@
           <div id="archiveContent"></div>
         </div>
 
-        <!-- ===== 100件小事 (独立页面 - 使用 form-nav) ===== -->
+        <!-- ===== 100件小事 ===== -->
         <div class="page-container" id="pageHundredThings">
           <div class="form-nav">
             <button class="back-btn" id="hundredThingsBack">👈</button>
@@ -3688,7 +3695,7 @@
           <div id="hundredThingsContent"></div>
         </div>
 
-        <!-- ===== 默契挑战 (独立页面 - 使用 form-nav) ===== -->
+        <!-- ===== 默契挑战 ===== -->
         <div class="page-container" id="pageCoupleQuiz">
           <div class="form-nav">
             <button class="back-btn" id="coupleQuizBack">👈</button>
@@ -3697,7 +3704,7 @@
           <div id="coupleQuizContent"></div>
         </div>
 
-        <!-- ===== 爱情占卜 (独立页面 - 使用 form-nav) ===== -->
+        <!-- ===== 爱情占卜 ===== -->
         <div class="page-container" id="pageLoveFortune">
           <div class="form-nav">
             <button class="back-btn" id="loveFortuneBack">👈</button>
@@ -3706,7 +3713,7 @@
           <div id="loveFortuneContent"></div>
         </div>
 
-        <!-- ===== 更新日志 (独立页面 - 使用 form-nav) ===== -->
+        <!-- ===== 更新日志 ===== -->
         <div class="page-container" id="pageChangeLog">
           <div class="form-nav">
             <button class="back-btn" id="changeLogBack">👈</button>
@@ -3715,7 +3722,7 @@
           <div id="changeLogContent"></div>
         </div>
 
-        <!-- ===== 每日问答 (独立页面 - 使用 form-nav) ===== -->
+        <!-- ===== 每日问答 ===== -->
         <div class="page-container" id="pageDailyQuiz">
           <div class="form-nav">
             <button class="back-btn" id="dailyQuizBack">👈</button>
@@ -4395,7 +4402,7 @@
           primaryLight,
         );
         document.getElementById("mainNav").style.background = primary;
-        document.querySelectorAll(".fixed-add-btn button").forEach((b) => {
+        document.querySelectorAll(".top-add-btn-wrap button").forEach((b) => {
           b.style.background = primary;
           b.style.boxShadow = `0 4px 16px ${primary}4D`;
         });
@@ -4713,7 +4720,6 @@
       let isLongPressTriggered = false;
 
       function showLongPressMenu(e, cardEl, itemId, itemType) {
-        // 移除已有菜单
         document
           .querySelectorAll(".longpress-menu")
           .forEach((el) => el.remove());
@@ -4721,16 +4727,11 @@
         const menu = document.createElement("div");
         menu.className = "longpress-menu";
 
-        // 根据卡片类型构建菜单项
         let menuItems = [];
-
-        // 所有卡片都支持编辑和删除
         menuItems.push(
           { icon: "✏️", label: "编辑", action: "edit", danger: false },
           { icon: "🗑️", label: "删除", action: "delete", danger: true },
         );
-
-        // 特殊：打卡卡片添加切换状态
         if (itemType === "challenge") {
           menuItems.splice(1, 0, {
             icon: "🔄",
@@ -4748,7 +4749,6 @@
           menu.appendChild(btn);
         });
 
-        // 获取点击位置
         let clientX, clientY;
         if (e.touches) {
           clientX = e.touches[0].clientX;
@@ -4758,7 +4758,6 @@
           clientY = e.clientY || e.pageY || 0;
         }
 
-        // 避免菜单超出屏幕
         const menuWidth = 160;
         const menuHeight = menuItems.length * 52 + 12;
         let left = Math.min(clientX, window.innerWidth - menuWidth - 16);
@@ -4770,7 +4769,6 @@
         menu.style.top = top + "px";
         document.body.appendChild(menu);
 
-        // 点击菜单项
         menu.querySelectorAll(".menu-item").forEach((btn) => {
           btn.addEventListener("click", function (e) {
             e.stopPropagation();
@@ -4778,21 +4776,17 @@
             menu.remove();
 
             if (action === "edit") {
-              // 触发编辑 - 模拟点击卡片
               if (cardEl) {
                 const clickEvent = new Event("click", { bubbles: true });
                 cardEl.dispatchEvent(clickEvent);
               }
             } else if (action === "delete") {
-              // 触发删除 - 查找删除按钮并点击
               const delBtn = cardEl?.querySelector(".del-btn");
               if (delBtn) {
                 const clickEvent = new Event("click", { bubbles: true });
                 delBtn.dispatchEvent(clickEvent);
               } else {
-                // 如果没有删除按钮，用confirm方式
                 showConfirmDialog("确定删除此记录吗？", () => {
-                  // 根据类型执行删除
                   if (itemType === "happy") {
                     data.happy = data.happy.filter((d) => d.id !== itemId);
                     saveData();
@@ -4835,7 +4829,6 @@
                 });
               }
             } else if (action === "toggle") {
-              // 切换打卡状态
               if (itemType === "challenge") {
                 const challenge = data.love.challenges.find(
                   (c) => c.id === itemId,
@@ -4850,7 +4843,6 @@
           });
         });
 
-        // 点击其他地方关闭菜单
         const closeMenu = function (ev) {
           if (!ev.target.closest(".longpress-menu")) {
             menu.remove();
@@ -4905,7 +4897,6 @@
             clearTimeout(timer);
             timer = null;
           }
-          // 如果长按已触发，阻止点击
           if (isLongPressTriggeredLocal) {
             e.preventDefault && e.preventDefault();
             isLongPressTriggeredLocal = false;
@@ -4916,15 +4907,12 @@
         element.addEventListener("touchmove", onMove, { passive: true });
         element.addEventListener("touchend", onEnd, { passive: false });
 
-        // 鼠标支持（桌面调试）
         element.addEventListener("mousedown", function (e) {
-          // 右键直接触发菜单
           if (e.button === 2) {
             e.preventDefault();
             showLongPressMenu(e, element, itemId, itemType);
             return;
           }
-          // 左键长按模拟
           let mouseTimer = null;
           let mouseMoved = false;
           const mouseStartX = e.clientX,
@@ -4960,7 +4948,6 @@
           document.addEventListener("mouseup", onMouseUp);
         });
 
-        // 阻止context menu默认行为
         element.addEventListener("contextmenu", function (e) {
           e.preventDefault();
         });
@@ -5802,7 +5789,7 @@
       }
 
       // ============================================================
-      // LOVE 主页
+      // LOVE 主页 - 首次访问显示设置表单
       // ============================================================
       function renderLove() {
         const love = data.love;
@@ -5810,6 +5797,53 @@
         if (!container) return;
         updateAchievements();
         let html = "";
+
+        // 检查是否已设置基本信息
+        if (!love.myName || !love.herName || !love.startDate) {
+          // 显示设置表单
+          html = `
+            <div class="love-setup-form">
+              <div class="setup-title">💕 开始你们的爱情轨迹</div>
+              <div class="setup-desc">填写基本信息，开启专属恋爱记录</div>
+              <div class="form-group"><label>我的名字</label><input type="text" id="setupMyName" value="${love.myName || ""}" placeholder="输入你的名字" /></div>
+              <div class="form-group"><label>TA的名字</label><input type="text" id="setupHerName" value="${love.herName || ""}" placeholder="输入对方的名字" /></div>
+              <div class="form-group"><label>我的生日</label><input type="date" id="setupMyBirthday" value="${love.myBirthday || ""}" /></div>
+              <div class="form-group"><label>TA的生日</label><input type="date" id="setupHerBirthday" value="${love.herBirthday || ""}" /></div>
+              <div class="form-group"><label>在一起的日子</label><input type="date" id="setupStartDate" value="${love.startDate || ""}" /></div>
+              <button class="btn-primary" id="setupSaveBtn">💾 保存信息</button>
+            </div>
+          `;
+          container.innerHTML = html;
+          document
+            .getElementById("setupSaveBtn")
+            .addEventListener("click", function () {
+              const myName = document
+                .getElementById("setupMyName")
+                .value.trim();
+              const herName = document
+                .getElementById("setupHerName")
+                .value.trim();
+              const myBirthday =
+                document.getElementById("setupMyBirthday").value;
+              const herBirthday =
+                document.getElementById("setupHerBirthday").value;
+              const startDate = document.getElementById("setupStartDate").value;
+              if (!myName || !herName || !startDate) {
+                alert("请至少填写双方名字和在一起的日子");
+                return;
+              }
+              data.love.myName = myName;
+              data.love.herName = herName;
+              data.love.myBirthday = myBirthday;
+              data.love.herBirthday = herBirthday;
+              data.love.startDate = startDate;
+              saveData();
+              renderLove();
+            });
+          return;
+        }
+
+        // ---- 已设置信息，显示卡片 ----
         const days = getLoveDays();
         const isBreakup = !!(
           love.breakup &&
@@ -5827,86 +5861,66 @@
           html += `<div style="background:#ffffff;border-radius:var(--radius);padding:10px 16px;margin-bottom:12px;text-align:center;border:0.5px solid var(--border);"><span style="font-size:14px;color:var(--text2);">🎉 距离 "${nextAnn.name}" 还有 </span><span style="font-size:20px;font-weight:700;color:var(--primary);">${nextAnn.days}</span><span style="font-size:14px;color:var(--text2);"> 天</span></div>`;
         }
 
-        if (love.myName && love.herName && love.startDate) {
-          const myBday = love.myBirthday
-            ? formatDate(love.myBirthday)
-            : "未填写";
-          const herBday = love.herBirthday
-            ? formatDate(love.herBirthday)
-            : "未填写";
-          let statusText = "💕 恋爱中",
-            statusClass = "";
-          if (isBreakup) {
-            statusClass = "breakup";
-            statusText = `🔥 已分手 (${formatDate(breakupDate)})`;
-          } else if (reconcileDate) {
-            statusClass = "reconciled";
-            statusText = `💕 和好于 ${formatDate(reconcileDate)}`;
-          }
-
-          const levelInfo = getLoveLevel(days);
-          const milestone = getMilestones(days);
-          const progressPct = milestone.next
-            ? Math.min(100, (days / milestone.next) * 100)
-            : 100;
-
-          const tree = data.love.loveTree || { level: 1, exp: 0 };
-          const treeExpNeeded = tree.level * 15;
-          const treeProgress = Math.min(
-            100,
-            Math.round((tree.exp / treeExpNeeded) * 100),
-          );
-
-          html += `<div class="love-profile-card" onclick="navigateTo('pageArchive');renderArchive();">
-            <div class="card-row">
-              <div class="names">
-                <span class="name">${love.myName}</span>
-                <span class="heart-symbol">❤️</span>
-                <span class="name">${love.herName}</span>
-              </div>
-              <span class="status-badge ${statusClass}">${statusText}</span>
-            </div>
-            <div class="info-grid">
-              <div class="info-item">
-                <span class="label">🍀 我的生日</span>
-                <span class="value">${myBday}</span>
-              </div>
-              <div class="info-item">
-                <span class="label">🌙 TA的生日</span>
-                <span class="value">${herBday}</span>
-              </div>
-              <div class="info-item">
-                <span class="label">📅 始于</span>
-                <span class="value">${formatDate(love.startDate)}</span>
-              </div>
-              <div class="info-item">
-                <span class="label">${isBreakup ? "💔 分手日期" : "💕 状态"}</span>
-                <span class="value">${isBreakup ? formatDate(breakupDate) : "恋爱中"}</span>
-              </div>
-            </div>
-            <div class="days-level-row">
-              <span class="days">❤️ ${days} 天</span>
-              <span class="level">${levelInfo.emoji} ${levelInfo.label}</span>
-            </div>
-            <div class="progress-bars">
-              <div class="pbar">
-                <span class="p-label">📊 天数</span>
-                <div class="p-track">
-                  <div class="p-fill animate" style="width:${progressPct}%;"></div>
-                </div>
-                <span class="p-value">${milestone.label}</span>
-              </div>
-              <div class="pbar">
-                <span class="p-label">🌳 树 Lv.${tree.level}</span>
-                <div class="p-track">
-                  <div class="p-fill animate" style="width:${treeProgress}%;"></div>
-                </div>
-                <span class="p-value">${tree.exp}/${treeExpNeeded}</span>
-              </div>
-            </div>
-            <div class="hint">点击查看恋爱档案</div>
-          </div>`;
+        const myBday = love.myBirthday ? formatDate(love.myBirthday) : "未填写";
+        const herBday = love.herBirthday
+          ? formatDate(love.herBirthday)
+          : "未填写";
+        let statusText = "💕 恋爱中",
+          statusClass = "";
+        if (isBreakup) {
+          statusClass = "breakup";
+          statusText = `🔥 已分手 (${formatDate(breakupDate)})`;
+        } else if (reconcileDate) {
+          statusClass = "reconciled";
+          statusText = `💕 和好于 ${formatDate(reconcileDate)}`;
         }
+
+        const levelInfo = getLoveLevel(days);
+        const milestone = getMilestones(days);
+        const progressPct = milestone.next
+          ? Math.min(100, (days / milestone.next) * 100)
+          : 100;
+
+        const tree = data.love.loveTree || { level: 1, exp: 0 };
+        const treeExpNeeded = tree.level * 15;
+        const treeProgress = Math.min(
+          100,
+          Math.round((tree.exp / treeExpNeeded) * 100),
+        );
+
+        html += `<div class="love-profile-card" onclick="navigateTo('pageArchive');renderArchive();">
+          <div class="card-row">
+            <div class="names">
+              <span class="name">${love.myName}</span>
+              <span class="heart-symbol">❤️</span>
+              <span class="name">${love.herName}</span>
+            </div>
+            <span class="status-badge ${statusClass}">${statusText}</span>
+          </div>
+          <div class="info-grid">
+            <div class="info-item"><span class="label">🍀 我的生日</span><span class="value">${myBday}</span></div>
+            <div class="info-item"><span class="label">🌙 TA的生日</span><span class="value">${herBday}</span></div>
+            <div class="info-item"><span class="label">📅 始于</span><span class="value">${formatDate(love.startDate)}</span></div>
+            <div class="info-item"><span class="label">${isBreakup ? "💔 分手日期" : "💕 状态"}</span><span class="value">${isBreakup ? formatDate(breakupDate) : "恋爱中"}</span></div>
+          </div>
+          <div class="days-level-row">
+            <span class="days">❤️ ${days} 天</span>
+            <span class="level">${levelInfo.emoji} ${levelInfo.label}</span>
+          </div>
+          <div class="progress-bars">
+            <div class="pbar">
+              <span class="p-label">📊 天数</span>
+              <div class="p-track"><div class="p-fill animate" style="width:${progressPct}%;"></div></div>
+              <span class="p-value">${milestone.label}</span>
+            </div>
+            <div class="pbar">
+              <span class="p-label">🌳 树 Lv.${tree.level}</span>
+              <div class="p-track"><div class="p-fill animate" style="width:${treeProgress}%;"></div></div>
+              <span class="p-value">${tree.exp}/${treeExpNeeded}</span>
+            </div>
+          </div>
+          <div class="hint">点击查看恋爱档案</div>
+        </div>`;
 
         const hidden = data.hiddenCards || [];
         const recordFuncs = [
@@ -6063,7 +6077,7 @@
       }
 
       // ============================================================
-      // 新增功能：时光胶囊（保留弹窗）、默契挑战独立页、占卜独立页、更新日志独立页
+      // 时光胶囊、默契挑战、占卜、更新日志
       // ============================================================
       function showTimeCapsuleModal() {
         const capsules = data.timeCapsules || [];
@@ -6160,7 +6174,6 @@
         });
       }
 
-      // ----- 默契挑战 独立页面 -----
       function renderCoupleQuiz() {
         const container = document.getElementById("coupleQuizContent");
         const quiz = data.coupleQuiz || {
@@ -6254,7 +6267,6 @@
           });
       }
 
-      // ----- 爱情占卜 独立页面 （按钮两端对齐）-----
       function renderLoveFortune() {
         const container = document.getElementById("loveFortuneContent");
         const fortunes = [
@@ -6382,7 +6394,6 @@
           });
       }
 
-      // ----- 更新日志 独立页面 -----
       function renderChangeLog() {
         const container = document.getElementById("changeLogContent");
         const changelog = [
@@ -6434,7 +6445,7 @@
       }
 
       // ============================================================
-      // 渲染快乐
+      // 渲染快乐 (移除空状态中的按钮)
       // ============================================================
       let happyPageNum = 1;
 
@@ -6462,7 +6473,7 @@
         const container = document.getElementById("happyList");
         if (!container) return;
         if (pageData.length === 0) {
-          container.innerHTML = `<div class="empty-state"><span class="empty-emoji">😊</span><div class="empty-title">还没有快乐记录</div><div class="empty-desc">记录每一个开心的瞬间吧</div><button class="empty-btn" onclick="document.getElementById('addHappyBtn').click();">➕ 添加快乐</button></div>`;
+          container.innerHTML = `<div class="empty-state"><span class="empty-emoji">😊</span><div class="empty-title">还没有快乐记录</div><div class="empty-desc">记录每一个开心的瞬间吧</div></div>`;
         } else {
           container.innerHTML = pageData
             .map((item) => renderHappyCard(item))
@@ -6748,7 +6759,7 @@
         .addEventListener("click", goBack);
 
       // ============================================================
-      // 渲染旅行
+      // 渲染旅行 (移除空状态中的按钮)
       // ============================================================
       let travelPageNum = 1;
 
@@ -6776,7 +6787,7 @@
         const container = document.getElementById("travelList");
         if (!container) return;
         if (pageData.length === 0) {
-          container.innerHTML = `<div class="empty-state"><span class="empty-emoji">✈️</span><div class="empty-title">还没有旅行记录</div><div class="empty-desc">出发吧，去创造属于你们的回忆</div><button class="empty-btn" onclick="document.getElementById('addTravelBtn').click();">➕ 添加旅行</button></div>`;
+          container.innerHTML = `<div class="empty-state"><span class="empty-emoji">✈️</span><div class="empty-title">还没有旅行记录</div><div class="empty-desc">出发吧，去创造属于你们的回忆</div></div>`;
         } else {
           container.innerHTML = pageData
             .map((item) => renderTravelCard(item))
@@ -7022,7 +7033,7 @@
         .addEventListener("click", goBack);
 
       // ============================================================
-      // 月经
+      // 渲染月经 (移除空状态中的按钮)
       // ============================================================
       let menstrualPageNum = 1;
 
@@ -7120,7 +7131,7 @@
         const container = document.getElementById("menstrualList");
         if (!container) return;
         if (pageData.length === 0) {
-          container.innerHTML = `<div class="empty-state"><span class="empty-emoji">🩸</span><div class="empty-title">还没有月经记录</div><div class="empty-desc">记录周期，关爱自己</div><button class="empty-btn" onclick="document.getElementById('addMenstrualBtn').click();">➕ 添加记录</button></div>`;
+          container.innerHTML = `<div class="empty-state"><span class="empty-emoji">🩸</span><div class="empty-title">还没有月经记录</div><div class="empty-desc">记录周期，关爱自己</div></div>`;
         } else {
           container.innerHTML = pageData
             .map((item) => renderMenstrualCard(item))
@@ -7576,7 +7587,7 @@
       }
 
       // ============================================================
-      // 纪念日
+      // 纪念日 (保留原有添加按钮样式)
       // ============================================================
       let anniversaryPage = 1;
 
@@ -7590,7 +7601,7 @@
         const pageItems = items.slice(start, end);
         const container = document.getElementById("anniversaryList");
         if (pageItems.length === 0) {
-          container.innerHTML = `<div class="empty-state"><span class="empty-emoji">🎉</span><div class="empty-title">还没有纪念日</div><div class="empty-desc">记录每一个值得庆祝的日子</div><button class="empty-btn" onclick="document.getElementById('addAnniversaryBtn').click();">➕ 添加纪念日</button></div>`;
+          container.innerHTML = `<div class="empty-state"><span class="empty-emoji">🎉</span><div class="empty-title">还没有纪念日</div><div class="empty-desc">记录每一个值得庆祝的日子</div></div>`;
         } else {
           container.innerHTML = pageItems
             .map((item) => {
@@ -7734,7 +7745,7 @@
         const pageItems = items.slice(start, end);
         const container = document.getElementById("fightList");
         if (pageItems.length === 0) {
-          container.innerHTML = `<div class="empty-state"><span class="empty-emoji">💢</span><div class="empty-title">还没有吵架记录</div><div class="empty-desc">偶尔的摩擦也是爱的调味剂</div><button class="empty-btn" onclick="document.getElementById('addFightBtn').click();">➕ 添加吵架</button></div>`;
+          container.innerHTML = `<div class="empty-state"><span class="empty-emoji">💢</span><div class="empty-title">还没有吵架记录</div><div class="empty-desc">偶尔的摩擦也是爱的调味剂</div></div>`;
         } else {
           container.innerHTML = pageItems
             .map(
@@ -7937,7 +7948,7 @@
         const pageItems = items.slice(start, end);
         const container = document.getElementById("letterList");
         if (pageItems.length === 0) {
-          container.innerHTML = `<div class="empty-state"><span class="empty-emoji">💌</span><div class="empty-title">还没有情书</div><div class="empty-desc">用文字表达你的爱意</div><button class="empty-btn" onclick="document.getElementById('addLetterBtn').click();">💌 写情书</button></div>`;
+          container.innerHTML = `<div class="empty-state"><span class="empty-emoji">💌</span><div class="empty-title">还没有情书</div><div class="empty-desc">用文字表达你的爱意</div></div>`;
         } else {
           container.innerHTML = pageItems
             .map(
@@ -8180,7 +8191,7 @@
         const pageItems = items.slice(start, end);
         const container = document.getElementById("challengeList");
         if (pageItems.length === 0) {
-          container.innerHTML = `<div class="empty-state"><span class="empty-emoji">✅</span><div class="empty-title">还没有打卡记录</div><div class="empty-desc">一起养成好习惯吧</div><button class="empty-btn" onclick="document.getElementById('addChallengeBtn').click();">➕ 添加打卡</button></div>`;
+          container.innerHTML = `<div class="empty-state"><span class="empty-emoji">✅</span><div class="empty-title">还没有打卡记录</div><div class="empty-desc">一起养成好习惯吧</div></div>`;
         } else {
           container.innerHTML = pageItems
             .map(
@@ -8324,7 +8335,7 @@
         .addEventListener("click", goBack);
 
       // ============================================================
-      // 足迹（完整地图）
+      // 足迹（完整地图） - 保留原有功能
       // ============================================================
       const cityCoords = {
         北京: [116.4, 39.9],
@@ -8853,7 +8864,7 @@
         .addEventListener("click", goBack);
 
       // ============================================================
-      // 恋爱档案（独立页面 - 保持左右分栏布局）
+      // 恋爱档案
       // ============================================================
       function renderArchive() {
         const container = document.getElementById("archiveContent");
@@ -9081,7 +9092,6 @@
           .getElementById("settingsBtn")
           .addEventListener("click", showSettings);
 
-        // 更多菜单 - 居中弹窗
         const moreOverlay = document.getElementById("moreOverlay");
         document
           .getElementById("moreBtn")
