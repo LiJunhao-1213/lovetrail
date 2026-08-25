@@ -858,14 +858,13 @@
       }
       .archive-profile-card {
         background: #ffffff;
-        border-radius: 8px;
-        padding: 20px 16px 16px;
+        border-radius: 12px;
+        padding: 20px 18px 18px;
         margin-bottom: 16px;
         box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
-        text-align: center;
+        border: 0.5px solid var(--border);
         position: relative;
         overflow: hidden;
-        margin-top: 20px;
       }
       .archive-profile-card::after {
         content: "❤️";
@@ -873,7 +872,7 @@
         bottom: -10px;
         right: -10px;
         font-size: 60px;
-        opacity: 0.06;
+        opacity: 0.05;
         transform: rotate(-10deg);
         pointer-events: none;
       }
@@ -885,7 +884,7 @@
         font-size: 22px;
         font-weight: 700;
         color: var(--text);
-        margin-bottom: 4px;
+        margin-bottom: 6px;
       }
       .archive-profile-card .archive-name-row .name {
         color: var(--primary);
@@ -907,7 +906,7 @@
         display: flex;
         align-items: center;
         gap: 4px;
-        background: #fff;
+        background: var(--bg);
         padding: 2px 14px;
         border-radius: 30px;
         border: 0.5px solid var(--border);
@@ -923,7 +922,7 @@
         color: var(--text2);
         margin-bottom: 8px;
         flex-wrap: wrap;
-        background: rgba(255, 255, 255, 0.6);
+        background: var(--bg);
         padding: 4px 14px;
         border-radius: 30px;
         border: 0.5px solid var(--border);
@@ -934,21 +933,21 @@
         gap: 4px;
       }
       .archive-profile-card .archive-days {
-        font-size: 20px;
-        font-weight: 600;
+        font-size: 24px;
+        font-weight: 700;
         color: var(--primary);
-        padding: 4px 0 2px;
+        padding: 6px 0 4px;
         letter-spacing: -0.5px;
       }
       .archive-profile-card .archive-days .days-emoji {
-        font-size: 24px;
-        margin-right: 6px;
+        font-size: 28px;
+        margin-right: 8px;
       }
       .archive-profile-card .archive-status-badge {
         display: inline-block;
         padding: 4px 20px;
         border-radius: 30px;
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 600;
         background: var(--primary-light);
         color: var(--primary);
@@ -1427,6 +1426,14 @@
         justify-content: center;
         min-height: 64px;
         position: relative;
+        cursor: grab;
+        transition: all 0.2s;
+        user-select: none;
+        touch-action: none;
+      }
+      .menstrual-stat-card:active {
+        cursor: grabbing;
+        opacity: 0.7;
       }
       .menstrual-stat-card .ms-title {
         position: absolute;
@@ -1534,6 +1541,7 @@
         font-size: 13px;
         padding: 4px 0;
         color: var(--text);
+        flex-wrap: nowrap;
       }
       .menstrual-record-card .record-body .daily-details .day-row .day-label {
         font-weight: 500;
@@ -1545,8 +1553,9 @@
         display: flex;
         align-items: center;
         gap: 4px;
-        min-width: 60px;
+        min-width: 80px;
         flex-shrink: 0;
+        justify-content: flex-start;
       }
       .menstrual-record-card
         .record-body
@@ -1557,6 +1566,8 @@
         align-items: center;
         gap: 4px;
         flex-wrap: wrap;
+        flex: 1;
+        min-width: 0;
       }
       .menstrual-record-card .record-body .toggle-btn {
         display: block;
@@ -1722,7 +1733,7 @@
       .thumb-slider {
         display: flex;
         overflow-x: auto;
-        gap: 4px;
+        gap: 6px;
         padding: 4px 0;
         scroll-snap-type: x mandatory;
         -webkit-overflow-scrolling: touch;
@@ -1731,8 +1742,8 @@
       }
       .thumb-slider .thumb-item {
         flex-shrink: 0;
-        width: 44px;
-        height: 44px;
+        width: 56px;
+        height: 56px;
         border-radius: var(--radius);
         overflow: hidden;
         border: 0.5px solid var(--border);
@@ -1745,22 +1756,7 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-      }
-      .thumb-slider .thumb-item .remove-img-btn {
-        position: absolute;
-        top: -4px;
-        right: -4px;
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        background: rgba(0, 0, 0, 0.6);
-        color: #fff;
-        border: none;
-        font-size: 10px;
-        line-height: 16px;
-        text-align: center;
-        cursor: pointer;
-        z-index: 2;
+        display: block;
       }
       .photo-upload .upload-area {
         display: flex;
@@ -1873,18 +1869,25 @@
       }
       .theme-preset-grid {
         display: grid;
-        grid-template-columns: repeat(6, 1fr);
-        gap: 10px;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 12px;
         margin: 10px 0 16px 0;
       }
       .theme-preset-btn {
         width: 100%;
         aspect-ratio: 1 / 1;
         border-radius: 50%;
-        border: 3px solid transparent;
+        border: 3px solid #e5e5ea;
         cursor: pointer;
         transition: all 0.25s;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        color: #fff;
+        font-weight: 600;
       }
       .theme-preset-btn:active {
         transform: scale(0.88);
@@ -1892,8 +1895,8 @@
       .theme-preset-btn.active-theme-btn {
         border-color: var(--text);
         box-shadow:
-          0 0 0 2px var(--bg),
-          0 0 0 4px var(--text);
+          0 0 0 3px var(--bg),
+          0 0 0 5px var(--text);
       }
       .theme-hue-wrap {
         display: flex;
@@ -3049,13 +3052,21 @@
       .thing-item {
         display: flex;
         align-items: center;
-        padding: 6px 0;
-        border-bottom: 0.5px solid var(--border);
-        gap: 8px;
+        padding: 8px 12px;
+        background: var(--card);
+        border-radius: var(--radius);
+        margin-bottom: 6px;
+        border: 0.5px solid var(--border);
+        gap: 10px;
+        transition: all 0.15s;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+      }
+      .thing-item:active {
+        transform: scale(0.98);
       }
       .thing-item .thing-check {
-        width: 28px;
-        height: 28px;
+        width: 30px;
+        height: 30px;
         border-radius: 50%;
         border: 2px solid var(--border);
         display: flex;
@@ -3065,6 +3076,7 @@
         flex-shrink: 0;
         transition: all 0.2s;
         font-size: 14px;
+        background: var(--bg);
       }
       .thing-item .thing-check.done {
         background: var(--primary);
@@ -3078,26 +3090,100 @@
         flex: 1;
         font-size: 14px;
         color: var(--text);
+        word-break: break-word;
       }
       .thing-item .thing-text.done {
         text-decoration: line-through;
         color: var(--text2);
       }
+      .thing-item .thing-actions {
+        display: flex;
+        gap: 2px;
+        flex-shrink: 0;
+      }
+      .thing-item .thing-actions button {
+        background: none;
+        border: none;
+        font-size: 16px;
+        cursor: pointer;
+        padding: 4px 6px;
+        color: var(--text2);
+        transition: all 0.2s;
+        line-height: 1;
+        border-radius: 6px;
+      }
+      .thing-item .thing-actions button:active {
+        transform: scale(0.85);
+        opacity: 0.6;
+      }
+      .thing-item .thing-actions .edit-thing {
+        color: var(--primary);
+      }
+      .thing-item .thing-actions .del-thing {
+        color: #ff3b30;
+      }
       .thing-progress {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 12px;
-        font-size: 14px;
+        margin-bottom: 14px;
+        font-size: 15px;
         font-weight: 600;
-        color: var(--text2);
+        color: var(--text);
+        padding: 0 4px;
       }
       .thing-progress .thing-percent {
         color: var(--primary);
       }
       .thing-list-container {
-        max-height: 380px;
+        max-height: 400px;
         overflow-y: auto;
         padding-right: 4px;
+        margin-bottom: 4px;
+      }
+      .thing-add-form {
+        display: flex;
+        gap: 10px;
+        margin-top: 14px;
+        padding-top: 14px;
+        border-top: 0.5px solid var(--border);
+      }
+      .thing-add-form input {
+        flex: 1;
+        padding: 10px 14px;
+        border-radius: var(--radius);
+        border: 0.5px solid var(--border);
+        font-size: 14px;
+        background: var(--card);
+        color: var(--text);
+        outline: none;
+        transition: all 0.2s;
+      }
+      .thing-add-form input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(255, 107, 138, 0.12);
+      }
+      .thing-add-form button {
+        padding: 10px 20px;
+        border-radius: var(--radius);
+        border: none;
+        background: var(--primary);
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        white-space: nowrap;
+      }
+      .thing-add-form button:active {
+        transform: scale(0.94);
+        opacity: 0.85;
+      }
+      .thing-hint {
+        font-size: 12px;
+        color: var(--text2);
+        text-align: center;
+        margin-top: 8px;
+        opacity: 0.8;
       }
       .capsule-item {
         background: var(--bg);
@@ -3152,246 +3238,97 @@
         transform: scale(0.85);
         color: #ff3b30;
       }
-      .quiz-question-item {
+      .year-selector {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        margin-bottom: 12px;
+        padding: 4px 0;
+      }
+      .year-selector button {
+        background: var(--card);
+        border: 0.5px solid var(--border);
+        border-radius: var(--radius);
+        padding: 4px 14px;
+        font-size: 16px;
+        cursor: pointer;
+        color: var(--text);
+        font-weight: 500;
+        transition: all 0.2s;
+      }
+      .year-selector button:active {
+        transform: scale(0.92);
+        opacity: 0.7;
+      }
+      .year-selector .year-label {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text);
+        min-width: 80px;
+        text-align: center;
+      }
+      .archive-stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 14px;
+      }
+      .archive-stats-grid .stat-box {
         background: #ffffff;
         border-radius: var(--radius);
-        padding: 12px 14px;
-        margin-bottom: 10px;
+        padding: 10px 6px;
+        text-align: center;
         border: 0.5px solid var(--border);
-        margin-top: 20px;
       }
-      .quiz-question-item .q-text {
+      .archive-stats-grid .stat-box .stat-num {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--primary);
+      }
+      .archive-stats-grid .stat-box .stat-label {
+        font-size: 11px;
+        color: var(--text2);
+        margin-top: 2px;
+      }
+      .archive-status-tag {
+        display: inline-block;
+        padding: 3px 14px;
+        border-radius: 30px;
+        font-size: 13px;
         font-weight: 600;
-        font-size: 14px;
-        color: var(--text);
-        margin-bottom: 6px;
-      }
-      .quiz-question-item .q-answers {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        font-size: 13px;
-        color: var(--text2);
-      }
-      .quiz-question-item .q-answers .qa-item {
-        background: var(--card);
-        padding: 10px;
-        border-radius: 12px;
-        border: 0.5px solid var(--border);
-      }
-      .quiz-question-item .q-answers .qa-item .qa-label {
-        font-weight: 500;
-        color: var(--text);
-      }
-      .quiz-question-item .q-answers .qa-item .qa-value {
+        background: var(--primary-light);
         color: var(--primary);
+        border: 0.5px solid rgba(255, 107, 138, 0.2);
       }
-      .quiz-question-item .q-match {
-        margin-top: 16px;
-        font-size: 13px;
-        font-weight: 500;
-      }
-      .quiz-question-item .q-match.match {
-        color: #2e7d32;
-      }
-      .quiz-question-item .q-match.mismatch {
+      .archive-status-tag.breakup {
+        background: #ffebee;
         color: #d32f2f;
+        border-color: #ffcdd2;
       }
-      .changelog-item {
-        padding: 10px 0;
-        border-bottom: 0.5px solid var(--border);
+      .archive-status-tag.reconciled {
+        background: #e8f5e9;
+        color: #2e7d32;
+        border-color: #c8e6c9;
       }
-      .changelog-item:last-child {
-        border-bottom: none;
-      }
-      .changelog-item .cl-version {
-        font-weight: 700;
-        color: var(--primary);
-        font-size: 15px;
-      }
-      .changelog-item .cl-date {
-        font-size: 12px;
-        color: var(--text2);
-        margin-left: 8px;
-      }
-      .changelog-item .cl-list {
-        margin-top: 4px;
-        padding-left: 18px;
-        font-size: 13px;
-        color: var(--text);
-        list-style: none;
-      }
-      .changelog-item .cl-list li {
-        padding: 2px 0;
-        position: relative;
-      }
-      .changelog-item .cl-list li::before {
-        content: "•";
-        position: absolute;
-        left: -14px;
-        color: var(--primary);
-        font-weight: 700;
-      }
-      .page-back-btn {
-        background: none;
-        border: none;
-        font-size: 22px;
-        color: var(--primary);
-        cursor: pointer;
-        padding: 4px 0;
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        font-weight: 500;
-      }
-      .page-back-btn:active {
-        opacity: 0.6;
-      }
-      .page-header {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 10px 0 14px 0;
-        border-bottom: 0.5px solid var(--border);
-        margin-bottom: 14px;
-        background: var(--bg);
-        position: sticky;
-        top: 0;
-        z-index: 10;
-      }
-      .page-header .page-title {
-        font-size: 18px;
-        font-weight: 700;
-        color: var(--primary);
-        flex: 1;
-        text-align: center;
-        margin-right: 32px;
-      }
-      .page-header .page-back {
-        font-size: 22px;
-        cursor: pointer;
-        background: none;
-        border: none;
-        color: var(--primary);
-        padding: 4px;
-        line-height: 1;
-      }
-      .longpress-menu {
-        position: fixed;
+      .love-archive-link {
+        display: block;
         background: var(--card);
-        border-radius: 14px;
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
-        padding: 6px 0;
-        min-width: 140px;
-        z-index: 99999;
-        animation: slideUp 0.15s ease;
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 0.5px solid var(--border);
-        overflow: hidden;
-      }
-      .longpress-menu .menu-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 12px 18px;
-        font-size: 16px;
-        font-weight: 500;
-        color: var(--text);
-        cursor: pointer;
-        transition: all 0.15s;
-        border: none;
-        background: transparent;
-        width: 100%;
-        text-align: left;
-      }
-      .longpress-menu .menu-item:active {
-        background: var(--bg);
-        transform: scale(0.96);
-      }
-      .longpress-menu .menu-item .menu-icon {
-        font-size: 18px;
-        width: 24px;
-        text-align: center;
-      }
-      .longpress-menu .menu-item.danger {
-        color: #ff3b30;
-      }
-      .longpress-menu .menu-divider {
-        height: 0.5px;
-        background: var(--border);
-        margin: 4px 12px;
-      }
-      .love-setup-form {
-        background: #fff;
         border-radius: var(--radius);
-        padding: 20px 16px;
-        margin: 14px 0 16px 0;
-        box-shadow: var(--shadow);
+        padding: 14px 16px;
+        margin: 12px 0 6px;
         border: 0.5px solid var(--border);
-      }
-      .love-setup-form .setup-title {
-        font-size: 18px;
-        font-weight: 700;
+        box-shadow: var(--shadow);
+        text-align: center;
+        font-size: 15px;
+        font-weight: 500;
         color: var(--primary);
-        text-align: center;
-        margin-bottom: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
       }
-      .love-setup-form .setup-desc {
-        font-size: 14px;
-        color: var(--text2);
-        text-align: center;
-        margin-bottom: 16px;
-      }
-      /* ===== 日期选择器右侧留白修复 ===== */
-      input[type="date"] {
-        max-width: 100% !important;
-        box-sizing: border-box !important;
-        min-width: 0 !important;
-        padding-right: 20px !important;
-        -webkit-appearance: none;
-        appearance: none;
-      }
-      .form-group input[type="date"] {
-        width: 100% !important;
-        max-width: 100% !important;
-        box-sizing: border-box !important;
-        padding-right: 20px !important;
-        min-width: 0 !important;
-      }
-      /* iOS Safari 额外修复 */
-      @supports (-webkit-touch-callout: none) {
-        input[type="date"] {
-          padding-right: 24px !important;
-        }
-        .form-group input[type="date"] {
-          padding-right: 24px !important;
-        }
-        .form-row .form-group input[type="date"] {
-          padding-right: 24px !important;
-          width: 100% !important;
-          max-width: 100% !important;
-          box-sizing: border-box !important;
-          min-width: 0 !important;
-        }
-      }
-      /* form-row 中的日期选择器修复 */
-      .form-row .form-group {
-        flex: 1 1 0%;
-        min-width: 0;
-        overflow: hidden;
-      }
-      .form-row .form-group input[type="date"] {
-        width: 100% !important;
-        max-width: 100% !important;
-        box-sizing: border-box !important;
-        padding-right: 20px !important;
-        min-width: 0 !important;
-      }
-      @supports (-webkit-touch-callout: none) {
-        .form-row .form-group input[type="date"] {
-          padding-right: 24px !important;
-        }
+      .love-archive-link:active {
+        transform: scale(0.96);
+        opacity: 0.8;
       }
     </style>
   </head>
@@ -3723,7 +3660,7 @@
           <div id="archiveContent"></div>
         </div>
 
-        <!-- ===== 100件小事 ===== -->
+        <!-- 100件小事 -->
         <div class="page-container" id="pageHundredThings">
           <div class="form-nav">
             <button class="back-btn" id="hundredThingsBack">👈</button>
@@ -3732,7 +3669,7 @@
           <div id="hundredThingsContent"></div>
         </div>
 
-        <!-- ===== 默契挑战 ===== -->
+        <!-- 默契挑战 -->
         <div class="page-container" id="pageCoupleQuiz">
           <div class="form-nav">
             <button class="back-btn" id="coupleQuizBack">👈</button>
@@ -3741,7 +3678,7 @@
           <div id="coupleQuizContent"></div>
         </div>
 
-        <!-- ===== 爱情占卜 ===== -->
+        <!-- 爱情占卜 -->
         <div class="page-container" id="pageLoveFortune">
           <div class="form-nav">
             <button class="back-btn" id="loveFortuneBack">👈</button>
@@ -3750,7 +3687,7 @@
           <div id="loveFortuneContent"></div>
         </div>
 
-        <!-- ===== 更新日志 ===== -->
+        <!-- 更新日志 -->
         <div class="page-container" id="pageChangeLog">
           <div class="form-nav">
             <button class="back-btn" id="changeLogBack">👈</button>
@@ -3759,7 +3696,7 @@
           <div id="changeLogContent"></div>
         </div>
 
-        <!-- ===== 每日问答 ===== -->
+        <!-- 每日问答 -->
         <div class="page-container" id="pageDailyQuiz">
           <div class="form-nav">
             <button class="back-btn" id="dailyQuizBack">👈</button>
@@ -3786,7 +3723,8 @@
           <span class="tab-emoji">📊</span><span class="tab-label">总览</span>
         </button>
         <button class="tab-item" data-tab="menstrual">
-          <span class="tab-emoji">🩸</span><span class="tab-label">经期</span>
+          <span class="tab-emoji">🩸</span
+          ><span class="tab-label">啊~难受</span>
         </button>
         <button class="tab-item" data-tab="love">
           <span class="tab-emoji">💕</span><span class="tab-label">Love</span>
@@ -3832,6 +3770,10 @@
       const STORAGE_KEY = "love_track_data";
       const PAGE_SIZE = 3;
       let chinaChart = null;
+      let viewerImages = [];
+      let viewerIndex = 0;
+      let viewerRecordId = null;
+      let viewerRecordType = null;
 
       function getPresetAchievements() {
         return [
@@ -4122,6 +4064,10 @@
             answers: {},
           },
           loveFortuneHistory: [],
+          overviewYear: {
+            trend: new Date().getFullYear(),
+            compare: new Date().getFullYear(),
+          },
         };
       }
 
@@ -4176,6 +4122,11 @@
                 answers: {},
               };
             if (!parsed.loveFortuneHistory) parsed.loveFortuneHistory = [];
+            if (!parsed.overviewYear)
+              parsed.overviewYear = {
+                trend: new Date().getFullYear(),
+                compare: new Date().getFullYear(),
+              };
             parsed.menstrual.forEach((record) => {
               if (!record.dayDetails) {
                 record.dayDetails = [];
@@ -4234,9 +4185,6 @@
         }
       }
 
-      // ============================================================
-      // UTILITY
-      // ============================================================
       function genId() {
         return (
           Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 7)
@@ -4427,9 +4375,6 @@
         setTimeout(() => container.remove(), 4000);
       }
 
-      // ============================================================
-      // THEME
-      // ============================================================
       function setThemeVariables(hue, sat, lit) {
         const primary = `hsl(${hue}, ${sat}%, ${lit}%)`;
         const primaryLight = `hsla(${hue}, ${sat}%, ${lit}%, 0.15)`;
@@ -4501,9 +4446,6 @@
         applyTheme(t.hue, t.sat, t.lit);
       }
 
-      // ============================================================
-      // MODAL
-      // ============================================================
       let modalCallback = null;
 
       function showModal(title, html, cb) {
@@ -4566,9 +4508,6 @@
         });
       }
 
-      // ============================================================
-      // 应用锁
-      // ============================================================
       function checkLock() {
         const lock = data.appLock;
         if (!lock || !lock.enabled) return;
@@ -4626,9 +4565,6 @@
         }
       }
 
-      // ============================================================
-      // 每日情话 & 倒计时
-      // ============================================================
       function getDailyQuote() {
         const today = new Date();
         const seed =
@@ -4664,9 +4600,6 @@
         };
       }
 
-      // ============================================================
-      // 粒子背景
-      // ============================================================
       let particleCanvas,
         particleCtx,
         particles = [];
@@ -4747,9 +4680,6 @@
         requestAnimationFrame(animateParticles);
       }
 
-      // ============================================================
-      // 长按菜单
-      // ============================================================
       let longPressTimer = null;
       let longPressTarget = null;
       let longPressTouchStartX = 0;
@@ -4920,7 +4850,7 @@
           const touch = e.touches ? e.touches[0] : e;
           const dx = Math.abs(touch.clientX - startX);
           const dy = Math.abs(touch.clientY - startY);
-          if (dx > 10 || dy > 10) {
+          if (dx > 12 || dy > 12) {
             isMoved = true;
             if (timer) {
               clearTimeout(timer);
@@ -4990,22 +4920,66 @@
         });
       }
 
-      // ============================================================
-      // 每日问答 & 100件小事 (独立页面)
-      // ============================================================
+      function openImageViewer(images, idx, recordId, recordType) {
+        if (!images || images.length === 0) return;
+        viewerImages = images;
+        viewerIndex = Math.min(Math.max(0, idx), images.length - 1);
+        viewerRecordId = recordId || null;
+        viewerRecordType = recordType || null;
+        const viewer = document.getElementById("imageViewer");
+        const img = document.getElementById("viewerImg");
+        img.src = viewerImages[viewerIndex];
+        viewer.classList.add("show");
+        updateViewerNav();
+      }
+
+      function closeImageViewer() {
+        document.getElementById("imageViewer").classList.remove("show");
+        viewerImages = [];
+        viewerIndex = 0;
+        viewerRecordId = null;
+        viewerRecordType = null;
+      }
+
+      function updateViewerNav() {
+        const prevBtn = document.getElementById("viewerPrev");
+        const nextBtn = document.getElementById("viewerNext");
+        prevBtn.disabled = viewerIndex <= 0;
+        nextBtn.disabled = viewerIndex >= viewerImages.length - 1;
+        const img = document.getElementById("viewerImg");
+        if (viewerImages[viewerIndex]) img.src = viewerImages[viewerIndex];
+      }
+
       function renderHundredThings() {
         const container = document.getElementById("hundredThingsContent");
         const things = data.hundredThings;
         const doneCount = things.filter((t) => t.done).length;
         const total = things.length;
         const pct = Math.round((doneCount / total) * 100);
-        let listHtml = `<div class="thing-progress"><span>进度 ${doneCount}/${total}</span><span class="thing-percent">${pct}%</span></div><div class="thing-list-container">`;
+
+        let listHtml = `<div class="thing-progress"><span>📋 进度 ${doneCount}/${total}</span><span class="thing-percent">${pct}%</span></div><div class="thing-list-container">`;
+
         things.forEach((t, idx) => {
           const cls = t.done ? "done" : "";
-          listHtml += `<div class="thing-item" data-idx="${idx}"><div class="thing-check ${cls}" data-idx="${idx}">${t.done ? "✓" : ""}</div><span class="thing-text ${cls}">${t.text}</span></div>`;
+          listHtml += `<div class="thing-item" data-idx="${idx}">
+                    <div class="thing-check ${cls}" data-idx="${idx}">${t.done ? "✓" : ""}</div>
+                    <span class="thing-text ${cls}">${t.text}</span>
+                    <div class="thing-actions">
+                        <button class="edit-thing" data-idx="${idx}" title="编辑">✏️</button>
+                        <button class="del-thing" data-idx="${idx}" title="删除">🗑️</button>
+                    </div>
+                </div>`;
         });
-        listHtml += `</div><div style="font-size:13px;color:var(--text2);text-align:center;margin-top:8px;">点击圆形按钮切换完成状态</div>`;
+        listHtml += `</div>`;
+
+        listHtml += `<div class="thing-add-form">
+                <input type="text" id="newThingInput" placeholder="添加新事项..." />
+                <button id="addThingBtn">➕ 添加</button>
+            </div>
+            <div class="thing-hint">点击圆形切换完成 · 点击✏️编辑 · 点击🗑️删除</div>`;
+
         container.innerHTML = listHtml;
+
         container.querySelectorAll(".thing-check").forEach((el) => {
           el.addEventListener("click", function () {
             const idx = parseInt(this.dataset.idx);
@@ -5014,6 +4988,85 @@
             renderHundredThings();
           });
         });
+
+        container.querySelectorAll(".del-thing").forEach((btn) => {
+          btn.addEventListener("click", function (e) {
+            e.stopPropagation();
+            const idx = parseInt(this.dataset.idx);
+            showConfirmDialog("确定删除这项吗？", () => {
+              data.hundredThings.splice(idx, 1);
+              saveData();
+              renderHundredThings();
+            });
+          });
+        });
+
+        container.querySelectorAll(".edit-thing").forEach((btn) => {
+          btn.addEventListener("click", function (e) {
+            e.stopPropagation();
+            const idx = parseInt(this.dataset.idx);
+            const thing = data.hundredThings[idx];
+            if (!thing) return;
+            const editHtml = `
+                        <div class="form-group">
+                            <label>修改事项内容</label>
+                            <input type="text" id="editThingInput" value="${thing.text.replace(/"/g, "&quot;")}" placeholder="输入新内容" />
+                        </div>
+                        <div class="btn-row">
+                            <button class="btn-primary" id="editThingSave">保存</button>
+                            <button class="btn-danger" id="editThingCancel">取消</button>
+                        </div>
+                    `;
+            showModal("编辑事项", editHtml, () => {
+              document
+                .getElementById("editThingSave")
+                .addEventListener("click", function () {
+                  const newText = document
+                    .getElementById("editThingInput")
+                    .value.trim();
+                  if (newText) {
+                    thing.text = newText;
+                    saveData();
+                    hideModal();
+                    renderHundredThings();
+                  } else {
+                    alert("内容不能为空");
+                  }
+                });
+              document
+                .getElementById("editThingCancel")
+                .addEventListener("click", function () {
+                  hideModal();
+                });
+            });
+          });
+        });
+
+        document
+          .getElementById("addThingBtn")
+          .addEventListener("click", function () {
+            const input = document.getElementById("newThingInput");
+            const text = input.value.trim();
+            if (!text) {
+              alert("请输入内容");
+              return;
+            }
+            const maxId = data.hundredThings.reduce(
+              (max, t) => Math.max(max, t.id),
+              0,
+            );
+            data.hundredThings.push({ id: maxId + 1, text, done: false });
+            saveData();
+            input.value = "";
+            renderHundredThings();
+          });
+        document
+          .getElementById("newThingInput")
+          .addEventListener("keypress", function (e) {
+            if (e.key === "Enter") {
+              document.getElementById("addThingBtn").click();
+            }
+          });
       }
 
       function renderDailyQuiz() {
@@ -5063,9 +5116,6 @@
           });
       }
 
-      // ============================================================
-      // 生理期预测
-      // ============================================================
       function getMenstrualPredictions() {
         const records = data.menstrual;
         if (records.length < 2) return null;
@@ -5108,9 +5158,6 @@
         };
       }
 
-      // ============================================================
-      // 下拉刷新
-      // ============================================================
       let pullStartY = 0,
         pullThreshold = 80;
 
@@ -5146,9 +5193,6 @@
         });
       }
 
-      // ============================================================
-      // 设置
-      // ============================================================
       function showSettings() {
         const lock = data.appLock;
         const html = `<div style="padding:6px 0;"><div class="form-group" style="padding:8px 0;background:none;box-shadow:none;border:none;"><div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-weight:500;">🔒 应用锁</span><label style="display:flex;align-items:center;gap:8px;"><span style="font-size:14px;color:var(--text2);">${lock.enabled ? "已启用" : "已禁用"}</span><input type="checkbox" id="lockToggle" ${lock.enabled ? "checked" : ""} style="width:40px;height:24px;cursor:pointer;"></label></div>${lock.enabled ? `<div style="font-size:13px;color:var(--text2);margin-top:4px;">密码: ${"*".repeat(lock.password.length)}</div>` : ""}<button class="btn-primary" id="lockChangePwd" style="margin-top:8px;width:auto;padding:6px 16px;">${lock.enabled ? "修改密码" : "设置密码"}</button></div><hr class="form-divider" /><div class="form-group" style="padding:8px 0;background:none;box-shadow:none;border:none;"><button class="btn-danger" id="clearDataBtnSettings">🗑️ 清除所有数据</button></div><div class="form-group" style="padding:8px 0;background:none;box-shadow:none;border:none;"><button class="btn-primary" id="exportDataBtn" style="background:#8e8e93;">📤 导出数据</button><button class="btn-primary" id="importDataBtn" style="background:#8e8e93;margin-top:6px;">📥 导入数据</button></div></div>`;
@@ -5248,9 +5292,6 @@
         });
       }
 
-      // ============================================================
-      // NAVIGATION
-      // ============================================================
       function navigateTo(pageId, addHistory) {
         document
           .querySelectorAll(".page-container, .form-page")
@@ -5301,9 +5342,6 @@
         }
       }
 
-      // ============================================================
-      // 成就系统
-      // ============================================================
       function updateAchievements() {
         const ach = data.achievements || [];
         const love = data.love;
@@ -5707,13 +5745,13 @@
         });
       }
 
-      // ============================================================
-      // 拖拽排序
-      // ============================================================
       let dragItem = null;
+      let touchDragData = null;
 
       function setupDragDrop(element) {
+        if (!element) return;
         element.setAttribute("draggable", "true");
+
         element.addEventListener("dragstart", function (e) {
           dragItem = this;
           this.style.opacity = "0.5";
@@ -5748,6 +5786,147 @@
             saveOrder(parent);
           }
         });
+
+        element.addEventListener(
+          "touchstart",
+          function (e) {
+            if (e.touches.length !== 1) return;
+            const touch = e.touches[0];
+            touchDragData = {
+              el: this,
+              startX: touch.clientX,
+              startY: touch.clientY,
+              isDragging: false,
+              clone: null,
+              offsetX: 0,
+              offsetY: 0,
+              parent: this.parentNode,
+              items: [],
+            };
+          },
+          { passive: true },
+        );
+
+        element.addEventListener(
+          "touchmove",
+          function (e) {
+            if (!touchDragData || touchDragData.el !== this) return;
+            const touch = e.touches[0];
+            const dx = touch.clientX - touchDragData.startX;
+            const dy = touch.clientY - touchDragData.startY;
+            if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+
+            e.preventDefault();
+            if (!touchDragData.isDragging) {
+              touchDragData.isDragging = true;
+              touchDragData.items = [
+                ...touchDragData.parent.querySelectorAll('[draggable="true"]'),
+              ];
+              const rect = this.getBoundingClientRect();
+              touchDragData.offsetX = touch.clientX - rect.left;
+              touchDragData.offsetY = touch.clientY - rect.top;
+
+              const clone = this.cloneNode(true);
+              clone.style.position = "fixed";
+              clone.style.width = rect.width + "px";
+              clone.style.pointerEvents = "none";
+              clone.style.zIndex = "9999";
+              clone.style.opacity = "0.85";
+              clone.style.transform = "scale(1.02)";
+              clone.style.boxShadow = "0 12px 40px rgba(0,0,0,0.15)";
+              clone.style.borderRadius = "8px";
+              clone.style.background = "var(--card)";
+              clone.style.transition = "none";
+              clone.className = this.className + " touch-dragging";
+              document.body.appendChild(clone);
+              touchDragData.clone = clone;
+
+              touchDragData.items.forEach((item) => {
+                if (item !== this)
+                  item.style.transition = "transform 0.15s ease";
+              });
+            }
+
+            if (touchDragData.clone) {
+              touchDragData.clone.style.left =
+                touch.clientX - touchDragData.offsetX + "px";
+              touchDragData.clone.style.top =
+                touch.clientY - touchDragData.offsetY + "px";
+            }
+
+            const items = touchDragData.items;
+            let targetItem = null;
+            for (let item of items) {
+              if (item === touchDragData.el) continue;
+              const rect = item.getBoundingClientRect();
+              if (
+                touch.clientX >= rect.left &&
+                touch.clientX <= rect.right &&
+                touch.clientY >= rect.top &&
+                touch.clientY <= rect.bottom
+              ) {
+                targetItem = item;
+                break;
+              }
+            }
+
+            items.forEach((item) => {
+              if (item !== touchDragData.el) {
+                item.classList.remove("touch-drag-over");
+              }
+            });
+
+            if (targetItem) {
+              targetItem.classList.add("touch-drag-over");
+              const idx = items.indexOf(targetItem);
+              const dragIdx = items.indexOf(touchDragData.el);
+              if (idx !== -1 && idx !== dragIdx) {
+                if (idx < dragIdx) {
+                  touchDragData.parent.insertBefore(
+                    touchDragData.el,
+                    targetItem,
+                  );
+                } else {
+                  touchDragData.parent.insertBefore(
+                    touchDragData.el,
+                    targetItem.nextSibling,
+                  );
+                }
+                touchDragData.items = [
+                  ...touchDragData.parent.querySelectorAll(
+                    '[draggable="true"]',
+                  ),
+                ];
+              }
+            }
+          },
+          { passive: false },
+        );
+
+        element.addEventListener(
+          "touchend",
+          function (e) {
+            if (touchDragData && touchDragData.el === this) {
+              if (touchDragData.clone) {
+                touchDragData.clone.remove();
+                touchDragData.clone = null;
+              }
+              if (touchDragData.items) {
+                touchDragData.items.forEach((item) => {
+                  item.classList.remove("touch-drag-over");
+                  item.style.transition = "";
+                });
+              }
+              if (touchDragData.isDragging) {
+                const parent = touchDragData.parent;
+                if (parent) saveOrder(parent);
+              }
+              touchDragData = null;
+              this.style.opacity = "1";
+            }
+          },
+          { passive: true },
+        );
       }
 
       function saveOrder(parent) {
@@ -5778,12 +5957,65 @@
           });
           data.achievements = newAch;
           saveData();
+        } else if (parent.id === "menstrualStats") {
+          // 经期统计卡片拖拽排序
+          const keys = order.filter((k) => k);
+          // 保存排序 - 实际是通过重新排序DOM来实现视觉排序，但数据不改变
+          // 但我们可以保存顺序到数据中以便持久化
+          if (keys.length > 0) {
+            // 只是UI排序，数据本身是动态计算的，所以只保存顺序到overviewOrder风格
+            // 但我们用单独字段存储
+            if (!data.menstrualStatsOrder) data.menstrualStatsOrder = [];
+            data.menstrualStatsOrder = keys;
+            saveData();
+          }
+        } else if (parent.id === "menstrualList") {
+          const ids = order.filter((id) => id);
+          if (ids.length > 0) {
+            const newOrder = [];
+            ids.forEach((id) => {
+              const item = data.menstrual.find((d) => d.id === id);
+              if (item) newOrder.push(item);
+            });
+            data.menstrual.forEach((item) => {
+              if (!ids.includes(item.id)) newOrder.push(item);
+            });
+            data.menstrual = newOrder;
+            saveData();
+          }
+        } else if (parent.closest("#happyList")) {
+          const ids = order.filter((id) => id);
+          if (ids.length > 0) {
+            const newOrder = [];
+            ids.forEach((id) => {
+              const item = data.happy.find((d) => d.id === id);
+              if (item) newOrder.push(item);
+            });
+            data.happy.forEach((item) => {
+              if (!ids.includes(item.id)) newOrder.push(item);
+            });
+            data.happy = newOrder;
+            saveData();
+            renderHappy();
+          }
+        } else if (parent.closest("#travelList")) {
+          const ids = order.filter((id) => id);
+          if (ids.length > 0) {
+            const newOrder = [];
+            ids.forEach((id) => {
+              const item = data.travel.find((d) => d.id === id);
+              if (item) newOrder.push(item);
+            });
+            data.travel.forEach((item) => {
+              if (!ids.includes(item.id)) newOrder.push(item);
+            });
+            data.travel = newOrder;
+            saveData();
+            renderTravel();
+          }
         }
       }
 
-      // ============================================================
-      // 恋爱等级 & 进度
-      // ============================================================
       function getLoveLevel(days) {
         if (days < 0) return { level: 0, label: "💔 未开始", emoji: "💔" };
         if (days < 30) return { level: 1, label: "🌱 萌芽期", emoji: "🌱" };
@@ -5825,9 +6057,7 @@
         return Math.floor((today - start) / (1000 * 60 * 60 * 24));
       }
 
-      // ============================================================
-      // LOVE 主页 - 首次访问显示设置表单
-      // ============================================================
+      // ============ LOVE 主页 ============
       function renderLove() {
         const love = data.love;
         const container = document.getElementById("loveContent");
@@ -5835,21 +6065,19 @@
         updateAchievements();
         let html = "";
 
-        // 检查是否已设置基本信息
         if (!love.myName || !love.herName || !love.startDate) {
-          // 显示设置表单
           html = `
-            <div class="love-setup-form">
-              <div class="setup-title">💕 开始你们的爱情轨迹</div>
-              <div class="setup-desc">填写基本信息，开启专属恋爱记录</div>
-              <div class="form-group"><label>我的名字</label><input type="text" id="setupMyName" value="${love.myName || ""}" placeholder="输入你的名字" /></div>
-              <div class="form-group"><label>TA的名字</label><input type="text" id="setupHerName" value="${love.herName || ""}" placeholder="输入对方的名字" /></div>
-              <div class="form-group"><label>我的生日</label><input type="date" id="setupMyBirthday" value="${love.myBirthday || ""}" /></div>
-              <div class="form-group"><label>TA的生日</label><input type="date" id="setupHerBirthday" value="${love.herBirthday || ""}" /></div>
-              <div class="form-group"><label>在一起的日子</label><input type="date" id="setupStartDate" value="${love.startDate || ""}" /></div>
-              <button class="btn-primary" id="setupSaveBtn">💾 保存信息</button>
-            </div>
-          `;
+                    <div class="love-setup-form">
+                        <div class="setup-title">💕 开始你们的爱情轨迹</div>
+                        <div class="setup-desc">填写基本信息，开启专属恋爱记录</div>
+                        <div class="form-group"><label>我的名字</label><input type="text" id="setupMyName" value="${love.myName || ""}" placeholder="输入你的名字" /></div>
+                        <div class="form-group"><label>TA的名字</label><input type="text" id="setupHerName" value="${love.herName || ""}" placeholder="输入对方的名字" /></div>
+                        <div class="form-group"><label>我的生日</label><input type="date" id="setupMyBirthday" value="${love.myBirthday || ""}" /></div>
+                        <div class="form-group"><label>TA的生日</label><input type="date" id="setupHerBirthday" value="${love.herBirthday || ""}" /></div>
+                        <div class="form-group"><label>在一起的日子</label><input type="date" id="setupStartDate" value="${love.startDate || ""}" /></div>
+                        <button class="btn-primary" id="setupSaveBtn">💾 保存信息</button>
+                    </div>
+                `;
           container.innerHTML = html;
           document
             .getElementById("setupSaveBtn")
@@ -5880,7 +6108,6 @@
           return;
         }
 
-        // ---- 已设置信息，显示卡片 ----
         const days = getLoveDays();
         const isBreakup = !!(
           love.breakup &&
@@ -5906,13 +6133,12 @@
           statusClass = "";
         if (isBreakup) {
           statusClass = "breakup";
-          statusText = `🔥 已分手 (${formatDate(breakupDate)})`;
+          statusText = `💔 已分手 (${formatDate(breakupDate)})`;
         } else if (reconcileDate) {
           statusClass = "reconciled";
           statusText = `💕 和好于 ${formatDate(reconcileDate)}`;
         }
 
-        const levelInfo = getLoveLevel(days);
         const milestone = getMilestones(days);
         const progressPct = milestone.next
           ? Math.min(100, (days / milestone.next) * 100)
@@ -5925,39 +6151,28 @@
           Math.round((tree.exp / treeExpNeeded) * 100),
         );
 
+        // 恋爱档案卡片 - 重新设计，去掉"什么期"
         html += `<div class="love-profile-card" onclick="navigateTo('pageArchive');renderArchive();">
-          <div class="card-row">
-            <div class="names">
-              <span class="name">${love.myName}</span>
-              <span class="heart-symbol">❤️</span>
-              <span class="name">${love.herName}</span>
-            </div>
-            <span class="status-badge ${statusClass}">${statusText}</span>
-          </div>
-          <div class="info-grid">
-            <div class="info-item"><span class="label">🍀 我的生日</span><span class="value">${myBday}</span></div>
-            <div class="info-item"><span class="label">🌙 TA的生日</span><span class="value">${herBday}</span></div>
-            <div class="info-item"><span class="label">📅 始于</span><span class="value">${formatDate(love.startDate)}</span></div>
-            <div class="info-item"><span class="label">${isBreakup ? "💔 分手日期" : "💕 状态"}</span><span class="value">${isBreakup ? formatDate(breakupDate) : "恋爱中"}</span></div>
-          </div>
-          <div class="days-level-row">
-            <span class="days">❤️ ${days} 天</span>
-            <span class="level">${levelInfo.emoji} ${levelInfo.label}</span>
-          </div>
-          <div class="progress-bars">
-            <div class="pbar">
-              <span class="p-label">📊 天数</span>
-              <div class="p-track"><div class="p-fill animate" style="width:${progressPct}%;"></div></div>
-              <span class="p-value">${milestone.label}</span>
-            </div>
-            <div class="pbar">
-              <span class="p-label">🌳 树 Lv.${tree.level}</span>
-              <div class="p-track"><div class="p-fill animate" style="width:${treeProgress}%;"></div></div>
-              <span class="p-value">${tree.exp}/${treeExpNeeded}</span>
-            </div>
-          </div>
-          <div class="hint">点击查看恋爱档案</div>
-        </div>`;
+                <div class="card-row">
+                    <div class="names"><span class="name">${love.myName}</span><span class="heart-symbol">❤️</span><span class="name">${love.herName}</span></div>
+                    <span class="status-badge ${statusClass}">${statusText}</span>
+                </div>
+                <div class="info-grid">
+                    <div class="info-item"><span class="label">🍀 我的生日</span><span class="value">${myBday}</span></div>
+                    <div class="info-item"><span class="label">🌙 TA的生日</span><span class="value">${herBday}</span></div>
+                    <div class="info-item"><span class="label">📅 始于</span><span class="value">${formatDate(love.startDate)}</span></div>
+                    <div class="info-item"><span class="label">${isBreakup ? "💔 分手日期" : "💕 状态"}</span><span class="value">${isBreakup ? formatDate(breakupDate) : "恋爱中"}</span></div>
+                </div>
+                <div class="days-level-row">
+                    <span class="days">❤️ ${days} 天</span>
+                    <span class="level">💕 第${Math.floor(days / 100) + 1}阶段</span>
+                </div>
+                <div class="progress-bars">
+                    <div class="pbar"><span class="p-label">📊 天数</span><div class="p-track"><div class="p-fill animate" style="width:${progressPct}%;"></div></div><span class="p-value">${milestone.label}</span></div>
+                    <div class="pbar"><span class="p-label">🌳 树 Lv.${tree.level}</span><div class="p-track"><div class="p-fill animate" style="width:${treeProgress}%;"></div></div><span class="p-value">${tree.exp}/${treeExpNeeded}</span></div>
+                </div>
+                <div class="hint">点击查看恋爱档案</div>
+            </div>`;
 
         const hidden = data.hiddenCards || [];
         const recordFuncs = [
@@ -6060,10 +6275,8 @@
             } else if (f.key === "lovefortune") status = "✨ 今日运势";
             else if (f.key === "changelog") status = "v2.0 更新";
             gridHtml += `<div class="love-function-card" data-key="${f.key}" data-page="${f.pageId}" draggable="true">
-                <div class="func-emoji">${f.emoji}</div>
-                <div class="func-name">${f.name}</div>
-                <div class="func-value">${status}</div>
-              </div>`;
+                        <div class="func-emoji">${f.emoji}</div><div class="func-name">${f.name}</div><div class="func-value">${status}</div>
+                    </div>`;
           });
           gridHtml += "</div>";
           return gridHtml;
@@ -6113,9 +6326,7 @@
           });
       }
 
-      // ============================================================
-      // 时光胶囊、默契挑战、占卜、更新日志
-      // ============================================================
+      // ============ 时光胶囊 ============
       function showTimeCapsuleModal() {
         const capsules = data.timeCapsules || [];
         let listHtml =
@@ -6128,30 +6339,30 @@
                   const canOpen =
                     !c.isOpened && new Date(c.openDate) <= new Date();
                   return `<div class="capsule-item" data-idx="${idx}">
-                <div class="capsule-info">
-                  <div class="capsule-title">${c.title || "无题"}</div>
-                  <div class="capsule-meta">📅 创建 ${formatDate(c.createDate)} · 开启 ${formatDate(c.openDate)}</div>
-                  ${c.isOpened ? `<div style="font-size:13px;color:var(--text);margin-top:4px;background:var(--primary-light);padding:4px 10px;border-radius:6px;">💬 ${c.content}</div>` : ""}
-                </div>
-                <div style="display:flex;align-items:center;gap:6px;">
-                  <span class="capsule-status ${statusCls}">${status}</span>
-                  ${canOpen ? `<button class="btn-primary" style="width:auto;padding:4px 12px;font-size:12px;margin:0;" data-open="${idx}">🔓 开启</button>` : ""}
-                  <button class="capsule-del" data-del="${idx}">❌</button>
-                </div>
-              </div>`;
+                        <div class="capsule-info">
+                            <div class="capsule-title">${c.title || "无题"}</div>
+                            <div class="capsule-meta">📅 创建 ${formatDate(c.createDate)} · 开启 ${formatDate(c.openDate)}</div>
+                            ${c.isOpened ? `<div style="font-size:13px;color:var(--text);margin-top:4px;background:var(--primary-light);padding:4px 10px;border-radius:6px;">💬 ${c.content}</div>` : ""}
+                        </div>
+                        <div style="display:flex;align-items:center;gap:6px;">
+                            <span class="capsule-status ${statusCls}">${status}</span>
+                            ${canOpen ? `<button class="btn-primary" style="width:auto;padding:4px 12px;font-size:12px;margin:0;" data-open="${idx}">🔓 开启</button>` : ""}
+                            <button class="capsule-del" data-del="${idx}">❌</button>
+                        </div>
+                    </div>`;
                 })
                 .join("");
 
         const html = `
-            ${listHtml}
-            <hr class="form-divider" />
-            <div style="display:flex;gap:8px;flex-wrap:wrap;">
-              <input type="text" id="capsuleTitle" placeholder="标题（可选）" style="flex:1;min-width:100px;padding:8px 12px;border-radius:var(--radius);border:0.5px solid var(--border);font-size:14px;" />
-              <input type="date" id="capsuleOpenDate" value="${addDays(todayStr(), 30)}" style="flex:1;min-width:120px;padding:8px 12px;border-radius:var(--radius);border:0.5px solid var(--border);font-size:14px;" />
-            </div>
-            <div class="form-group" style="margin-top:8px;"><textarea id="capsuleContent" rows="3" placeholder="写给未来的话..." style="width:100%;padding:10px 12px;border-radius:var(--radius);border:0.5px solid var(--border);font-size:14px;resize:vertical;"></textarea></div>
-            <button class="btn-primary" id="capsuleAddBtn">📦 封存时光胶囊</button>
-          `;
+                ${listHtml}
+                <hr class="form-divider" />
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <input type="text" id="capsuleTitle" placeholder="标题（可选）" style="flex:1;min-width:100px;padding:8px 12px;border-radius:var(--radius);border:0.5px solid var(--border);font-size:14px;" />
+                    <input type="date" id="capsuleOpenDate" value="${addDays(todayStr(), 30)}" style="flex:1;min-width:120px;padding:8px 12px;border-radius:var(--radius);border:0.5px solid var(--border);font-size:14px;" />
+                </div>
+                <div class="form-group" style="margin-top:8px;"><textarea id="capsuleContent" rows="3" placeholder="写给未来的话..." style="width:100%;padding:10px 12px;border-radius:var(--radius);border:0.5px solid var(--border);font-size:14px;resize:vertical;"></textarea></div>
+                <button class="btn-primary" id="capsuleAddBtn">📦 封存时光胶囊</button>
+            `;
         showModal("📦 时光胶囊", html, () => {
           document
             .getElementById("capsuleAddBtn")
@@ -6246,28 +6457,28 @@
                 : "⏳ 等待回答";
             const matchCls = match ? "match" : "mismatch";
             return `<div class="quiz-question-item">
-              <div class="q-text">❓ ${q}</div>
-              <div class="q-answers">
-                <span class="qa-item"><span class="qa-label">我的答案：</span><span class="qa-value">${myAns || "未答"}</span></span>
-                <span class="qa-item"><span class="qa-label">TA的答案：</span><span class="qa-value">${herAns || "未答"}</span></span>
-              </div>
-              <div class="q-match ${matchCls}">${matchText}</div>
-              <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
-                <input type="text" class="quiz-my-input" data-q="${q}" placeholder="我的答案" value="${myAns}" style="flex:1;min-width:80px;padding:10px;border-radius:var(--radius);border:0.5px solid var(--border);font-size:13px;" />
-                <input type="text" class="quiz-her-input" data-q="${q}" placeholder="TA的答案" value="${herAns}" style="flex:1;min-width:80px;padding:10px;border-radius:var(--radius);border:0.5px solid var(--border);font-size:13px;" />
-                <button class="btn-primary quiz-save-btn" data-q="${q}" style="width:auto;padding:4px 16px;font-size:13px;margin:0;">💾</button>
-              </div>
-            </div>`;
+                    <div class="q-text">❓ ${q}</div>
+                    <div class="q-answers">
+                        <span class="qa-item"><span class="qa-label">我的答案：</span><span class="qa-value">${myAns || "未答"}</span></span>
+                        <span class="qa-item"><span class="qa-label">TA的答案：</span><span class="qa-value">${herAns || "未答"}</span></span>
+                    </div>
+                    <div class="q-match ${matchCls}">${matchText}</div>
+                    <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
+                        <input type="text" class="quiz-my-input" data-q="${q}" placeholder="我的答案" value="${myAns}" style="flex:1;min-width:80px;padding:10px;border-radius:var(--radius);border:0.5px solid var(--border);font-size:13px;" />
+                        <input type="text" class="quiz-her-input" data-q="${q}" placeholder="TA的答案" value="${herAns}" style="flex:1;min-width:80px;padding:10px;border-radius:var(--radius);border:0.5px solid var(--border);font-size:13px;" />
+                        <button class="btn-primary quiz-save-btn" data-q="${q}" style="width:auto;padding:4px 16px;font-size:13px;margin:0;">💾</button>
+                    </div>
+                </div>`;
           })
           .join("");
 
         const html = `
-            <div style="max-height:500px;overflow-y:auto;margin-bottom:8px;">${qHtml}</div>
-            <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">
-              <button class="btn-primary" id="quizAddQuestion" style="flex:1;padding:10px 20px;font-size:16px;">➕ 添加问题</button>
-              <button class="btn-primary" id="quizResetAll" style="flex:1;padding:10px 20px;font-size:16px;background:#8e8e93;">🔄 重置</button>
-            </div>
-          `;
+                <div style="max-height:500px;overflow-y:auto;margin-bottom:8px;">${qHtml}</div>
+                <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">
+                    <button class="btn-primary" id="quizAddQuestion" style="flex:1;padding:10px 20px;font-size:16px;">➕ 添加问题</button>
+                    <button class="btn-primary" id="quizResetAll" style="flex:1;padding:10px 20px;font-size:16px;background:#8e8e93;">🔄 重置</button>
+                </div>
+            `;
         container.innerHTML = html;
 
         document.querySelectorAll(".quiz-save-btn").forEach((btn) => {
@@ -6408,21 +6619,21 @@
         const selectedTips = shuffled.slice(0, 3);
 
         const html = `
-            <div class="random-egg-body">
-              <span class="random-icon">${fortune.icon}</span>
-              <div class="random-title">${fortune.title}</div>
-              <div class="random-detail">
-                <div style="padding:8px 0;font-size:15px;color:var(--text);">${fortune.desc}</div>
-                <hr class="form-divider" style="margin:8px 0;" />
-                <div style="font-size:14px;font-weight:600;color:var(--primary);margin-bottom:4px;">💡 今日爱情建议</div>
-                ${selectedTips.map((t) => `<div style="padding:3px 0;font-size:14px;color:var(--text);">${t}</div>`).join("")}
-                <div style="margin-top:8px;font-size:12px;color:var(--text2);">🔮 占卜日期 ${formatDate(today)}</div>
-              </div>
-            </div>
-            <div class="fortune-btn-row">
-              <button class="btn-primary" id="fortuneRefresh" style="margin:0;">🔄 再占一次</button>
-            </div>
-          `;
+                <div class="random-egg-body">
+                    <span class="random-icon">${fortune.icon}</span>
+                    <div class="random-title">${fortune.title}</div>
+                    <div class="random-detail">
+                        <div style="padding:8px 0;font-size:15px;color:var(--text);">${fortune.desc}</div>
+                        <hr class="form-divider" style="margin:8px 0;" />
+                        <div style="font-size:14px;font-weight:600;color:var(--primary);margin-bottom:4px;">💡 今日爱情建议</div>
+                        ${selectedTips.map((t) => `<div style="padding:3px 0;font-size:14px;color:var(--text);">${t}</div>`).join("")}
+                        <div style="margin-top:8px;font-size:12px;color:var(--text2);">🔮 占卜日期 ${formatDate(today)}</div>
+                    </div>
+                </div>
+                <div class="fortune-btn-row">
+                    <button class="btn-primary" id="fortuneRefresh" style="margin:0;">🔄 再占一次</button>
+                </div>
+            `;
         container.innerHTML = html;
         document
           .getElementById("fortuneRefresh")
@@ -6434,6 +6645,19 @@
       function renderChangeLog() {
         const container = document.getElementById("changeLogContent");
         const changelog = [
+          {
+            version: "v2.1.0",
+            date: "2025-02-01",
+            items: [
+              "🎨 主题弹窗新增预设主题色",
+              "📊 总览页面支持年份选择",
+              "🖼️ 图片查看优化，移除删除按钮",
+              "🗺️ 足迹地图加载优化",
+              "📋 恋爱档案页面重新设计",
+              "📊 经期统计卡片支持拖拽排序",
+              "📋 100件小事布局优化",
+            ],
+          },
           {
             version: "v2.0.0",
             date: "2025-01-20",
@@ -6473,17 +6697,15 @@
         let html = `<div style="max-height:500px;overflow-y:auto;">`;
         changelog.forEach((c) => {
           html += `<div class="changelog-item">
-              <div><span class="cl-version">${c.version}</span><span class="cl-date">${formatDate(c.date)}</span></div>
-              <ul class="cl-list">${c.items.map((item) => `<li>${item}</li>`).join("")}</ul>
-            </div>`;
+                        <div><span class="cl-version">${c.version}</span><span class="cl-date">${formatDate(c.date)}</span></div>
+                        <ul class="cl-list">${c.items.map((item) => `<li>${item}</li>`).join("")}</ul>
+                    </div>`;
         });
         html += `</div><div style="font-size:12px;color:var(--text2);text-align:center;margin-top:8px;">💕 感谢使用 Love·轨迹 520.1314</div>`;
         container.innerHTML = html;
       }
 
-      // ============================================================
-      // 渲染快乐 (移除空状态中的按钮)
-      // ============================================================
+      // ============ 渲染快乐 ============
       let happyPageNum = 1;
 
       function renderHappy(list) {
@@ -6501,7 +6723,10 @@
             totalEl.innerHTML = total + ' <span class="unit">次</span>';
           const recentEl = document.getElementById("happyRecent");
           if (recentEl && total > 0) {
-            const last = source[source.length - 1];
+            const sorted = [...source].sort(
+              (a, b) => new Date(b.startDate) - new Date(a.startDate),
+            );
+            const last = sorted[0];
             recentEl.textContent = last.startDate
               ? formatDate(last.startDate)
               : "-";
@@ -6536,6 +6761,7 @@
             renderHappy();
           }
         };
+
         container.querySelectorAll(".record-card").forEach((el) => {
           setupDragDrop(el);
           const id = el.dataset.id;
@@ -6543,12 +6769,14 @@
             setupLongPress(el, id, "happy");
           }
           el.addEventListener("click", function (e) {
-            if (e.target.closest(".del-btn")) return;
+            if (e.target.closest(".del-btn") || e.target.closest(".thumb-item"))
+              return;
             const id = this.dataset.id;
             const item = data.happy.find((d) => d.id === id);
             if (item) showHappyForm(item);
           });
         });
+
         container.querySelectorAll(".del-btn").forEach((el) => {
           el.addEventListener("click", function (e) {
             e.stopPropagation();
@@ -6561,6 +6789,25 @@
                 saveData();
                 setTimeout(() => renderHappy(), 300);
               });
+            }
+          });
+        });
+
+        // 图片点击查看 - 已移除删除按钮
+        container.querySelectorAll(".thumb-item").forEach((thumb) => {
+          thumb.addEventListener("click", function (e) {
+            const card = this.closest(".record-card");
+            const id = card ? card.dataset.id : null;
+            const item = data.happy.find((d) => d.id === id);
+            if (item && item.images && item.images.length > 0) {
+              const imgIdx = parseInt(this.dataset.imgIdx);
+              if (
+                !isNaN(imgIdx) &&
+                imgIdx >= 0 &&
+                imgIdx < item.images.length
+              ) {
+                openImageViewer(item.images, imgIdx, id, "happy");
+              }
             }
           });
         });
@@ -6599,7 +6846,7 @@
           .join("  ");
         const thumbHtml =
           images.length > 0
-            ? `<div class="thumb-slider">${images.map((img, idx) => `<div class="thumb-item" data-img-idx="${idx}"><img src="${img}" /><button class="remove-img-btn" data-img-idx="${idx}">✕</button></div>`).join("")}</div>`
+            ? `<div class="thumb-slider">${images.map((img, idx) => `<div class="thumb-item" data-img-idx="${idx}"><img src="${img}" /></div>`).join("")}</div>`
             : "";
         return `<div class="record-card" data-id="${item.id}" draggable="true"><div class="record-header"><span class="date-text">${dateStr}</span><button class="del-btn" data-id="${item.id}">❌</button></div><div class="record-body"><div class="left"><div class="info-row"><span class="emoji">📍</span><span class="value">${location}</span></div>${moods.length > 0 ? `<div class="info-row"><span class="emoji">心情：</span><span class="value">${moodItems}</span></div>` : ""}${tags.length > 0 ? `<div class="info-row"><span class="label">快乐类型：</span><span class="value">${tagItems}</span></div>` : ""}${item.content ? `<div class="info-row"><span class="emoji">📝</span><span class="value" style="font-size:13px;color:var(--text2);">${item.content}</span></div>` : ""}${thumbHtml}</div></div></div>`;
       }
@@ -6657,14 +6904,14 @@
           )
           .join("");
         const html = `<div class="form-group"><label>开始时间</label><input type="date" id="hfDate" value="${startDate}" onchange="updateHappyEndDate()" /></div>
-          <div class="form-row"><div class="form-group"><label>天数</label><input type="number" id="hfDays" value="${days}" min="1" onchange="updateHappyEndDate()" oninput="updateHappyEndDate()" /></div>
-          <div class="form-group"><label>结束时间</label><input type="date" id="hfEndDate" value="${isEdit ? item.endDate : ""}" readonly /></div></div>
-          <div class="form-group"><label>地点（可选）</label><input type="text" id="hfLocation" value="${location}" placeholder="地点（可选）" /></div>
-          <div class="form-group"><label>备注/日记（可选）</label><textarea id="hfContent" placeholder="写下今天的故事" rows="3">${content}</textarea></div>
-          <div class="form-group"><label>快乐类型</label><div class="type-tags" id="hfTypeTags">${typeList.map((t) => `<span class="type-tag ${tags.includes(t.val) ? "active" : ""}" data-value="${t.val}">${t.emoji} ${t.val}</span>`).join("")}</div></div>
-          <div class="form-group"><label>心情</label><div class="mood-options" id="hfMoodOptions">${moodList.map((m) => `<span class="mood-option ${moods.includes(m.val) ? "active" : ""}" data-value="${m.val}">${m.emoji} ${m.val}</span>`).join("")}</div></div>
-          <div class="form-group"><label>快乐照片（可多选）</label><div class="photo-upload"><div class="upload-area"><button class="upload-btn" id="hfPhotoBtn">📷 点击上传图片</button><input type="file" id="hfPhotoInput" accept="image/*" multiple /></div><div class="thumbnails" id="hfThumbnails">${thumbHtml}</div></div></div>
-          ${isEdit ? `<div class="btn-row"><button class="btn-primary" id="hfSave">💾 更新</button><button class="btn-danger" id="hfDelete">🗑️ 删除</button></div>` : `<button class="btn-primary" id="hfSave">💾 保存</button>`}`;
+                <div class="form-row"><div class="form-group"><label>天数</label><input type="number" id="hfDays" value="${days}" min="1" onchange="updateHappyEndDate()" oninput="updateHappyEndDate()" /></div>
+                <div class="form-group"><label>结束时间</label><input type="date" id="hfEndDate" value="${isEdit ? item.endDate : ""}" readonly /></div></div>
+                <div class="form-group"><label>地点（可选）</label><input type="text" id="hfLocation" value="${location}" placeholder="地点（可选）" /></div>
+                <div class="form-group"><label>备注/日记（可选）</label><textarea id="hfContent" placeholder="写下今天的故事" rows="3">${content}</textarea></div>
+                <div class="form-group"><label>快乐类型</label><div class="type-tags" id="hfTypeTags">${typeList.map((t) => `<span class="type-tag ${tags.includes(t.val) ? "active" : ""}" data-value="${t.val}">${t.emoji} ${t.val}</span>`).join("")}</div></div>
+                <div class="form-group"><label>心情</label><div class="mood-options" id="hfMoodOptions">${moodList.map((m) => `<span class="mood-option ${moods.includes(m.val) ? "active" : ""}" data-value="${m.val}">${m.emoji} ${m.val}</span>`).join("")}</div></div>
+                <div class="form-group"><label>快乐照片（可多选）</label><div class="photo-upload"><div class="upload-area"><button class="upload-btn" id="hfPhotoBtn">📷 点击上传图片</button><input type="file" id="hfPhotoInput" accept="image/*" multiple /></div><div class="thumbnails" id="hfThumbnails">${thumbHtml}</div></div></div>
+                ${isEdit ? `<div class="btn-row"><button class="btn-primary" id="hfSave">💾 更新</button><button class="btn-danger" id="hfDelete">🗑️ 删除</button></div>` : `<button class="btn-primary" id="hfSave">💾 保存</button>`}`;
         document.getElementById("happyFormBody").innerHTML = html;
         document.getElementById("pageHappy").classList.remove("active");
         document.getElementById("pageHappyForm").classList.add("active");
@@ -6795,9 +7042,7 @@
         .getElementById("happyFormBack")
         .addEventListener("click", goBack);
 
-      // ============================================================
-      // 渲染旅行 (移除空状态中的按钮)
-      // ============================================================
+      // ============ 渲染旅行 ============
       let travelPageNum = 1;
 
       function renderTravel(list) {
@@ -6815,7 +7060,10 @@
             totalEl.innerHTML = total + ' <span class="unit">次</span>';
           const recentEl = document.getElementById("travelRecent");
           if (recentEl && total > 0) {
-            const last = source[source.length - 1];
+            const sorted = [...source].sort(
+              (a, b) => new Date(b.startDate) - new Date(a.startDate),
+            );
+            const last = sorted[0];
             recentEl.textContent = last.startDate
               ? formatDate(last.startDate)
               : "-";
@@ -6850,6 +7098,7 @@
             renderTravel();
           }
         };
+
         container.querySelectorAll(".travel-record-card").forEach((el) => {
           setupDragDrop(el);
           const id = el.dataset.id;
@@ -6857,7 +7106,8 @@
             setupLongPress(el, id, "travel");
           }
           el.addEventListener("click", function (e) {
-            if (e.target.closest(".del-btn")) return;
+            if (e.target.closest(".del-btn") || e.target.closest(".thumb-item"))
+              return;
             const id = this.dataset.id;
             const item = data.travel.find((d) => d.id === id);
             if (item) showTravelForm(item);
@@ -6875,6 +7125,23 @@
                 saveData();
                 setTimeout(() => renderTravel(), 300);
               });
+            }
+          });
+        });
+        container.querySelectorAll(".thumb-item").forEach((thumb) => {
+          thumb.addEventListener("click", function (e) {
+            const card = this.closest(".travel-record-card");
+            const id = card ? card.dataset.id : null;
+            const item = data.travel.find((d) => d.id === id);
+            if (item && item.images && item.images.length > 0) {
+              const imgIdx = parseInt(this.dataset.imgIdx);
+              if (
+                !isNaN(imgIdx) &&
+                imgIdx >= 0 &&
+                imgIdx < item.images.length
+              ) {
+                openImageViewer(item.images, imgIdx, id, "travel");
+              }
             }
           });
         });
@@ -6898,7 +7165,7 @@
         const images = item.images || [];
         const thumbHtml =
           images.length > 0
-            ? `<div class="thumb-slider">${images.map((img, idx) => `<div class="thumb-item" data-img-idx="${idx}"><img src="${img}" /><button class="remove-img-btn" data-img-idx="${idx}">✕</button></div>`).join("")}</div>`
+            ? `<div class="thumb-slider">${images.map((img, idx) => `<div class="thumb-item" data-img-idx="${idx}"><img src="${img}" /></div>`).join("")}</div>`
             : "";
         return `<div class="travel-record-card" data-id="${item.id}" draggable="true"><div class="record-header"><span class="date-text">${dateStr}</span><button class="del-btn" data-id="${item.id}">❌</button></div><div class="record-body"><div class="left"><div class="info-row"><span class="emoji">📍</span><span class="value">${location}</span></div>${transport ? `<div class="info-row"><span class="emoji">🚗</span><span class="value">${transport}</span></div>` : ""}${content ? `<div class="info-row"><span class="emoji">📝</span><span class="value" style="font-size:13px;color:var(--text2);">${content}</span></div>` : ""}${thumbHtml}</div></div></div>`;
       }
@@ -6937,14 +7204,14 @@
           )
           .join("");
         const html = `<div class="form-group"><label>开始时间</label><input type="date" id="tfDate" value="${startDate}" onchange="updateTravelEndDate()" /></div>
-          <div class="form-row"><div class="form-group"><label>天数</label><input type="number" id="tfDays" value="${days}" min="1" onchange="updateTravelEndDate()" oninput="updateTravelEndDate()" /></div>
-          <div class="form-group"><label>结束时间</label><input type="date" id="tfEndDate" value="${isEdit ? item.endDate : ""}" readonly /></div></div>
-          <div class="form-group"><label>目的地（可选）</label><input type="text" id="tfLocation" value="${location}" placeholder="目的地（可选）" /></div>
-          <hr class="form-divider" />
-          <div class="form-group"><label>交通方式</label><div class="type-tags" id="tfTransportTags">${transportOptions.map((t) => `<span class="type-tag ${transport === t.value ? "active" : ""}" data-value="${t.value}">${t.emoji} ${t.label}</span>`).join("")}</div></div>
-          <div class="form-group"><label>备注/日记（可选）</label><textarea id="tfContent" placeholder="写下旅行故事" rows="3">${content}</textarea></div>
-          <div class="form-group"><label>旅行照片（可多选）</label><div class="photo-upload"><div class="upload-area"><button class="upload-btn" id="tfPhotoBtn">📷 点击上传图片</button><input type="file" id="tfPhotoInput" accept="image/*" multiple /></div><div class="thumbnails" id="tfThumbnails">${thumbHtml}</div></div></div>
-          ${isEdit ? `<div class="btn-row"><button class="btn-primary" id="tfSave">💾 更新</button><button class="btn-danger" id="tfDelete">🗑️ 删除</button></div>` : `<button class="btn-primary" id="tfSave">💾 保存</button>`}`;
+                <div class="form-row"><div class="form-group"><label>天数</label><input type="number" id="tfDays" value="${days}" min="1" onchange="updateTravelEndDate()" oninput="updateTravelEndDate()" /></div>
+                <div class="form-group"><label>结束时间</label><input type="date" id="tfEndDate" value="${isEdit ? item.endDate : ""}" readonly /></div></div>
+                <div class="form-group"><label>目的地（可选）</label><input type="text" id="tfLocation" value="${location}" placeholder="目的地（可选）" /></div>
+                <hr class="form-divider" />
+                <div class="form-group"><label>交通方式</label><div class="type-tags" id="tfTransportTags">${transportOptions.map((t) => `<span class="type-tag ${transport === t.value ? "active" : ""}" data-value="${t.value}">${t.emoji} ${t.label}</span>`).join("")}</div></div>
+                <div class="form-group"><label>备注/日记（可选）</label><textarea id="tfContent" placeholder="写下旅行故事" rows="3">${content}</textarea></div>
+                <div class="form-group"><label>旅行照片（可多选）</label><div class="photo-upload"><div class="upload-area"><button class="upload-btn" id="tfPhotoBtn">📷 点击上传图片</button><input type="file" id="tfPhotoInput" accept="image/*" multiple /></div><div class="thumbnails" id="tfThumbnails">${thumbHtml}</div></div></div>
+                ${isEdit ? `<div class="btn-row"><button class="btn-primary" id="tfSave">💾 更新</button><button class="btn-danger" id="tfDelete">🗑️ 删除</button></div>` : `<button class="btn-primary" id="tfSave">💾 保存</button>`}`;
         document.getElementById("travelFormBody").innerHTML = html;
         document.getElementById("pageTravel").classList.remove("active");
         document.getElementById("pageTravelForm").classList.add("active");
@@ -7069,9 +7336,7 @@
         .getElementById("travelFormBack")
         .addEventListener("click", goBack);
 
-      // ============================================================
-      // 渲染月经 (移除空状态中的按钮)
-      // ============================================================
+      // ============ 渲染月经 ============
       let menstrualPageNum = 1;
 
       function renderMenstrual(list) {
@@ -7124,11 +7389,36 @@
                 ? `提前 ${Math.abs(deviation)}天`
                 : "准时";
           const statItems = [
-            { emoji: "📋", label: "总次数", value: total, unit: "次" },
-            { emoji: "⏳", label: "预计下次", value: nextDate, unit: "" },
-            { emoji: "📅", label: "上次月经时间", value: lastRange, unit: "" },
-            { emoji: "📊", label: "偏差", value: deviationText, unit: "" },
             {
+              key: "total",
+              emoji: "📋",
+              label: "总次数",
+              value: total,
+              unit: "次",
+            },
+            {
+              key: "next",
+              emoji: "⏳",
+              label: "预计下次",
+              value: nextDate,
+              unit: "",
+            },
+            {
+              key: "last",
+              emoji: "📅",
+              label: "上次月经",
+              value: lastRange,
+              unit: "",
+            },
+            {
+              key: "deviation",
+              emoji: "📊",
+              label: "偏差",
+              value: deviationText,
+              unit: "",
+            },
+            {
+              key: "avgdev",
               emoji: "📈",
               label: "平均偏差",
               value:
@@ -7140,12 +7430,14 @@
               unit: "",
             },
             {
+              key: "cycle",
               emoji: "🔄",
               label: "周期",
               value: lastCycle > 0 ? lastCycle + "天" : "-",
               unit: "",
             },
             {
+              key: "avgcycle",
               emoji: "📊",
               label: "平均周期",
               value: avgCycle > 0 ? avgCycle + "天" : "-",
@@ -7155,14 +7447,34 @@
           const pred = getMenstrualPredictions();
           let predHtml = "";
           if (pred) {
-            predHtml = `<div class="menstrual-stat-card" style="grid-column:span 2;background:var(--primary-light);"><div class="ms-title"><span class="ms-emoji">🔮</span> 预测</div><div class="ms-value" style="font-size:16px;">${pred.status}</div><div style="font-size:12px;color:var(--text2);margin-top:4px;">下次月经: ${formatDate(pred.nextStart)} (${pred.daysToNext > 0 ? pred.daysToNext + "天后" : "已过" + Math.abs(pred.daysToNext) + "天"})</div><div style="font-size:11px;color:var(--text2);">易孕期: ${formatDate(pred.fertileStart)} ~ ${formatDate(pred.fertileEnd)}</div></div>`;
+            predHtml = `<div class="menstrual-stat-card" style="grid-column:span 2;background:var(--primary-light);" data-key="predict"><div class="ms-title"><span class="ms-emoji">🔮</span> 预测</div><div class="ms-value" style="font-size:16px;">${pred.status}</div><div style="font-size:12px;color:var(--text2);margin-top:4px;">下次月经: ${formatDate(pred.nextStart)} (${pred.daysToNext > 0 ? pred.daysToNext + "天后" : "已过" + Math.abs(pred.daysToNext) + "天"})</div><div style="font-size:11px;color:var(--text2);">易孕期: ${formatDate(pred.fertileStart)} ~ ${formatDate(pred.fertileEnd)}</div></div>`;
           }
-          let statsHtml = `<div class="menstrual-stats-grid">`;
-          statItems.forEach((item) => {
-            statsHtml += `<div class="menstrual-stat-card"><div class="ms-title"><span class="ms-emoji">${item.emoji}</span> ${item.label}</div><div class="ms-value">${item.value}${item.unit ? ' <span class="unit">' + item.unit + "</span>" : ""}</div></div>`;
+          // 排序 - 如果有保存的顺序则使用
+          const savedOrder = data.menstrualStatsOrder || [];
+          let orderedItems = [...statItems];
+          if (savedOrder.length > 0) {
+            const ordered = [];
+            savedOrder.forEach((key) => {
+              const found = statItems.find((item) => item.key === key);
+              if (found) ordered.push(found);
+            });
+            statItems.forEach((item) => {
+              if (!ordered.find((i) => i.key === item.key)) ordered.push(item);
+            });
+            orderedItems = ordered;
+          }
+          let statsHtml = `<div class="menstrual-stats-grid" id="menstrualStats">`;
+          orderedItems.forEach((item) => {
+            statsHtml += `<div class="menstrual-stat-card" draggable="true" data-key="${item.key}"><div class="ms-title"><span class="ms-emoji">${item.emoji}</span> ${item.label}</div><div class="ms-value">${item.value}${item.unit ? ' <span class="unit">' + item.unit + "</span>" : ""}</div></div>`;
           });
           statsHtml += predHtml + `</div>`;
           statsContainer.innerHTML = statsHtml;
+          // 为经期统计卡片添加拖拽
+          statsContainer
+            .querySelectorAll(".menstrual-stat-card")
+            .forEach((el) => {
+              setupDragDrop(el);
+            });
         }
 
         const container = document.getElementById("menstrualList");
@@ -7307,11 +7619,11 @@
           "🤢恶心",
         ];
         let html = `<div class="form-group"><label>开始时间</label><input type="date" id="mfStartDate" value="${startDate}" /></div>
-          <div class="form-group"><label>持续天数</label><input type="number" id="mfDays" value="${days}" min="1" max="20" /></div>
-          <hr class="form-divider" />
-          <div style="font-size:14px;font-weight:500;color:var(--text2);margin-bottom:12px;">📓每天症状与流量（点击标签选择，流量单选，症状可多选）</div>
-          <div id="mfDayCards"></div>
-          ${isEdit ? `<div class="btn-row"><button class="btn-primary" id="mfSave">💾 更新</button><button class="btn-danger" id="mfDelete">🗑️ 删除</button></div>` : `<button class="btn-primary" id="mfSave">💾 保存</button>`}`;
+                <div class="form-group"><label>持续天数</label><input type="number" id="mfDays" value="${days}" min="1" max="20" /></div>
+                <hr class="form-divider" />
+                <div style="font-size:14px;font-weight:500;color:var(--text2);margin-bottom:12px;">📓每天症状与流量（点击标签选择，流量单选，症状可多选）</div>
+                <div id="mfDayCards"></div>
+                ${isEdit ? `<div class="btn-row"><button class="btn-primary" id="mfSave">💾 更新</button><button class="btn-danger" id="mfDelete">🗑️ 删除</button></div>` : `<button class="btn-primary" id="mfSave">💾 保存</button>`}`;
         document.getElementById("menstrualFormBody").innerHTML = html;
         document.getElementById("pageMenstrual").classList.remove("active");
         document.getElementById("pageMenstrualForm").classList.add("active");
@@ -7463,12 +7775,21 @@
         .getElementById("menstrualFormBack")
         .addEventListener("click", goBack);
 
-      // ============================================================
-      // 总览
-      // ============================================================
+      // ============ 总览 ============
       function renderOverview() {
         const container = document.getElementById("overviewContent");
         if (!container) return;
+
+        // 年份选择状态
+        const currentYear = new Date().getFullYear();
+        if (!data.overviewYear)
+          data.overviewYear = { trend: currentYear, compare: currentYear };
+        if (!data.overviewYear.trend) data.overviewYear.trend = currentYear;
+        if (!data.overviewYear.compare) data.overviewYear.compare = currentYear;
+
+        let trendYear = data.overviewYear.trend;
+        let compareYear = data.overviewYear.compare;
+
         const happyCount = data.happy.length;
         const travelCount = data.travel.length;
         let days = getLoveDays();
@@ -7476,15 +7797,19 @@
           data.happy.length > 0 ? data.happy[data.happy.length - 1] : null;
         const lastTravel =
           data.travel.length > 0 ? data.travel[data.travel.length - 1] : null;
-        const monthlyCounts = Array(12).fill(0);
+
+        // 月度快乐趋势（按选中年份）
+        const trendMonthlyCounts = Array(12).fill(0);
         data.happy.forEach((h) => {
           if (h.startDate) {
             const d = new Date(h.startDate);
-            const month = d.getMonth();
-            if (month >= 0 && month < 12) monthlyCounts[month]++;
+            if (d.getFullYear() === trendYear) {
+              const month = d.getMonth();
+              if (month >= 0 && month < 12) trendMonthlyCounts[month]++;
+            }
           }
         });
-        const maxCount = Math.max(...monthlyCounts, 1);
+        const maxCount = Math.max(...trendMonthlyCounts, 1);
         const monthNames = [
           "1月",
           "2月",
@@ -7499,42 +7824,47 @@
           "11月",
           "12月",
         ];
-        let chartHtml = `<div class="weather-card"><div class="card-header">📊 月度快乐趋势</div><div class="card-body"><div class="bar-chart-vertical">`;
+
+        // 趋势图
+        let chartHtml = `<div class="weather-card"><div class="card-header">📊 月度快乐趋势</div><div class="card-body"><div class="year-selector"><button id="trendYearPrev">‹</button><span class="year-label" id="trendYearLabel">${trendYear}年</span><button id="trendYearNext">›</button></div><div class="bar-chart-vertical">`;
         monthNames.forEach((name, idx) => {
-          const count = monthlyCounts[idx];
+          const count = trendMonthlyCounts[idx];
           const pct = maxCount > 0 ? (count / maxCount) * 100 : 0;
           chartHtml += `<div class="bar-item"><div class="bar-count">${count}</div><div class="bar-fill" style="height:${Math.max(pct, 2)}%;"></div><div class="bar-label">${name}</div></div>`;
         });
         chartHtml += `</div></div></div>`;
 
-        const currentYear = new Date().getFullYear();
-        const lastYear = currentYear - 1;
-        const thisYearData = data.happy.filter(
-          (h) => new Date(h.startDate).getFullYear() === currentYear,
+        // 月度对比（按选中年份）
+        const compareYearData = data.happy.filter(
+          (h) => new Date(h.startDate).getFullYear() === compareYear,
         );
-        const lastYearData = data.happy.filter(
-          (h) => new Date(h.startDate).getFullYear() === lastYear,
+        const prevYearData = data.happy.filter(
+          (h) => new Date(h.startDate).getFullYear() === compareYear - 1,
         );
-        const thisCounts = monthNames.map(
+        const compareCounts = monthNames.map(
           (m, i) =>
-            thisYearData.filter((h) => new Date(h.startDate).getMonth() === i)
+            compareYearData.filter(
+              (h) => new Date(h.startDate).getMonth() === i,
+            ).length,
+        );
+        const prevCounts = monthNames.map(
+          (m, i) =>
+            prevYearData.filter((h) => new Date(h.startDate).getMonth() === i)
               .length,
         );
-        const lastCounts = monthNames.map(
-          (m, i) =>
-            lastYearData.filter((h) => new Date(h.startDate).getMonth() === i)
-              .length,
-        );
+
         let compareHtml = "";
-        if (thisYearData.length > 0 || lastYearData.length > 0) {
-          compareHtml = `<div class="weather-card"><div class="card-header">📊 月度对比 (${lastYear} vs ${currentYear})</div><div class="card-body"><div style="display:flex;height:120px;align-items:flex-end;gap:4px;padding:4px 0;overflow-x:auto;">`;
-          const maxVal = Math.max(...thisCounts, ...lastCounts, 1);
+        if (compareYearData.length > 0 || prevYearData.length > 0) {
+          compareHtml = `<div class="weather-card"><div class="card-header">📊 月度对比 (${compareYear - 1} vs ${compareYear})</div><div class="card-body"><div class="year-selector"><button id="compareYearPrev">‹</button><span class="year-label" id="compareYearLabel">${compareYear}年</span><button id="compareYearNext">›</button></div><div style="display:flex;height:120px;align-items:flex-end;gap:4px;padding:4px 0;overflow-x:auto;">`;
+          const maxVal = Math.max(...compareCounts, ...prevCounts, 1);
           monthNames.forEach((m, idx) => {
-            const thisPct = (thisCounts[idx] / maxVal) * 100;
-            const lastPct = (lastCounts[idx] / maxVal) * 100;
+            const thisPct = (compareCounts[idx] / maxVal) * 100;
+            const lastPct = (prevCounts[idx] / maxVal) * 100;
             compareHtml += `<div style="display:flex;flex-direction:column;align-items:center;flex:1;min-width:20px;"><div style="display:flex;gap:2px;height:100%;align-items:flex-end;"><div style="width:6px;background:var(--primary);height:${Math.max(thisPct, 2)}%;border-radius:2px 2px 0 0;"></div><div style="width:6px;background:#ccc;height:${Math.max(lastPct, 2)}%;border-radius:2px 2px 0 0;"></div></div><div style="font-size:8px;color:var(--text2);margin-top:2px;">${m}</div></div>`;
           });
-          compareHtml += `</div><div style="display:flex;justify-content:center;gap:20px;margin-top:6px;font-size:12px;color:var(--text2);"><span><span style="display:inline-block;width:10px;height:10px;background:var(--primary);border-radius:2px;"></span> ${currentYear}</span><span><span style="display:inline-block;width:10px;height:10px;background:#ccc;border-radius:2px;"></span> ${lastYear}</span></div></div></div>`;
+          compareHtml += `</div><div style="display:flex;justify-content:center;gap:20px;margin-top:6px;font-size:12px;color:var(--text2);"><span><span style="display:inline-block;width:10px;height:10px;background:var(--primary);border-radius:2px;"></span> ${compareYear}</span><span><span style="display:inline-block;width:10px;height:10px;background:#ccc;border-radius:2px;"></span> ${compareYear - 1}</span></div></div></div>`;
+        } else {
+          compareHtml = `<div class="weather-card"><div class="card-header">📊 月度对比</div><div class="card-body"><div class="year-selector"><button id="compareYearPrev">‹</button><span class="year-label" id="compareYearLabel">${compareYear}年</span><button id="compareYearNext">›</button></div><div style="text-align:center;padding:20px 0;color:var(--text2);font-size:14px;">暂无 ${compareYear - 1} 或 ${compareYear} 年的数据</div></div></div>`;
         }
 
         const cards = {
@@ -7569,22 +7899,58 @@
             unit: "",
           },
         };
-        let html = `<div class="overview-small-grid" id="overviewGrid">`;
+        let html2 = `<div class="overview-small-grid" id="overviewGrid">`;
         const order = data.overviewOrder || Object.keys(cards);
         order.forEach((key) => {
           const card = cards[key];
           if (!card) return;
           const isDate =
             card.label === "上一次旅行" || card.label === "上一次快乐";
-          html += `<div class="overview-card" draggable="true" data-key="${key}"><div class="ov-title"><span class="ov-emoji">${card.emoji}</span> ${card.label}</div><div class="ov-value ${isDate ? "small-text" : ""}">${card.value}${card.unit ? ' <span class="unit">' + card.unit + "</span>" : ""}</div></div>`;
+          html2 += `<div class="overview-card" draggable="true" data-key="${key}"><div class="ov-title"><span class="ov-emoji">${card.emoji}</span> ${card.label}</div><div class="ov-value ${isDate ? "small-text" : ""}">${card.value}${card.unit ? ' <span class="unit">' + card.unit + "</span>" : ""}</div></div>`;
         });
-        html += "</div>";
-        html += compareHtml;
-        html += chartHtml;
-        html += `<div class="overview-large-card" data-page="pageFootprint"><div class="ov-title"><span class="ov-emoji">👣</span> 足迹</div><div class="ov-content">探寻每一个牵手经过的地方</div></div>
-          <div class="overview-large-card" data-page="pageYearlyReport"><div class="ov-title"><span class="ov-emoji">📈</span> 年度报告</div><div class="ov-content">记录属于我们的每一个瞬间</div></div>
-          <div class="overview-large-card" data-page="pageArchive"><div class="ov-title"><span class="ov-emoji">📋</span> 恋爱档案</div><div class="ov-content">查看完整恋爱时间线与状态</div></div>`;
-        container.innerHTML = html;
+        html2 += "</div>";
+        html2 += compareHtml;
+        html2 += chartHtml;
+        html2 += `<div class="overview-large-card" data-page="pageFootprint"><div class="ov-title"><span class="ov-emoji">👣</span> 足迹</div><div class="ov-content">探寻每一个牵手经过的地方</div></div>
+                <div class="overview-large-card" data-page="pageYearlyReport"><div class="ov-title"><span class="ov-emoji">📈</span> 年度报告</div><div class="ov-content">记录属于我们的每一个瞬间</div></div>
+                <div class="overview-large-card" data-page="pageArchive"><div class="ov-title"><span class="ov-emoji">📋</span> 恋爱档案</div><div class="ov-content">查看完整恋爱时间线与状态</div></div>`;
+
+        container.innerHTML = html2;
+
+        // 年份选择器绑定
+        document
+          .getElementById("trendYearPrev")
+          .addEventListener("click", function () {
+            data.overviewYear.trend =
+              (data.overviewYear.trend || currentYear) - 1;
+            saveData();
+            renderOverview();
+          });
+        document
+          .getElementById("trendYearNext")
+          .addEventListener("click", function () {
+            data.overviewYear.trend =
+              (data.overviewYear.trend || currentYear) + 1;
+            saveData();
+            renderOverview();
+          });
+        document
+          .getElementById("compareYearPrev")
+          .addEventListener("click", function () {
+            data.overviewYear.compare =
+              (data.overviewYear.compare || currentYear) - 1;
+            saveData();
+            renderOverview();
+          });
+        document
+          .getElementById("compareYearNext")
+          .addEventListener("click", function () {
+            data.overviewYear.compare =
+              (data.overviewYear.compare || currentYear) + 1;
+            saveData();
+            renderOverview();
+          });
+
         container
           .querySelectorAll(".overview-card")
           .forEach((el) => setupDragDrop(el));
@@ -7603,9 +7969,6 @@
           });
       }
 
-      // ============================================================
-      // 分页
-      // ============================================================
       function renderPagination(
         containerId,
         infoId,
@@ -7623,9 +7986,7 @@
         if (next) next.disabled = currentPage >= totalPages;
       }
 
-      // ============================================================
-      // 纪念日 (保留原有添加按钮样式)
-      // ============================================================
+      // ============ 纪念日 ============
       let anniversaryPage = 1;
 
       function renderAnniversary() {
@@ -7767,9 +8128,7 @@
         .getElementById("anniversaryListBack")
         .addEventListener("click", goBack);
 
-      // ============================================================
-      // 吵架/和好
-      // ============================================================
+      // ============ 吵架/和好 ============
       let fightPage = 1;
 
       function renderFight() {
@@ -7914,9 +8273,7 @@
         .getElementById("fightListBack")
         .addEventListener("click", goBack);
 
-      // ============================================================
-      // 分手
-      // ============================================================
+      // ============ 分手 ============
       function renderBreakup() {
         const b = data.love.breakup || {};
         const container = document.getElementById("breakupContent");
@@ -7970,9 +8327,7 @@
         .getElementById("breakupFormBack")
         .addEventListener("click", goBack);
 
-      // ============================================================
-      // 情书
-      // ============================================================
+      // ============ 情书 ============
       let letterPage = 1;
 
       function renderLetter() {
@@ -8117,9 +8472,7 @@
         .getElementById("letterListBack")
         .addEventListener("click", goBack);
 
-      // ============================================================
-      // 爱情树
-      // ============================================================
+      // ============ 爱情树 ============
       function checkTreeLevelUp() {
         let tree = data.love.loveTree;
         while (tree.exp >= tree.level * 15) {
@@ -8213,9 +8566,7 @@
       }
       document.getElementById("treeListBack").addEventListener("click", goBack);
 
-      // ============================================================
-      // 打卡
-      // ============================================================
+      // ============ 打卡 ============
       let challengePage = 1;
 
       function renderChallenge() {
@@ -8371,9 +8722,7 @@
         .getElementById("challengeListBack")
         .addEventListener("click", goBack);
 
-      // ============================================================
-      // 足迹 - 保留完整功能
-      // ============================================================
+      // ============ 足迹 ============
       const cityCoords = {
         北京: [116.4, 39.9],
         上海: [121.47, 31.23],
@@ -8617,34 +8966,34 @@
             .getPropertyValue("--primary")
             .trim() || "#ff6b8a";
         container.innerHTML = `
-                <div class="weather-card">
-                    <div class="card-header">👣 足迹</div>
-                    <div class="card-body">
-                        <div class="footprint-tabs">
-                            <span class="ftab active" data-tab="all">全部</span>
-                            <span class="ftab" data-tab="happy">😊 快乐</span>
-                            <span class="ftab" data-tab="travel">✈️ 旅行</span>
-                        </div>
-                        <div style="max-height:180px;overflow-y:auto;margin-bottom:12px;">
-                            ${listHtml}
-                        </div>
-                        <div style="padding-top:12px;border-top:0.5px solid var(--border);">
-                            <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;">🗺️ 去过的地方 (${Object.keys(visitedCities).length}个城市)</div>
-                            <div class="china-map-container" id="chinaMapContainer"></div>
-                            <div class="map-legend">
-                                <span><span class="legend-dot visited-color" style="background:${primaryColor};"></span> 去过</span>
-                                <span><span class="legend-dot unvisited-color"></span> 未去</span>
-                                <span><span class="legend-dot city-dot" style="background:${primaryColor};"></span> 城市</span>
+                    <div class="weather-card">
+                        <div class="card-header">👣 足迹</div>
+                        <div class="card-body">
+                            <div class="footprint-tabs">
+                                <span class="ftab active" data-tab="all">全部</span>
+                                <span class="ftab" data-tab="happy">😊 快乐</span>
+                                <span class="ftab" data-tab="travel">✈️ 旅行</span>
                             </div>
-                            <div style="font-size:12px;color:var(--text2);text-align:center;margin-top:4px;display:flex;flex-wrap:wrap;justify-content:center;gap:4px 12px;">
-                                ${Object.keys(visitedCities)
-                                  .map((c) => `<span>📍 ${c}</span>`)
-                                  .join("")}
+                            <div style="max-height:180px;overflow-y:auto;margin-bottom:12px;">
+                                ${listHtml}
+                            </div>
+                            <div style="padding-top:12px;border-top:0.5px solid var(--border);">
+                                <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;">🗺️ 去过的地方 (${Object.keys(visitedCities).length}个城市)</div>
+                                <div class="china-map-container" id="chinaMapContainer"></div>
+                                <div class="map-legend">
+                                    <span><span class="legend-dot visited-color" style="background:${primaryColor};"></span> 去过</span>
+                                    <span><span class="legend-dot unvisited-color"></span> 未去</span>
+                                    <span><span class="legend-dot city-dot" style="background:${primaryColor};"></span> 城市</span>
+                                </div>
+                                <div style="font-size:12px;color:var(--text2);text-align:center;margin-top:4px;display:flex;flex-wrap:wrap;justify-content:center;gap:4px 12px;">
+                                    ${Object.keys(visitedCities)
+                                      .map((c) => `<span>📍 ${c}</span>`)
+                                      .join("")}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            `;
+                `;
         container.querySelectorAll(".ftab").forEach((el) => {
           el.addEventListener("click", function () {
             container
@@ -8681,42 +9030,43 @@
           getComputedStyle(document.documentElement)
             .getPropertyValue("--primary")
             .trim() || "#ff6b8a";
-        const loadMap = () => {
-          const urls = [
-            "https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json",
-            "https://cdn.jsdelivr.net/npm/echarts@5.4.3/map/json/china.json",
-          ];
-          let idx = 0;
 
-          function tryLoad() {
-            if (idx >= urls.length) {
-              container.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text2);font-size:13px;">⚠️ 地图加载失败，请刷新重试</div>`;
-              return;
-            }
-            fetch(urls[idx])
-              .then((res) => {
-                if (!res.ok) throw new Error("Network error");
-                return res.json();
-              })
-              .then((data) => {
-                chinaMapData = data;
-                echarts.registerMap("china", data);
-                buildMap(
-                  chinaChart,
-                  locationDetails,
-                  visitedProvinceShort,
-                  citySet,
-                  primary,
-                );
-              })
-              .catch(() => {
-                idx++;
-                tryLoad();
-              });
+        // 多数据源加载
+        const urls = [
+          "https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json",
+          "https://cdn.jsdelivr.net/npm/echarts@5.4.3/map/json/china.json",
+          "https://gitee.com/small9/echarts-map/raw/master/china.json",
+        ];
+        let idx = 0;
+
+        function tryLoad() {
+          if (idx >= urls.length) {
+            container.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--text2);font-size:13px;gap:6px;">⚠️ 地图加载失败<br><span style="font-size:11px;">请检查网络后刷新</span></div>`;
+            return;
           }
-          tryLoad();
-        };
-        loadMap();
+          fetch(urls[idx], { mode: "cors" })
+            .then((res) => {
+              if (!res.ok) throw new Error("Network error");
+              return res.json();
+            })
+            .then((data) => {
+              chinaMapData = data;
+              echarts.registerMap("china", data);
+              buildMap(
+                chinaChart,
+                locationDetails,
+                visitedProvinceShort,
+                citySet,
+                primary,
+              );
+            })
+            .catch(() => {
+              idx++;
+              tryLoad();
+            });
+        }
+        tryLoad();
+
         const resizeHandler = () => {
           if (chinaChart) chinaChart.resize();
         };
@@ -8881,9 +9231,7 @@
         .getElementById("footprintListBack")
         .addEventListener("click", goBack);
 
-      // ============================================================
-      // 年度报告
-      // ============================================================
+      // ============ 年度报告 ============
       function renderYearlyReport() {
         const container = document.getElementById("yearlyReportContent");
         const happyCount = data.happy.length;
@@ -8900,9 +9248,7 @@
         .getElementById("yearlyReportListBack")
         .addEventListener("click", goBack);
 
-      // ============================================================
-      // 恋爱档案
-      // ============================================================
+      // ============ 恋爱档案（重新设计） ============
       function renderArchive() {
         const container = document.getElementById("archiveContent");
         const love = data.love;
@@ -8914,6 +9260,7 @@
         );
         let breakupDate = love.breakup?.date || "";
         let reconcileDate = love.breakup?.reconcileDate || "";
+
         const timeline = [];
         if (love.startDate)
           timeline.push({ date: love.startDate, icon: "💕", text: "恋爱开始" });
@@ -8943,6 +9290,7 @@
           });
         });
         timeline.sort((a, b) => new Date(a.date) - new Date(b.date));
+
         let statusText = "💕 恋爱中",
           statusClass = "";
         if (isBreakup) {
@@ -8953,68 +9301,62 @@
           statusText = `💕 和好于 ${formatDate(reconcileDate)}`;
         }
 
-        const levelInfo = getLoveLevel(days);
         const milestone = getMilestones(days);
         const progressPct = milestone.next
           ? Math.min(100, (days / milestone.next) * 100)
           : 100;
 
+        // 统计数据
+        const totalHappy = data.happy.length;
+        const totalTravel = data.travel.length;
+        const totalAnniversary = love.anniversaries?.length || 0;
+        const totalLetters = love.loveLetters?.length || 0;
+
         let html = `<div class="archive-container">
-          <div class="archive-profile-card" style="text-align:left;padding:20px 18px 18px;">
-            <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;align-items:center;">
-              <div class="archive-name-row" style="font-size:20px;gap:8px;">
-                <span class="name">${love.myName || "我"}</span>
-                <span class="heart-symbol">❤️</span>
-                <span class="name">${love.herName || "TA"}</span>
-              </div>
-              <div class="archive-status-badge ${statusClass}" style="font-size:12px;padding:2px 14px;">${statusText}</div>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;">
-              <div style="background:var(--bg);border-radius:12px;padding:10px 12px;text-align:center;">
-                <div style="font-size:12px;color:var(--text2);">🎂 我的生日</div>
-                <div style="font-size:15px;font-weight:600;color:var(--text);">${love.myBirthday ? formatDate(love.myBirthday) : "未填写"}</div>
-              </div>
-              <div style="background:var(--bg);border-radius:12px;padding:10px 12px;text-align:center;">
-                <div style="font-size:12px;color:var(--text2);">🎂 TA的生日</div>
-                <div style="font-size:15px;font-weight:600;color:var(--text);">${love.herBirthday ? formatDate(love.herBirthday) : "未填写"}</div>
-              </div>
-              <div style="background:var(--bg);border-radius:12px;padding:10px 12px;text-align:center;grid-column:span 2;">
-                <div style="font-size:12px;color:var(--text2);">📅 始于</div>
-                <div style="font-size:15px;font-weight:600;color:var(--text);">${love.startDate ? formatDate(love.startDate) : "未设置"}</div>
-              </div>
-              ${
-                love.breakup?.date
-                  ? `<div style="background:var(--bg);border-radius:12px;padding:10px 12px;text-align:center;grid-column:span 2;">
-                <div style="font-size:12px;color:var(--text2);">💔 分手日期</div>
-                <div style="font-size:15px;font-weight:600;color:#d32f2f;">${formatDate(love.breakup.date)}</div>
-              </div>`
-                  : ""
-              }
-              ${
-                love.breakup?.reconcileDate
-                  ? `<div style="background:var(--bg);border-radius:12px;padding:10px 12px;text-align:center;grid-column:span 2;">
-                <div style="font-size:12px;color:var(--text2);">💕 和好日期</div>
-                <div style="font-size:15px;font-weight:600;color:#2e7d32;">${formatDate(love.breakup.reconcileDate)}</div>
-              </div>`
-                  : ""
-              }
-            </div>
-            <div style="text-align:center;margin-top:14px;padding-top:12px;border-top:0.5px solid var(--border);">
-              <div class="archive-days" style="font-size:28px;">${isBreakup ? "💔" : "💕"} ${days} 天</div>
-              <div style="font-size:14px;font-weight:600;color:var(--primary);margin:4px 0 6px;">${levelInfo.emoji} ${levelInfo.label}</div>
-              <div class="progress-wrap" style="max-width:280px;margin:0 auto;">
-                <div class="progress-row">
-                  <span class="p-left" style="font-size:12px;">${days}天</span>
-                  <div class="progress-track"><div class="progress-fill animate" style="width:${Math.min(100, progressPct)}%;"></div></div>
-                  <span class="p-right" style="font-size:12px;">${milestone.label}</span>
+                <div class="archive-profile-card">
+                    <div class="archive-name-row">
+                        <span class="name">${love.myName || "我"}</span>
+                        <span class="heart-symbol">❤️</span>
+                        <span class="name">${love.herName || "TA"}</span>
+                    </div>
+                    <div style="text-align:center;margin-bottom:6px;">
+                        <span class="archive-status-tag ${statusClass}">${statusText}</span>
+                    </div>
+                    <div class="archive-birthdays">
+                        <span class="bday-item"><span class="bday-emoji">🎂</span> ${love.myBirthday ? formatDate(love.myBirthday) : "未填写"}</span>
+                        <span class="bday-item"><span class="bday-emoji">🎂</span> ${love.herBirthday ? formatDate(love.herBirthday) : "未填写"}</span>
+                    </div>
+                    <div class="archive-dates">
+                        <span class="date-item">📅 始于 ${love.startDate ? formatDate(love.startDate) : "未设置"}</span>
+                        ${isBreakup ? `<span class="date-item">💔 分手 ${formatDate(breakupDate)}</span>` : ""}
+                        ${reconcileDate ? `<span class="date-item">💕 和好 ${formatDate(reconcileDate)}</span>` : ""}
+                    </div>
+                    <div class="archive-days"><span class="days-emoji">${isBreakup ? "💔" : "💕"}</span> ${days} 天</div>
+                    <div class="progress-wrap" style="max-width:280px;margin:6px auto 0;">
+                        <div class="progress-row">
+                            <span class="p-left" style="font-size:12px;">${days}天</span>
+                            <div class="progress-track" style="height:6px;background:var(--bg);border-radius:4px;overflow:hidden;flex:1;margin:0 8px;">
+                                <div class="progress-fill animate" style="width:${Math.min(100, progressPct)}%;height:100%;background:var(--primary);border-radius:4px;transition:width 0.6s ease;"></div>
+                            </div>
+                            <span class="p-right" style="font-size:12px;">${milestone.label}</span>
+                        </div>
+                    </div>
                 </div>
-              </div>
-            </div>
-          </div>
-          <div style="font-size:16px;font-weight:600;color:var(--text);margin:8px 0 12px 0;display:flex;align-items:center;gap:8px;">
-            📜 完整时间线 <span style="font-size:12px;font-weight:400;color:var(--text2);">共 ${timeline.length} 个节点</span>
-          </div>
-          <div class="archive-timeline">`;
+
+                <div class="archive-stats-grid">
+                    <div class="stat-box"><div class="stat-num">${totalHappy}</div><div class="stat-label">😊 快乐</div></div>
+                    <div class="stat-box"><div class="stat-num">${totalTravel}</div><div class="stat-label">✈️ 旅行</div></div>
+                    <div class="stat-box"><div class="stat-num">${totalAnniversary}</div><div class="stat-label">🎖️ 纪念日</div></div>
+                    <div class="stat-box"><div class="stat-num">${totalLetters}</div><div class="stat-label">💌 情书</div></div>
+                    <div class="stat-box"><div class="stat-num">${love.challenges?.length || 0}</div><div class="stat-label">✅ 打卡</div></div>
+                    <div class="stat-box"><div class="stat-num">${love.fights?.length || 0}</div><div class="stat-label">💢 吵架</div></div>
+                </div>
+
+                <div style="font-size:16px;font-weight:600;color:var(--text);margin:8px 0 12px 0;display:flex;align-items:center;gap:8px;">
+                    📜 时间线 <span style="font-size:12px;font-weight:400;color:var(--text2);">共 ${timeline.length} 个节点</span>
+                </div>
+                <div class="archive-timeline">`;
+
         if (timeline.length === 0) {
           html += `<div class="empty-state"><span class="empty-emoji">📭</span><div class="empty-title">还没有时间线记录</div><div class="empty-desc">开始创造你们的回忆吧</div></div>`;
         } else {
@@ -9029,9 +9371,6 @@
         .getElementById("archiveListBack")
         .addEventListener("click", goBack);
 
-      // ============================================================
-      // Toast
-      // ============================================================
       function showToast(msg) {
         const toast = document.createElement("div");
         toast.style.cssText = `position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.78);backdrop-filter:blur(8px);color:#fff;padding:10px 22px;border-radius:12px;font-size:14px;font-weight:500;z-index:2000;pointer-events:none;opacity:0;transition:opacity 0.3s ease,transform 0.3s ease;max-width:80%;text-align:center;`;
@@ -9048,9 +9387,7 @@
         }, 2200);
       }
 
-      // ============================================================
-      // 滑动返回手势
-      // ============================================================
+      // ============ 滑动返回 ============
       let touchStartX = 0,
         touchStartY = 0,
         isSwiping = false;
@@ -9084,12 +9421,10 @@
             const activePage = document.querySelector(
               ".page-container.active, .form-page.active",
             );
-            if (
-              activePage &&
-              activePage.id !== "pageHappy" &&
-              navHistory.length > 1
-            ) {
-              goBack();
+            if (activePage && activePage.id !== "pageLove") {
+              navigateTo("pageLove", true);
+              renderLove();
+              navHistory = ["pageLove"];
               touchStartX = 0;
             }
           }
@@ -9097,9 +9432,6 @@
         { passive: false },
       );
 
-      // ============================================================
-      // 独立页面返回按钮绑定
-      // ============================================================
       function initPageBackButtons() {
         const backs = [
           "hundredThingsBack",
@@ -9114,9 +9446,49 @@
         });
       }
 
-      // ============================================================
-      // 初始化
-      // ============================================================
+      function initImageViewer() {
+        document
+          .getElementById("viewerClose")
+          .addEventListener("click", closeImageViewer);
+        document
+          .getElementById("viewerPrev")
+          .addEventListener("click", function () {
+            if (viewerIndex > 0) {
+              viewerIndex--;
+              updateViewerNav();
+            }
+          });
+        document
+          .getElementById("viewerNext")
+          .addEventListener("click", function () {
+            if (viewerIndex < viewerImages.length - 1) {
+              viewerIndex++;
+              updateViewerNav();
+            }
+          });
+        document
+          .getElementById("imageViewer")
+          .addEventListener("click", function (e) {
+            if (e.target === this) closeImageViewer();
+          });
+        document.addEventListener("keydown", function (e) {
+          if (
+            !document.getElementById("imageViewer").classList.contains("show")
+          )
+            return;
+          if (e.key === "Escape") closeImageViewer();
+          if (e.key === "ArrowLeft" && viewerIndex > 0) {
+            viewerIndex--;
+            updateViewerNav();
+          }
+          if (e.key === "ArrowRight" && viewerIndex < viewerImages.length - 1) {
+            viewerIndex++;
+            updateViewerNav();
+          }
+        });
+      }
+
+      // ============ 初始化 ============
       function init() {
         loadTheme();
         updateAchievements();
@@ -9151,13 +9523,121 @@
               const hue = data.theme?.hue || 340;
               const sat = data.theme?.sat || 70;
               const lit = data.theme?.lit || 55;
-              const html = `<div class="theme-hue-wrap"><label>色相 (${hue}°)</label><input type="range" min="0" max="360" value="${hue}" id="hueSlider" /><div class="theme-preview-block" style="background:hsl(${hue},${sat}%,${lit}%);"></div><button class="btn-primary" id="applyThemeBtn">应用主题</button></div>`;
+              // 预设主题色
+              const presets = [
+                {
+                  hue: 340,
+                  sat: 70,
+                  lit: 55,
+                  color: "#ff6b8a",
+                  label: "甜蜜粉",
+                },
+                {
+                  hue: 210,
+                  sat: 70,
+                  lit: 55,
+                  color: "#4a9eff",
+                  label: "清新蓝",
+                },
+                {
+                  hue: 160,
+                  sat: 70,
+                  lit: 50,
+                  color: "#34c9a0",
+                  label: "薄荷绿",
+                },
+                {
+                  hue: 45,
+                  sat: 80,
+                  lit: 55,
+                  color: "#f5b342",
+                  label: "暖阳黄",
+                },
+                {
+                  hue: 280,
+                  sat: 60,
+                  lit: 55,
+                  color: "#a855f7",
+                  label: "梦幻紫",
+                },
+                {
+                  hue: 10,
+                  sat: 70,
+                  lit: 55,
+                  color: "#ff6b6b",
+                  label: "珊瑚红",
+                },
+                {
+                  hue: 190,
+                  sat: 60,
+                  lit: 50,
+                  color: "#4dd0e1",
+                  label: "湖水蓝",
+                },
+                {
+                  hue: 30,
+                  sat: 70,
+                  lit: 55,
+                  color: "#ff8a65",
+                  label: "蜜橘橙",
+                },
+                {
+                  hue: 320,
+                  sat: 60,
+                  lit: 55,
+                  color: "#e040fb",
+                  label: "蔷薇紫",
+                },
+                {
+                  hue: 120,
+                  sat: 50,
+                  lit: 45,
+                  color: "#66bb6a",
+                  label: "森林绿",
+                },
+              ];
+              let presetHtml = `<div class="theme-preset-grid">`;
+              presets.forEach((p) => {
+                const active =
+                  p.hue === hue && p.sat === sat && p.lit === lit
+                    ? "active-theme-btn"
+                    : "";
+                presetHtml += `<button class="theme-preset-btn ${active}" style="background:${p.color};" data-hue="${p.hue}" data-sat="${p.sat}" data-lit="${p.lit}" title="${p.label}"></button>`;
+              });
+              presetHtml += `</div>`;
+
+              const html = `<div style="font-size:14px;font-weight:600;color:var(--text2);margin-bottom:4px;">🎨 预设主题</div>${presetHtml}<div class="theme-hue-wrap"><label>色相 (${hue}°)</label><input type="range" min="0" max="360" value="${hue}" id="hueSlider" /><div class="theme-preview-block" style="background:hsl(${hue},${sat}%,${lit}%);"></div><button class="btn-primary" id="applyThemeBtn">应用主题</button></div>`;
               showModal("🎨 主题", html, () => {
                 const slider = document.getElementById("hueSlider");
                 const preview = document.querySelector(".theme-preview-block");
+
+                // 预设点击
+                document
+                  .querySelectorAll(".theme-preset-btn")
+                  .forEach((btn) => {
+                    btn.addEventListener("click", function () {
+                      const h = parseInt(this.dataset.hue);
+                      const s = parseInt(this.dataset.sat);
+                      const l = parseInt(this.dataset.lit);
+                      slider.value = h;
+                      preview.style.background = `hsl(${h},${s}%,${l}%)`;
+                      document
+                        .querySelectorAll(".theme-preset-btn")
+                        .forEach((b) => b.classList.remove("active-theme-btn"));
+                      this.classList.add("active-theme-btn");
+                      // 应用主题
+                      applyTheme(h, s, l);
+                      hideModal();
+                      showToast("✅ 主题已更新");
+                    });
+                  });
+
                 slider.addEventListener("input", function () {
                   const h = parseInt(this.value);
                   preview.style.background = `hsl(${h},${sat}%,${lit}%)`;
+                  document
+                    .querySelectorAll(".theme-preset-btn")
+                    .forEach((b) => b.classList.remove("active-theme-btn"));
                 });
                 document
                   .getElementById("applyThemeBtn")
@@ -9287,8 +9767,8 @@
                         dateObj.toDateString(),
                     ) ||
                     data.travel.some(
-                      (t) =>
-                        new Date(t.startDate).toDateString() ===
+                      (t2) =>
+                        new Date(t2.startDate).toDateString() ===
                         dateObj.toDateString(),
                     ) ||
                     data.love.anniversaries.some(
@@ -9348,6 +9828,7 @@
 
         initParticles();
         initPageBackButtons();
+        initImageViewer();
         renderLove();
         renderHappy();
         renderTravel();
@@ -9411,8 +9892,8 @@
         });
 
         setInterval(saveData, 30000);
-        console.log("💕 Love·轨迹 已启动 (完整版 - 独立页面版 + 长按菜单)");
-        console.log("✅ 所有功能已集成，适配iPhone 13全屏");
+        console.log("💕 Love·轨迹 已启动 (完整版 - 修复版)");
+        console.log("✅ 所有功能已集成");
       }
 
       if (document.readyState === "loading") {
