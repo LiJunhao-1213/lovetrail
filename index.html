@@ -347,7 +347,6 @@
         box-sizing: border-box;
         overflow: hidden;
       }
-      /* 日期选择器优化 */
       .form-group input[type="date"] {
         width: 100%;
         min-width: 0;
@@ -2640,8 +2639,6 @@
         min-height: 0;
       }
       .cal-grid .cal-day.has-event {
-        font-weight: 600;
-        color: #fff;
         border-radius: 50%;
       }
       .cal-grid .cal-day .event-dot {
@@ -3242,7 +3239,10 @@
         margin-top: 8px;
         opacity: 0.8;
       }
-      /* ===== 小桃全新设计 ===== */
+
+      /* ================================================================
+             小桃 · 智能对话助手 (居中弹窗)
+             ================================================================ */
       .lingbao-container {
         position: fixed;
         bottom: 130px;
@@ -3256,7 +3256,6 @@
         -webkit-user-select: none;
         transition: transform 0.2s ease;
       }
-      /* 主按钮 —— 更圆润，带光晕和浮动 */
       .lingbao-main {
         width: 62px;
         height: 62px;
@@ -3278,7 +3277,6 @@
       .lingbao-main:active {
         transform: scale(0.88);
       }
-      /* 小徽章 */
       .lingbao-main .lingbao-badge {
         position: absolute;
         top: -6px;
@@ -3306,7 +3304,6 @@
           transform: scale(1.15);
         }
       }
-      /* 浮动动画 */
       @keyframes lingbaoFloat {
         0%,
         100% {
@@ -3319,7 +3316,6 @@
       .lingbao-main.floating {
         animation: lingbaoFloat 3s ease-in-out infinite;
       }
-      /* 脉冲光晕 */
       @keyframes lingbaoPulse {
         0%,
         100% {
@@ -3336,12 +3332,12 @@
       .lingbao-main.pulse {
         animation: lingbaoPulse 2.5s ease-in-out infinite;
       }
-      /* 气泡提示 */
       .lingbao-bubble {
         position: absolute;
         bottom: 76px;
         right: 0;
-        background: var(--card);
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(4px);
         border-radius: 16px 16px 4px 16px;
         padding: 10px 16px;
         font-size: 14px;
@@ -3355,8 +3351,6 @@
         white-space: normal;
         line-height: 1.5;
         z-index: 9999;
-        backdrop-filter: blur(4px);
-        background: rgba(255, 255, 255, 0.92);
       }
       .lingbao-bubble.show {
         display: block;
@@ -3372,60 +3366,211 @@
         border-right: 10px solid transparent;
         border-top: 10px solid rgba(255, 255, 255, 0.92);
       }
-      /* 菜单 - 更精致 */
-      .lingbao-menu {
-        position: absolute;
-        bottom: 80px;
-        right: 0;
-        background: rgba(255, 255, 255, 0.96);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border-radius: 20px;
-        box-shadow: 0 12px 48px rgba(0, 0, 0, 0.12);
-        padding: 8px 0;
-        min-width: 180px;
-        border: 0.5px solid var(--border);
-        display: none;
-        animation: slideUp 0.25s ease;
-        overflow: hidden;
-        max-height: 420px;
-        overflow-y: auto;
+      .lingbao-chat-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.35);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
         z-index: 9998;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.25s ease;
+        padding: 16px;
       }
-      .lingbao-menu.show {
-        display: block;
+      .lingbao-chat-overlay.show {
+        display: flex;
       }
-      .lingbao-menu .menu-item {
+      .lingbao-chat {
+        width: 100%;
+        max-width: 400px;
+        max-height: 85vh;
+        background: var(--card);
+        border-radius: 24px;
+        box-shadow: 0 16px 60px rgba(0, 0, 0, 0.2);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        animation: slideUp 0.3s ease;
+        border: 0.5px solid var(--border);
+      }
+      .lingbao-chat-header {
         display: flex;
         align-items: center;
-        gap: 12px;
-        padding: 12px 18px;
-        font-size: 14px;
-        font-weight: 500;
-        color: var(--text);
-        cursor: pointer;
-        transition: all 0.15s;
-        border: none;
-        background: transparent;
-        width: 100%;
-        text-align: left;
-        border-radius: 0;
-      }
-      .lingbao-menu .menu-item:active {
-        background: var(--primary-light);
-        transform: scale(0.96);
-      }
-      .lingbao-menu .menu-item .menu-icon {
-        font-size: 20px;
-        width: 30px;
-        text-align: center;
+        justify-content: space-between;
+        padding: 14px 18px 10px 18px;
+        border-bottom: 0.5px solid var(--border);
+        background: var(--card);
         flex-shrink: 0;
       }
-      .lingbao-menu .menu-divider {
-        height: 0.5px;
-        background: var(--border);
-        margin: 4px 14px;
+      .lingbao-chat-header .left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
       }
+      .lingbao-chat-header .avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(255, 107, 138, 0.3);
+      }
+      .lingbao-chat-header .info .name {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .lingbao-chat-header .info .status {
+        font-size: 11px;
+        color: var(--text2);
+        opacity: 0.8;
+      }
+      .lingbao-chat-header .close-btn {
+        font-size: 22px;
+        background: none;
+        border: none;
+        color: var(--text2);
+        cursor: pointer;
+        padding: 4px 8px;
+        transition: all 0.2s;
+        line-height: 1;
+      }
+      .lingbao-chat-header .close-btn:active {
+        transform: scale(0.85);
+        opacity: 0.6;
+      }
+      .lingbao-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 12px 16px 8px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        background: var(--bg);
+        min-height: 200px;
+        max-height: 50vh;
+      }
+      .lingbao-messages .msg {
+        max-width: 88%;
+        padding: 10px 14px;
+        border-radius: 16px;
+        font-size: 14px;
+        line-height: 1.6;
+        word-break: break-word;
+        animation: fadeIn 0.25s ease;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+      }
+      .lingbao-messages .msg.bot {
+        align-self: flex-start;
+        background: var(--card);
+        border: 0.5px solid var(--border);
+        border-bottom-left-radius: 4px;
+        color: var(--text);
+      }
+      .lingbao-messages .msg.bot .msg-icon {
+        margin-right: 4px;
+      }
+      .lingbao-messages .msg.user {
+        align-self: flex-end;
+        background: var(--primary);
+        color: #fff;
+        border-bottom-right-radius: 4px;
+      }
+      .lingbao-messages .msg .time {
+        font-size: 10px;
+        opacity: 0.6;
+        margin-top: 4px;
+        display: block;
+        text-align: right;
+      }
+      .lingbao-messages .msg.user .time {
+        color: rgba(255, 255, 255, 0.7);
+      }
+      .lingbao-quick {
+        display: flex;
+        gap: 6px;
+        padding: 6px 16px 4px 16px;
+        flex-wrap: wrap;
+        background: var(--bg);
+        border-top: 0.5px solid var(--border);
+        flex-shrink: 0;
+      }
+      .lingbao-quick .qbtn {
+        padding: 4px 12px;
+        border-radius: 30px;
+        border: 0.5px solid var(--border);
+        background: var(--card);
+        font-size: 12px;
+        color: var(--text2);
+        cursor: pointer;
+        transition: all 0.2s;
+        white-space: nowrap;
+        font-weight: 500;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      }
+      .lingbao-quick .qbtn:active {
+        transform: scale(0.92);
+        background: var(--primary-light);
+        color: var(--primary);
+        border-color: var(--primary);
+      }
+      .lingbao-input-area {
+        display: flex;
+        gap: 8px;
+        padding: 10px 16px 14px 16px;
+        background: var(--card);
+        border-top: 0.5px solid var(--border);
+        flex-shrink: 0;
+      }
+      .lingbao-input-area input {
+        flex: 1;
+        padding: 10px 14px;
+        border-radius: 30px;
+        border: 0.5px solid var(--border);
+        font-size: 14px;
+        background: var(--bg);
+        color: var(--text);
+        outline: none;
+        transition: all 0.2s;
+        min-width: 0;
+      }
+      .lingbao-input-area input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(255, 107, 138, 0.12);
+      }
+      .lingbao-input-area input::placeholder {
+        color: var(--text2);
+      }
+      .lingbao-input-area .send-btn {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        border: none;
+        background: var(--primary);
+        color: #fff;
+        font-size: 20px;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        box-shadow: 0 2px 8px rgba(255, 107, 138, 0.3);
+      }
+      .lingbao-input-area .send-btn:active {
+        transform: scale(0.88);
+        opacity: 0.85;
+      }
+
       /* 全屏倒计时 */
       .countdown-overlay {
         position: fixed;
@@ -3782,7 +3927,6 @@
         min-width: 80px;
         text-align: center;
       }
-      /* 长按菜单 */
       .longpress-menu {
         position: fixed;
         z-index: 99999;
@@ -3825,6 +3969,82 @@
       }
       .longpress-menu .menu-item.danger:active {
         background: #ffebee;
+      }
+
+      /* ===== 日历图例 ===== */
+      .cal-legend {
+        display: flex;
+        gap: 18px;
+        justify-content: center;
+        padding: 10px 0 6px 0;
+        flex-wrap: wrap;
+        border-top: 0.5px solid var(--border);
+        margin-top: 8px;
+        font-size: 12px;
+        color: var(--text2);
+      }
+      .cal-legend .leg-item {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .cal-legend .leg-dot {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+      }
+      .cal-legend .leg-dot.happy-dot {
+        background: #ff6b8a;
+      }
+      .cal-legend .leg-dot.travel-dot {
+        background: #4a9eff;
+      }
+      .cal-legend .leg-dot.menstrual-dot {
+        background: #9b59b6;
+      }
+
+      /* 日历详情区域 */
+      .cal-detail-area {
+        margin-top: 10px;
+        padding: 10px 12px;
+        background: var(--bg);
+        border-radius: var(--radius);
+        border: 0.5px solid var(--border);
+        min-height: 60px;
+        max-height: 200px;
+        overflow-y: auto;
+        font-size: 13px;
+        color: var(--text);
+      }
+      .cal-detail-area .empty-detail {
+        color: var(--text2);
+        text-align: center;
+        padding: 12px 0;
+        font-size: 13px;
+      }
+      .cal-detail-area .detail-item {
+        padding: 6px 8px;
+        border-bottom: 0.5px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .cal-detail-area .detail-item:last-child {
+        border-bottom: none;
+      }
+      .cal-detail-area .detail-item .dtype {
+        font-weight: 500;
+        color: var(--primary);
+        min-width: 40px;
+      }
+      .cal-detail-area .detail-item .dtext {
+        color: var(--text);
+      }
+      .cal-detail-area .detail-item .dsub {
+        color: var(--text2);
+        font-size: 12px;
       }
     </style>
   </head>
@@ -4131,7 +4351,7 @@
           </div>
           <div id="yearlyReportContent"></div>
         </div>
-        <!-- 恋爱档案（已修复） -->
+        <!-- 恋爱档案 -->
         <div class="page-container" id="pageArchive">
           <div class="form-nav">
             <button class="back-btn" id="archiveListBack">👈</button>
@@ -4206,42 +4426,43 @@
       </div>
     </div>
 
-    <!-- 全新小桃 -->
+    <!-- ===== 小桃 · 智能对话助手（居中弹窗） ===== -->
     <div class="lingbao-container" id="lingbaoContainer">
       <div class="lingbao-bubble" id="lingbaoBubble">💕 今天也要加油哦</div>
       <div class="lingbao-main floating pulse" id="lingbaoMain">
         <span id="lingbaoEmoji">🍑</span>
         <span class="lingbao-badge" id="lingbaoBadge">💕</span>
       </div>
-      <div class="lingbao-menu" id="lingbaoMenu">
-        <button class="menu-item" data-action="quote">
-          <span class="menu-icon">💬</span> 今日情话
-        </button>
-        <button class="menu-item" data-action="random">
-          <span class="menu-icon">🎲</span> 随机一句
-        </button>
-        <button class="menu-item" data-action="today">
-          <span class="menu-icon">📅</span> 今天是什么日子
-        </button>
-        <button class="menu-item" data-action="countdown">
-          <span class="menu-icon">📅</span> 姨妈倒计时
-        </button>
-        <button class="menu-item" data-action="lovedays">
-          <span class="menu-icon">💕</span> 恋爱天数
-        </button>
-        <button class="menu-item" data-action="randomach">
-          <span class="menu-icon">🏆</span> 随机成就
-        </button>
-        <button class="menu-item" data-action="opencal">
-          <span class="menu-icon">📅</span> 打开日历
-        </button>
-        <div class="menu-divider"></div>
-        <button class="menu-item" data-action="top">
-          <span class="menu-icon">🔝</span> 回到顶部
-        </button>
-        <button class="menu-item" data-action="emoji">
-          <span class="menu-icon">😊</span> 换个表情
-        </button>
+      <div class="lingbao-chat-overlay" id="lingbaoChatOverlay">
+        <div class="lingbao-chat" id="lingbaoChat">
+          <div class="lingbao-chat-header">
+            <div class="left">
+              <div class="avatar" id="chatAvatar">🍑</div>
+              <div class="info">
+                <div class="name">小桃</div>
+                <div class="status" id="chatStatus">💕 在线</div>
+              </div>
+            </div>
+            <button class="close-btn" id="chatCloseBtn">✕</button>
+          </div>
+          <div class="lingbao-messages" id="lingbaoMessages"></div>
+          <div class="lingbao-quick" id="lingbaoQuick">
+            <button class="qbtn" data-action="quote">💬 情话</button>
+            <button class="qbtn" data-action="lovedays">💕 恋爱天数</button>
+            <button class="qbtn" data-action="countdown">📅 姨妈倒计时</button>
+            <button class="qbtn" data-action="randomach">🏆 随机成就</button>
+            <button class="qbtn" data-action="opencal">📅 日历</button>
+          </div>
+          <div class="lingbao-input-area">
+            <input
+              type="text"
+              id="lingbaoInput"
+              placeholder="问小桃点什么..."
+              autocomplete="off"
+            />
+            <button class="send-btn" id="lingbaoSendBtn">➤</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -4637,6 +4858,13 @@
             trend: new Date().getFullYear(),
             compare: new Date().getFullYear(),
           },
+          // AI 配置
+          aiConfig: {
+            enabled: false,
+            provider: "deepseek",
+            apiKey: "",
+            model: "deepseek-chat",
+          },
         };
       }
 
@@ -4695,6 +4923,13 @@
               parsed.overviewYear = {
                 trend: new Date().getFullYear(),
                 compare: new Date().getFullYear(),
+              };
+            if (!parsed.aiConfig)
+              parsed.aiConfig = {
+                enabled: false,
+                provider: "deepseek",
+                apiKey: "",
+                model: "deepseek-chat",
               };
             parsed.menstrual.forEach((record) => {
               if (!record.dayDetails) {
@@ -5275,38 +5510,201 @@
         requestAnimationFrame(animateParticles);
       }
 
-      // ====================================================================
-      // LINGBAO (小桃)
-      // ====================================================================
+      // ================================================================
+      // 小桃 · 智能对话引擎（居中弹窗 + 本地存储 + AI）
+      // ================================================================
+      let chatHistory = [];
+      const CHAT_STORAGE_KEY = "lingbao_chat_history";
+
+      function loadChatHistory() {
+        try {
+          const saved = localStorage.getItem(CHAT_STORAGE_KEY);
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            if (Array.isArray(parsed)) chatHistory = parsed;
+          }
+        } catch (e) {}
+      }
+
+      function saveChatHistory() {
+        try {
+          localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(chatHistory));
+        } catch (e) {}
+      }
+
+      // ---------- AI 调用 ----------
+      async function callAI(userMessage) {
+        const config = data.aiConfig || {
+          enabled: false,
+          apiKey: "",
+          provider: "deepseek",
+          model: "deepseek-chat",
+        };
+        if (!config.enabled || !config.apiKey) {
+          return null;
+        }
+        try {
+          const messages = [
+            {
+              role: "system",
+              content:
+                "你是一个温暖可爱的恋爱助手，名叫小桃。你擅长用温柔、俏皮、甜蜜的语气回答关于恋爱、感情、生活的问题。回答要简短有爱，适当使用emoji。你只回答与情感、恋爱、生活相关的问题，如果用户问其他问题，你可以俏皮地拒绝并引导到恋爱话题。",
+            },
+            { role: "user", content: userMessage },
+          ];
+          const resp = await fetch(
+            "https://api.deepseek.com/chat/completions",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${config.apiKey}`,
+              },
+              body: JSON.stringify({
+                model: config.model || "deepseek-chat",
+                messages: messages,
+                temperature: 0.9,
+                max_tokens: 300,
+                stream: false,
+              }),
+            },
+          );
+          if (!resp.ok) {
+            const errText = await resp.text();
+            console.warn("AI API error:", resp.status, errText);
+            return null;
+          }
+          const json = await resp.json();
+          if (json.choices && json.choices.length > 0) {
+            return json.choices[0].message.content.trim();
+          }
+          return null;
+        } catch (e) {
+          console.warn("AI call error:", e);
+          return null;
+        }
+      }
+
+      // ---------- 小桃核心 ----------
       function initLingbao() {
         const container = document.getElementById("lingbaoContainer");
         const main = document.getElementById("lingbaoMain");
-        const menu = document.getElementById("lingbaoMenu");
+        const overlay = document.getElementById("lingbaoChatOverlay");
+        const messagesEl = document.getElementById("lingbaoMessages");
+        const inputEl = document.getElementById("lingbaoInput");
+        const sendBtn = document.getElementById("lingbaoSendBtn");
+        const closeBtn = document.getElementById("chatCloseBtn");
         const bubble = document.getElementById("lingbaoBubble");
         const emojiEl = document.getElementById("lingbaoEmoji");
 
+        loadChatHistory();
+
         main.addEventListener("click", function (e) {
           e.stopPropagation();
-          toggleLingbaoMenu();
-        });
-
-        menu.addEventListener("click", function (e) {
-          const item = e.target.closest(".menu-item");
-          if (!item) return;
-          e.stopPropagation();
-          const action = item.dataset.action;
-          if (action) {
-            handleLingbaoAction(action);
-            closeLingbaoMenu();
+          if (overlay.classList.contains("show")) {
+            closeChat();
+          } else {
+            openChat();
           }
         });
 
-        document.addEventListener("click", function (e) {
-          if (!container.contains(e.target)) {
-            closeLingbaoMenu();
+        closeBtn.addEventListener("click", closeChat);
+        overlay.addEventListener("click", function (e) {
+          if (e.target === this) closeChat();
+        });
+
+        async function sendMessage() {
+          const text = inputEl.value.trim();
+          if (!text) return;
+          addUserMessage(text);
+          inputEl.value = "";
+          // 显示"正在思考..."
+          const thinkingId = "thinking_" + Date.now();
+          const time = new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+          chatHistory.push({
+            role: "bot",
+            text: "💭 小桃想想...",
+            time,
+            _id: thinkingId,
+            _temp: true,
+          });
+          saveChatHistory();
+          renderMessages();
+          setTimeout(() => {
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+          }, 50);
+
+          // 尝试AI
+          let reply = null;
+          const config = data.aiConfig || { enabled: false, apiKey: "" };
+          if (config.enabled && config.apiKey) {
+            try {
+              reply = await callAI(text);
+            } catch (e) {
+              console.warn(e);
+            }
+          }
+          // 如果AI没返回，用本地回复
+          if (!reply) {
+            reply = getLocalReply(text);
+          }
+          // 移除临时消息
+          const tempIdx = chatHistory.findIndex((m) => m._id === thinkingId);
+          if (tempIdx !== -1) {
+            chatHistory.splice(tempIdx, 1);
+            saveChatHistory();
+          }
+          // 添加正式回复
+          addBotMessage(reply);
+        }
+
+        sendBtn.addEventListener("click", sendMessage);
+        inputEl.addEventListener("keydown", function (e) {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            sendMessage();
           }
         });
 
+        document.querySelectorAll("#lingbaoQuick .qbtn").forEach((btn) => {
+          btn.addEventListener("click", function () {
+            const action = this.dataset.action;
+            handleQuickAction(action);
+          });
+        });
+
+        renderMessages();
+        if (chatHistory.length === 0) {
+          setTimeout(() => {
+            const welcome =
+              "嗨！我是小桃 🍑 你的恋爱小助手～\n想聊天、查日子、听情话，都可以找我！\n也可以试试下面的快捷按钮哦 👇";
+            addBotMessage(welcome);
+          }, 300);
+        }
+
+        showLingbaoBubble("💕 今天也要加油哦", 3000);
+        setInterval(() => {
+          if (!overlay.classList.contains("show")) {
+            const idx = Math.floor(Math.random() * LINGBAO_EMOJIS.length);
+            emojiEl.textContent = LINGBAO_EMOJIS[idx];
+            const msgs = [
+              "💕 想我了吗？",
+              "🌸 今天开心吗？",
+              "✨ 有什么想聊的？",
+              "💖 我在呢～",
+              "🍑 要听情话吗？",
+            ];
+            showLingbaoBubble(
+              msgs[Math.floor(Math.random() * msgs.length)],
+              2500,
+            );
+          }
+        }, 12000);
+
+        // 拖动
         let dragStartX,
           dragStartY,
           isDragging = false;
@@ -5389,20 +5787,11 @@
             container.style.bottom = "auto";
           }
         }
-
         function onMouseUp() {
           isMouseDown = false;
           document.removeEventListener("mousemove", onMouseMove);
           document.removeEventListener("mouseup", onMouseUp);
         }
-
-        showLingbaoBubble("💕 今天也要加油哦", 3000);
-        setInterval(() => {
-          if (!lingbaoMenuOpen) {
-            const idx = Math.floor(Math.random() * LINGBAO_EMOJIS.length);
-            emojiEl.textContent = LINGBAO_EMOJIS[idx];
-          }
-        }, 8000);
 
         const savedPos = localStorage.getItem("lingbao_position");
         if (savedPos) {
@@ -5427,36 +5816,229 @@
             }
           }
         });
-      }
 
-      function toggleLingbaoMenu() {
-        const menu = document.getElementById("lingbaoMenu");
-        const bubble = document.getElementById("lingbaoBubble");
-        bubble.classList.remove("show");
-        if (lingbaoMenuOpen) {
-          menu.classList.remove("show");
-          lingbaoMenuOpen = false;
-        } else {
-          menu.classList.add("show");
-          lingbaoMenuOpen = true;
-          const msgs = [
-            "💕 找我有什么事呀？",
-            "😊 今天开心吗？",
-            "🌸 要一起记录美好吗？",
-            "✨ 我在呢！",
-            "💖 想你了~",
-          ];
-          showLingbaoBubble(
-            msgs[Math.floor(Math.random() * msgs.length)],
-            2500,
-          );
+        function openChat() {
+          overlay.classList.add("show");
+          document.getElementById("lingbaoBubble").classList.remove("show");
+          setTimeout(() => inputEl.focus(), 300);
         }
-      }
+        function closeChat() {
+          overlay.classList.remove("show");
+        }
 
-      function closeLingbaoMenu() {
-        const menu = document.getElementById("lingbaoMenu");
-        menu.classList.remove("show");
-        lingbaoMenuOpen = false;
+        function addUserMessage(text) {
+          const time = new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+          chatHistory.push({ role: "user", text, time });
+          saveChatHistory();
+          renderMessages();
+          setTimeout(() => {
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+          }, 50);
+        }
+
+        function addBotMessage(text) {
+          const time = new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+          chatHistory.push({ role: "bot", text, time });
+          saveChatHistory();
+          renderMessages();
+          setTimeout(() => {
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+          }, 50);
+          document.getElementById("chatStatus").textContent = "💬 刚刚回复";
+          setTimeout(() => {
+            document.getElementById("chatStatus").textContent = "💕 在线";
+          }, 2000);
+        }
+
+        function renderMessages() {
+          if (chatHistory.length === 0) {
+            messagesEl.innerHTML = `<div class="msg bot"><span class="msg-icon">🍑 </span>嗨！我是小桃，有什么可以帮你的吗？<span class="time">刚刚</span></div>`;
+            return;
+          }
+          messagesEl.innerHTML = chatHistory
+            .map((msg) => {
+              const cls = msg.role === "bot" ? "bot" : "user";
+              const icon = msg.role === "bot" ? "🍑 " : "";
+              return `<div class="msg ${cls}"><span class="msg-icon">${icon}</span>${msg.text.replace(/\n/g, "<br>")}<span class="time">${msg.time}</span></div>`;
+            })
+            .join("");
+        }
+
+        function getLocalReply(text) {
+          const lower = text.toLowerCase();
+          if (
+            lower.includes("你叫什么") ||
+            lower.includes("你是谁") ||
+            (lower.includes("小桃") && lower.includes("名字"))
+          ) {
+            return "🍑 我叫小桃，是你的恋爱小助手～ 你可以随时找我聊天、查日子、听情话！";
+          }
+          if (
+            lower.includes("姨妈") ||
+            lower.includes("月经") ||
+            lower.includes("周期") ||
+            lower.includes("倒计时")
+          ) {
+            const pred = getMenstrualPredictions();
+            if (!pred)
+              return "📊 还没有足够的月经记录，我无法预测呢。先记录几次月经周期吧～";
+            const days = pred.daysToNext;
+            if (days <= 0)
+              return "🌸 姨妈预计今天或已到来，注意休息，多喝热水哦！";
+            return `📅 距离下次姨妈还有 ${days} 天\n${pred.status}\n💡 易孕期：${formatDate(pred.fertileStart)} ~ ${formatDate(pred.fertileEnd)}`;
+          }
+          if (
+            lower.includes("恋爱") ||
+            lower.includes("天数") ||
+            lower.includes("在一起")
+          ) {
+            const days = getLoveDays();
+            const name1 = data.love.myName || "我";
+            const name2 = data.love.herName || "TA";
+            if (days === 0)
+              return "💕 你们还没有记录在一起的日子呢，先去 Love 页面设置吧～";
+            return `💕 ${name1} ❤️ ${name2} · 恋爱 ${days} 天\n${getLoveLevel(days).label}`;
+          }
+          if (
+            lower.includes("情话") ||
+            lower.includes("语录") ||
+            lower.includes("情书")
+          ) {
+            return `💬 ${getDailyQuote()}`;
+          }
+          if (
+            lower.includes("今天") ||
+            lower.includes("日子") ||
+            lower.includes("日期")
+          ) {
+            const d = new Date();
+            const days = getLoveDays();
+            const nextAnn = getNextAnniversaryDays();
+            let extra = "";
+            if (nextAnn)
+              extra = `\n🎉 距离 "${nextAnn.name}" 还有 ${nextAnn.days} 天`;
+            return `📅 ${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日 · 恋爱 ${days} 天${extra}`;
+          }
+          if (
+            lower.includes("成就") ||
+            lower.includes("奖杯") ||
+            lower.includes("解锁")
+          ) {
+            const unlocked = data.achievements.filter((a) => a.unlocked);
+            if (unlocked.length === 0)
+              return "🏆 还没有解锁的成就，继续加油创造美好回忆吧！";
+            const ach = unlocked[Math.floor(Math.random() * unlocked.length)];
+            return `🏆 ${ach.icon} ${ach.title}\n${ach.desc}`;
+          }
+          if (lower.includes("纪念日") || lower.includes("纪念")) {
+            const next = getNextAnniversaryDays();
+            if (!next) return "📅 还没有设置纪念日呢，去 Love 页面添加吧～";
+            return `🎉 下一个纪念日：「${next.name}」\n还有 ${next.days} 天 (${formatDate(next.date)})`;
+          }
+          if (
+            lower.includes("帮助") ||
+            lower.includes("help") ||
+            lower.includes("功能")
+          ) {
+            return "🍑 小桃能帮你：\n💬 聊情话、查恋爱天数\n📅 姨妈倒计时、纪念日提醒\n🏆 随机成就、开日历\n✨ 试试输入：情话、恋爱天数、姨妈、纪念日、成就";
+          }
+          if (lower.includes("日历") || lower.includes("打开日历")) {
+            document.getElementById("moreBtn").click();
+            document
+              .querySelector('.more-item[data-action="calendar"]')
+              .click();
+            closeChat();
+            return "📅 已为你打开日历～";
+          }
+          if (lower.includes("顶部") || lower.includes("回到顶部")) {
+            document.querySelector(".main-content").scrollTop = 0;
+            const activePage = document.querySelector(
+              ".page-container.active, .form-page.active",
+            );
+            if (activePage) activePage.scrollTop = 0;
+            return "🔝 已经回到顶部啦！";
+          }
+          if (lower.includes("表情") || lower.includes("换个表情")) {
+            lingbaoEmojiIndex = (lingbaoEmojiIndex + 1) % LINGBAO_EMOJIS.length;
+            document.getElementById("lingbaoEmoji").textContent =
+              LINGBAO_EMOJIS[lingbaoEmojiIndex];
+            return "😊 换了个新表情～ 🍑";
+          }
+          const fallbacks = [
+            getDailyQuote(),
+            "💕 今天有想我嘛？",
+            "🌸 要不要一起去做点浪漫的事？",
+            "✨ 你是我最想珍惜的人。",
+            "🍑 嘿嘿，我在呢～",
+            "💖 今天也是爱你的一天！",
+          ];
+          return fallbacks[Math.floor(Math.random() * fallbacks.length)];
+        }
+
+        function handleQuickAction(action) {
+          let reply = "";
+          switch (action) {
+            case "quote":
+              reply = `💬 ${getDailyQuote()}`;
+              break;
+            case "lovedays": {
+              const days = getLoveDays();
+              const name1 = data.love.myName || "我";
+              const name2 = data.love.herName || "TA";
+              if (days === 0) reply = "💕 先设置恋爱日期吧～";
+              else
+                reply = `💕 ${name1} ❤️ ${name2} · ${days} 天\n${getLoveLevel(days).label}`;
+              break;
+            }
+            case "countdown": {
+              const pred = getMenstrualPredictions();
+              if (!pred) reply = "📊 暂无足够数据预测，先记录月经周期吧。";
+              else if (pred.daysToNext <= 0)
+                reply = "🌸 姨妈预计今天或已到来，注意休息～";
+              else
+                reply = `📅 距离下次姨妈还有 ${pred.daysToNext} 天\n${pred.status}\n易孕期：${formatDate(pred.fertileStart)} ~ ${formatDate(pred.fertileEnd)}`;
+              break;
+            }
+            case "randomach": {
+              const unlocked = data.achievements.filter((a) => a.unlocked);
+              if (unlocked.length === 0)
+                reply = "🏆 还没有解锁的成就，继续加油！";
+              else {
+                const ach =
+                  unlocked[Math.floor(Math.random() * unlocked.length)];
+                reply = `🏆 ${ach.icon} ${ach.title}\n${ach.desc}`;
+              }
+              break;
+            }
+            case "opencal":
+              document.getElementById("moreBtn").click();
+              document
+                .querySelector('.more-item[data-action="calendar"]')
+                .click();
+              closeChat();
+              return;
+            default:
+              reply = "💕 小桃在呢，有什么想聊的？";
+          }
+          addUserMessage("⚡ " + action);
+          setTimeout(() => {
+            addBotMessage(reply);
+          }, 300);
+        }
+
+        window.lingbao = {
+          openChat,
+          closeChat,
+          addBotMessage,
+          addUserMessage,
+          handleQuickAction,
+        };
       }
 
       function showLingbaoBubble(text, duration) {
@@ -5471,73 +6053,8 @@
         }
       }
 
-      function handleLingbaoAction(action) {
-        const emojiEl = document.getElementById("lingbaoEmoji");
-        switch (action) {
-          case "quote":
-            const quote = getDailyQuote();
-            showLingbaoBubble("💬 " + quote, 4000);
-            break;
-          case "random":
-            const random =
-              LOVE_QUOTES[Math.floor(Math.random() * LOVE_QUOTES.length)];
-            showLingbaoBubble("🎲 " + random, 4000);
-            break;
-          case "today":
-            const today = new Date();
-            const days = getLoveDays();
-            const msg = `📅 ${today.getFullYear()}年${today.getMonth() + 1}月${today.getDate()}日 · 恋爱${days}天`;
-            showLingbaoBubble(msg, 3500);
-            break;
-          case "countdown":
-            showMenstrualCountdown();
-            break;
-          case "lovedays":
-            const loveDays = getLoveDays();
-            const name1 = data.love.myName || "我";
-            const name2 = data.love.herName || "TA";
-            showLingbaoBubble(
-              `💕 ${name1} ❤️ ${name2} · 恋爱 ${loveDays} 天`,
-              3000,
-            );
-            break;
-          case "randomach": {
-            const unlocked = data.achievements.filter((a) => a.unlocked);
-            if (unlocked.length === 0) {
-              showLingbaoBubble("🏆 还没有解锁的成就，继续加油！", 2500);
-            } else {
-              const ach = unlocked[Math.floor(Math.random() * unlocked.length)];
-              showLingbaoBubble(`🏆 ${ach.icon} ${ach.title}`, 3000);
-            }
-            break;
-          }
-          case "opencal":
-            document.getElementById("moreBtn").click();
-            document
-              .querySelector('.more-item[data-action="calendar"]')
-              .click();
-            closeLingbaoMenu();
-            break;
-          case "top":
-            document.querySelector(".main-content").scrollTop = 0;
-            const activePage = document.querySelector(
-              ".page-container.active, .form-page.active",
-            );
-            if (activePage) activePage.scrollTop = 0;
-            showLingbaoBubble("🔝 回到顶部啦", 1500);
-            break;
-          case "emoji":
-            lingbaoEmojiIndex = (lingbaoEmojiIndex + 1) % LINGBAO_EMOJIS.length;
-            emojiEl.textContent = LINGBAO_EMOJIS[lingbaoEmojiIndex];
-            showLingbaoBubble("😊 换了个表情~", 1500);
-            break;
-          default:
-            showLingbaoBubble("💕 我在呢！", 1500);
-        }
-      }
-
       // ====================================================================
-      // 倒计时
+      // 倒计时（供小桃调用）
       // ====================================================================
       function showMenstrualCountdown() {
         const pred = getMenstrualPredictions();
@@ -5603,7 +6120,7 @@
         });
 
       // ====================================================================
-      // 图片查看器（滑动支持）
+      // 图片查看器
       // ====================================================================
       function initImageViewerGestures() {
         const viewer = document.getElementById("imageViewer");
@@ -5984,11 +6501,56 @@
       }
 
       // ====================================================================
-      // 设置
+      // 设置（含AI配置）
       // ====================================================================
       function showSettings() {
         const lock = data.appLock;
-        const html = `<div style="padding:6px 0;"><div class="form-group" style="padding:8px 0;background:none;box-shadow:none;border:none;"><div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-weight:500;">🔒 应用锁</span><label style="display:flex;align-items:center;gap:8px;"><span style="font-size:14px;color:var(--text2);">${lock.enabled ? "已启用" : "已禁用"}</span><input type="checkbox" id="lockToggle" ${lock.enabled ? "checked" : ""} style="width:40px;height:24px;cursor:pointer;"></label></div>${lock.enabled ? `<div style="font-size:13px;color:var(--text2);margin-top:4px;">密码: ${"*".repeat(lock.password.length)}</div>` : ""}<button class="btn-primary" id="lockChangePwd" style="margin-top:8px;width:auto;padding:6px 16px;">${lock.enabled ? "修改密码" : "设置密码"}</button></div><hr class="form-divider" /><div class="form-group" style="padding:8px 0;background:none;box-shadow:none;border:none;"><button class="btn-danger" id="clearDataBtnSettings">🗑️ 清除所有数据</button></div><div class="form-group" style="padding:8px 0;background:none;box-shadow:none;border:none;"><button class="btn-primary" id="exportDataBtn" style="background:#8e8e93;">📤 导出数据</button><button class="btn-primary" id="importDataBtn" style="background:#8e8e93;margin-top:6px;">📥 导入数据</button></div></div>`;
+        const ai = data.aiConfig || {
+          enabled: false,
+          provider: "deepseek",
+          apiKey: "",
+          model: "deepseek-chat",
+        };
+        const html = `<div style="padding:6px 0;">
+            <div class="form-group" style="padding:8px 0;background:none;box-shadow:none;border:none;">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <span style="font-weight:500;">🔒 应用锁</span>
+                    <label style="display:flex;align-items:center;gap:8px;">
+                        <span style="font-size:14px;color:var(--text2);">${lock.enabled ? "已启用" : "已禁用"}</span>
+                        <input type="checkbox" id="lockToggle" ${lock.enabled ? "checked" : ""} style="width:40px;height:24px;cursor:pointer;">
+                    </label>
+                </div>
+                ${lock.enabled ? `<div style="font-size:13px;color:var(--text2);margin-top:4px;">密码: ${"*".repeat(lock.password.length)}</div>` : ""}
+                <button class="btn-primary" id="lockChangePwd" style="margin-top:8px;width:auto;padding:6px 16px;">${lock.enabled ? "修改密码" : "设置密码"}</button>
+            </div>
+            <hr class="form-divider" />
+            <div class="form-group" style="padding:8px 0;background:none;box-shadow:none;border:none;">
+                <div style="font-weight:600;font-size:15px;margin-bottom:6px;">🤖 AI 智能助手（小桃）</div>
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;">
+                    <span style="font-size:14px;color:var(--text2);">启用AI</span>
+                    <input type="checkbox" id="aiToggle" ${ai.enabled ? "checked" : ""} style="width:40px;height:24px;cursor:pointer;">
+                </div>
+                <div style="font-size:12px;color:var(--text2);margin:4px 0 8px 0;">💡 目前支持 DeepSeek API（免费额度），需自行获取 API Key</div>
+                <div class="form-group" style="background:var(--bg);padding:8px 12px;margin-bottom:6px;">
+                    <label style="font-size:12px;">API Key</label>
+                    <input type="password" id="aiApiKey" value="${ai.apiKey || ""}" placeholder="输入你的 DeepSeek API Key" style="font-size:13px;padding:6px 10px;" />
+                </div>
+                <div class="form-group" style="background:var(--bg);padding:8px 12px;margin-bottom:6px;">
+                    <label style="font-size:12px;">模型（默认 deepseek-chat）</label>
+                    <input type="text" id="aiModel" value="${ai.model || "deepseek-chat"}" placeholder="deepseek-chat" style="font-size:13px;padding:6px 10px;" />
+                </div>
+                <button class="btn-primary" id="aiSaveBtn" style="width:auto;padding:6px 20px;margin:4px 0;">💾 保存AI配置</button>
+                <div style="font-size:11px;color:var(--text2);margin-top:6px;">🔑 获取API Key: <a href="https://platform.deepseek.com/api_keys" target="_blank" style="color:var(--primary);">DeepSeek 平台</a></div>
+            </div>
+            <hr class="form-divider" />
+            <div class="form-group" style="padding:8px 0;background:none;box-shadow:none;border:none;">
+                <button class="btn-danger" id="clearDataBtnSettings">🗑️ 清除所有数据</button>
+            </div>
+            <div class="form-group" style="padding:8px 0;background:none;box-shadow:none;border:none;">
+                <button class="btn-primary" id="exportDataBtn" style="background:#8e8e93;">📤 导出数据</button>
+                <button class="btn-primary" id="importDataBtn" style="background:#8e8e93;margin-top:6px;">📥 导入数据</button>
+            </div>
+        </div>`;
         showModal("⚙️ 设置", html, () => {
           document
             .getElementById("lockToggle")
@@ -6078,9 +6640,28 @@
                     alert("❌ 导入失败，文件格式错误");
                   }
                 };
-                reader.readAsText(file);
+                reader.readAsDataURL(file);
               };
               input.click();
+            });
+          // AI 配置保存
+          document
+            .getElementById("aiSaveBtn")
+            .addEventListener("click", function () {
+              const enabled = document.getElementById("aiToggle").checked;
+              const apiKey = document.getElementById("aiApiKey").value.trim();
+              const model =
+                document.getElementById("aiModel").value.trim() ||
+                "deepseek-chat";
+              data.aiConfig = { enabled, provider: "deepseek", apiKey, model };
+              saveData();
+              hideModal();
+              showToast("✅ AI配置已保存");
+              if (enabled && apiKey) {
+                showToast("🤖 小桃已接入AI！");
+              } else if (enabled && !apiKey) {
+                showToast("⚠️ 请填写API Key以启用AI");
+              }
             });
         });
       }
@@ -6554,12 +7135,9 @@
       // 拖拽排序（已禁用）
       // ====================================================================
       function setupDragDrop(element) {
-        // 拖拽功能已按用户要求移除
         return;
       }
-
       function saveOrder(parent) {
-        // 拖拽排序已禁用
         return;
       }
 
@@ -8538,7 +9116,6 @@
       function renderArchive() {
         const container = document.getElementById("archiveContent");
         const love = data.love;
-        // 检查是否有基本数据
         if (!love.myName || !love.herName || !love.startDate) {
           container.innerHTML = `<div class="empty-state" style="padding:40px 20px;"><span class="empty-emoji">📋</span><div class="empty-title">暂无恋爱信息</div><div class="empty-desc">请先在 Love 页面填写双方名字和开始日期</div><button class="btn-primary" onclick="navigateTo('pageLove');renderLove();" style="width:auto;padding:8px 24px;margin:0 auto;">前往填写</button></div>`;
           return;
@@ -8556,7 +9133,6 @@
         const letters = love.loveLetters || [];
         const challenges = love.challenges || [];
 
-        // 统计
         const totalAnn = anniversaries.length;
         const totalFights = fights.length;
         const totalLetters = letters.length;
@@ -8572,9 +9148,7 @@
           statusText = `💕 和好于 ${formatDate(reconcileDate)}`;
         }
 
-        // 构建时间线
         let timelineItems = [];
-        // 在一起日期
         if (love.startDate) {
           timelineItems.push({
             date: love.startDate,
@@ -8582,7 +9156,6 @@
             text: "在一起啦！",
           });
         }
-        // 纪念日
         anniversaries.forEach((a) => {
           timelineItems.push({
             date: a.date,
@@ -8590,7 +9163,6 @@
             text: a.content || "纪念日",
           });
         });
-        // 吵架
         fights.forEach((f) => {
           timelineItems.push({
             date: f.date,
@@ -8605,7 +9177,6 @@
             });
           }
         });
-        // 分手/和好
         if (love.breakup?.date) {
           timelineItems.push({
             date: love.breakup.date,
@@ -8620,7 +9191,6 @@
             });
           }
         }
-        // 情书
         letters.forEach((l) => {
           timelineItems.push({
             date: l.date,
@@ -8628,7 +9198,6 @@
             text: l.title || "情书",
           });
         });
-        // 按日期排序（从旧到新）
         timelineItems.sort((a, b) => new Date(a.date) - new Date(b.date));
 
         let timelineHtml = `<div class="archive-timeline">`;
@@ -8672,43 +9241,713 @@
         container.innerHTML = html;
       }
 
-      // 返回按钮绑定（已在HTML中通过 onclick 或事件监听）
-      // 在 init 中会绑定 archiveListBack 的 goBack
-
       // ====================================================================
-      // 占位函数（其他页面已完整实现，此处仅声明避免报错）
+      // 占位函数（纪念日、吵架、分手、情书、树、打卡、足迹、年度报告）
+      // 这些函数已在原有代码中定义，为避免破坏，保留空实现或简单实现
       // ====================================================================
       function renderAnniversary() {
-        /* 完整实现已在上方包含 */
+        const container = document.getElementById("anniversaryList");
+        const list = data.love.anniversaries || [];
+        const total = list.length;
+        const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+        let page = parseInt(localStorage.getItem("anniversaryPage")) || 1;
+        if (page > totalPages) page = totalPages;
+        const start = (page - 1) * PAGE_SIZE;
+        const end = Math.min(start + PAGE_SIZE, total);
+        const pageData = list.slice(start, end);
+        if (pageData.length === 0) {
+          container.innerHTML = `<div class="empty-state"><span class="empty-emoji">🎉</span><div class="empty-title">还没有纪念日</div><div class="empty-desc">添加属于你们的特别日子</div></div>`;
+        } else {
+          container.innerHTML = pageData
+            .map(
+              (item) => `
+            <div class="list-item-card" data-id="${item.id}">
+              <div class="item-left"><div class="item-title">${item.content || "纪念日"}</div><div class="item-sub">📅 ${formatDate(item.date)}</div></div>
+              <button class="del-btn" data-id="${item.id}">❌</button>
+            </div>
+          `,
+            )
+            .join("");
+          container.querySelectorAll(".del-btn").forEach((btn) => {
+            btn.addEventListener("click", function (e) {
+              e.stopPropagation();
+              const id = this.dataset.id;
+              showConfirmDialog("确定删除吗？", () => {
+                data.love.anniversaries = data.love.anniversaries.filter(
+                  (d) => d.id !== id,
+                );
+                saveData();
+                renderAnniversary();
+              });
+            });
+          });
+          container.querySelectorAll(".list-item-card").forEach((el) => {
+            const id = el.dataset.id;
+            if (id) setupLongPress(el, id, "anniversary");
+            el.addEventListener("click", function () {
+              const id = this.dataset.id;
+              const item = data.love.anniversaries.find((d) => d.id === id);
+              if (item) showAnniversaryForm(item);
+            });
+          });
+        }
+        renderPagination(
+          "anniversaryPagination",
+          "anniversaryPageInfo",
+          "anniversaryPrev",
+          "anniversaryNext",
+          page,
+          totalPages,
+        );
+        document.getElementById("anniversaryPrev").onclick = function () {
+          if (page > 1) {
+            localStorage.setItem("anniversaryPage", page - 1);
+            renderAnniversary();
+          }
+        };
+        document.getElementById("anniversaryNext").onclick = function () {
+          if (page < totalPages) {
+            localStorage.setItem("anniversaryPage", page + 1);
+            renderAnniversary();
+          }
+        };
       }
 
+      function showAnniversaryForm(editItem) {
+        const isEdit = !!editItem;
+        const item = isEdit ? editItem : null;
+        const html = `<div class="form-group"><label>纪念日名称</label><input type="text" id="afName" value="${isEdit ? item.content : ""}" placeholder="例如：一周年" /></div>
+            <div class="form-group"><label>日期</label><input type="date" id="afDate" value="${isEdit ? item.date : todayStr()}" /></div>
+            ${isEdit ? `<div class="btn-row"><button class="btn-primary" id="afSave">💾 更新</button><button class="btn-danger" id="afDelete">🗑️ 删除</button></div>` : `<button class="btn-primary" id="afSave">💾 保存</button>`}`;
+        document.getElementById("anniversaryFormBody").innerHTML = html;
+        document.getElementById("anniversaryFormTitle").textContent = isEdit
+          ? "编辑纪念日"
+          : "添加纪念日";
+        document.getElementById("pageAnniversary").classList.remove("active");
+        document.getElementById("pageAnniversaryForm").classList.add("active");
+        navHistory.push("pageAnniversaryForm");
+        document
+          .getElementById("afSave")
+          .addEventListener("click", function () {
+            const name = document.getElementById("afName").value.trim();
+            const date = document.getElementById("afDate").value;
+            if (!name || !date) {
+              alert("请填写完整");
+              return;
+            }
+            if (isEdit) {
+              const idx = data.love.anniversaries.findIndex(
+                (d) => d.id === item.id,
+              );
+              if (idx !== -1) {
+                data.love.anniversaries[idx] = { ...item, content: name, date };
+                saveData();
+                goBack();
+                renderAnniversary();
+              }
+            } else {
+              data.love.anniversaries.push({
+                id: genId(),
+                content: name,
+                date,
+              });
+              saveData();
+              fireConfetti();
+              goBack();
+              renderAnniversary();
+            }
+          });
+        const delBtn = document.getElementById("afDelete");
+        if (delBtn) {
+          delBtn.addEventListener("click", function () {
+            showConfirmDialog("确定删除吗？", () => {
+              data.love.anniversaries = data.love.anniversaries.filter(
+                (d) => d.id !== item.id,
+              );
+              saveData();
+              goBack();
+              renderAnniversary();
+            });
+          });
+        }
+      }
+      document
+        .getElementById("addAnniversaryBtn")
+        .addEventListener("click", () => showAnniversaryForm(null));
+      document
+        .getElementById("anniversaryFormBack")
+        .addEventListener("click", goBack);
+      document
+        .getElementById("anniversaryListBack")
+        .addEventListener("click", goBack);
+
+      // 吵架
       function renderFight() {
-        /* 完整实现已在上方包含 */
+        const container = document.getElementById("fightList");
+        const list = data.love.fights || [];
+        const total = list.length;
+        const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+        let page = parseInt(localStorage.getItem("fightPage")) || 1;
+        if (page > totalPages) page = totalPages;
+        const start = (page - 1) * PAGE_SIZE;
+        const end = Math.min(start + PAGE_SIZE, total);
+        const pageData = list.slice(start, end);
+        if (pageData.length === 0) {
+          container.innerHTML = `<div class="empty-state"><span class="empty-emoji">💢</span><div class="empty-title">没有吵架记录</div><div class="empty-desc">希望你们永远和好如初</div></div>`;
+        } else {
+          container.innerHTML = pageData
+            .map(
+              (item) => `
+            <div class="list-item-card" data-id="${item.id}">
+              <div class="item-left"><div class="item-title">${item.content || "吵架"}</div><div class="item-sub">📅 ${formatDate(item.date)} ${item.reconcileDate ? "🤝 和好 " + formatDate(item.reconcileDate) : "⏳ 未和好"}</div></div>
+              <button class="del-btn" data-id="${item.id}">❌</button>
+            </div>
+          `,
+            )
+            .join("");
+          container.querySelectorAll(".del-btn").forEach((btn) => {
+            btn.addEventListener("click", function (e) {
+              e.stopPropagation();
+              const id = this.dataset.id;
+              showConfirmDialog("确定删除吗？", () => {
+                data.love.fights = data.love.fights.filter((d) => d.id !== id);
+                saveData();
+                renderFight();
+              });
+            });
+          });
+          container.querySelectorAll(".list-item-card").forEach((el) => {
+            const id = el.dataset.id;
+            if (id) setupLongPress(el, id, "fight");
+            el.addEventListener("click", function () {
+              const id = this.dataset.id;
+              const item = data.love.fights.find((d) => d.id === id);
+              if (item) showFightForm(item);
+            });
+          });
+        }
+        renderPagination(
+          "fightPagination",
+          "fightPageInfo",
+          "fightPrev",
+          "fightNext",
+          page,
+          totalPages,
+        );
+        document.getElementById("fightPrev").onclick = function () {
+          if (page > 1) {
+            localStorage.setItem("fightPage", page - 1);
+            renderFight();
+          }
+        };
+        document.getElementById("fightNext").onclick = function () {
+          if (page < totalPages) {
+            localStorage.setItem("fightPage", page + 1);
+            renderFight();
+          }
+        };
       }
 
+      function showFightForm(editItem) {
+        const isEdit = !!editItem;
+        const item = isEdit ? editItem : null;
+        const html = `<div class="form-group"><label>内容</label><input type="text" id="ffContent" value="${isEdit ? item.content : ""}" placeholder="吵架原因" /></div>
+            <div class="form-group"><label>吵架日期</label><input type="date" id="ffDate" value="${isEdit ? item.date : todayStr()}" /></div>
+            <div class="form-group"><label>和好日期（可选）</label><input type="date" id="ffReconcile" value="${isEdit ? item.reconcileDate || "" : ""}" /></div>
+            ${isEdit ? `<div class="btn-row"><button class="btn-primary" id="ffSave">💾 更新</button><button class="btn-danger" id="ffDelete">🗑️ 删除</button></div>` : `<button class="btn-primary" id="ffSave">💾 保存</button>`}`;
+        document.getElementById("fightFormBody").innerHTML = html;
+        document.getElementById("fightFormTitle").textContent = isEdit
+          ? "编辑吵架"
+          : "添加吵架";
+        document.getElementById("pageFight").classList.remove("active");
+        document.getElementById("pageFightForm").classList.add("active");
+        navHistory.push("pageFightForm");
+        document
+          .getElementById("ffSave")
+          .addEventListener("click", function () {
+            const content =
+              document.getElementById("ffContent").value.trim() || "吵架";
+            const date = document.getElementById("ffDate").value;
+            const reconcileDate = document.getElementById("ffReconcile").value;
+            if (!date) {
+              alert("请选择日期");
+              return;
+            }
+            if (isEdit) {
+              const idx = data.love.fights.findIndex((d) => d.id === item.id);
+              if (idx !== -1) {
+                data.love.fights[idx] = {
+                  ...item,
+                  content,
+                  date,
+                  reconcileDate,
+                };
+                saveData();
+                goBack();
+                renderFight();
+              }
+            } else {
+              data.love.fights.push({
+                id: genId(),
+                content,
+                date,
+                reconcileDate,
+              });
+              saveData();
+              fireConfetti();
+              goBack();
+              renderFight();
+            }
+          });
+        const delBtn = document.getElementById("ffDelete");
+        if (delBtn) {
+          delBtn.addEventListener("click", function () {
+            showConfirmDialog("确定删除吗？", () => {
+              data.love.fights = data.love.fights.filter(
+                (d) => d.id !== item.id,
+              );
+              saveData();
+              goBack();
+              renderFight();
+            });
+          });
+        }
+      }
+      document
+        .getElementById("addFightBtn")
+        .addEventListener("click", () => showFightForm(null));
+      document
+        .getElementById("fightFormBack")
+        .addEventListener("click", goBack);
+      document
+        .getElementById("fightListBack")
+        .addEventListener("click", goBack);
+
+      // 分手
       function renderBreakup() {
-        /* 完整实现已在上方包含 */
+        const container = document.getElementById("breakupContent");
+        const breakup = data.love.breakup || { date: "", reconcileDate: "" };
+        const html = `<div class="form-group"><label>💔 分手日期</label><input type="date" id="buDate" value="${breakup.date || ""}" /></div>
+            <div class="form-group"><label>💕 和好日期（可选）</label><input type="date" id="buReconcile" value="${breakup.reconcileDate || ""}" /></div>
+            <button class="btn-primary" id="buSave">💾 保存</button>`;
+        container.innerHTML = html;
+        document
+          .getElementById("buSave")
+          .addEventListener("click", function () {
+            const date = document.getElementById("buDate").value;
+            const reconcileDate = document.getElementById("buReconcile").value;
+            data.love.breakup = { date, reconcileDate };
+            saveData();
+            showToast("✅ 已保存");
+            renderBreakup();
+          });
       }
+      document
+        .getElementById("breakupListBack")
+        .addEventListener("click", goBack);
+      document
+        .getElementById("breakupFormBack")
+        .addEventListener("click", goBack);
 
+      // 情书
       function renderLetter() {
-        /* 完整实现已在上方包含 */
+        const container = document.getElementById("letterList");
+        const list = data.love.loveLetters || [];
+        const total = list.length;
+        const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+        let page = parseInt(localStorage.getItem("letterPage")) || 1;
+        if (page > totalPages) page = totalPages;
+        const start = (page - 1) * PAGE_SIZE;
+        const end = Math.min(start + PAGE_SIZE, total);
+        const pageData = list.slice(start, end);
+        if (pageData.length === 0) {
+          container.innerHTML = `<div class="empty-state"><span class="empty-emoji">💌</span><div class="empty-title">还没有情书</div><div class="empty-desc">写下你想对TA说的话</div></div>`;
+        } else {
+          container.innerHTML = pageData
+            .map(
+              (item) => `
+            <div class="list-item-card" data-id="${item.id}">
+              <div class="item-left"><div class="item-title">${item.title || "无题"}</div><div class="item-sub">📅 ${formatDate(item.date)}</div><div class="item-desc">${item.content ? item.content.slice(0, 30) + (item.content.length > 30 ? "..." : "") : ""}</div></div>
+              <button class="del-btn" data-id="${item.id}">❌</button>
+            </div>
+          `,
+            )
+            .join("");
+          container.querySelectorAll(".del-btn").forEach((btn) => {
+            btn.addEventListener("click", function (e) {
+              e.stopPropagation();
+              const id = this.dataset.id;
+              showConfirmDialog("确定删除吗？", () => {
+                data.love.loveLetters = data.love.loveLetters.filter(
+                  (d) => d.id !== id,
+                );
+                saveData();
+                renderLetter();
+              });
+            });
+          });
+          container.querySelectorAll(".list-item-card").forEach((el) => {
+            const id = el.dataset.id;
+            if (id) setupLongPress(el, id, "letter");
+            el.addEventListener("click", function () {
+              const id = this.dataset.id;
+              const item = data.love.loveLetters.find((d) => d.id === id);
+              if (item) showLetterForm(item);
+            });
+          });
+        }
+        renderPagination(
+          "letterPagination",
+          "letterPageInfo",
+          "letterPrev",
+          "letterNext",
+          page,
+          totalPages,
+        );
+        document.getElementById("letterPrev").onclick = function () {
+          if (page > 1) {
+            localStorage.setItem("letterPage", page - 1);
+            renderLetter();
+          }
+        };
+        document.getElementById("letterNext").onclick = function () {
+          if (page < totalPages) {
+            localStorage.setItem("letterPage", page + 1);
+            renderLetter();
+          }
+        };
       }
 
+      function showLetterForm(editItem) {
+        const isEdit = !!editItem;
+        const item = isEdit ? editItem : null;
+        const html = `<div class="form-group"><label>标题</label><input type="text" id="lfTitle" value="${isEdit ? item.title : ""}" placeholder="给TA的情书" /></div>
+            <div class="form-group"><label>日期</label><input type="date" id="lfDate" value="${isEdit ? item.date : todayStr()}" /></div>
+            <div class="form-group"><label>内容</label><textarea id="lfContent" rows="6" placeholder="写下你的心里话...">${isEdit ? item.content : ""}</textarea></div>
+            ${isEdit ? `<div class="btn-row"><button class="btn-primary" id="lfSave">💾 更新</button><button class="btn-danger" id="lfDelete">🗑️ 删除</button></div>` : `<button class="btn-primary" id="lfSave">💾 保存</button>`}`;
+        document.getElementById("letterFormBody").innerHTML = html;
+        document.getElementById("letterFormTitle").textContent = isEdit
+          ? "编辑情书"
+          : "写情书";
+        document.getElementById("pageLetter").classList.remove("active");
+        document.getElementById("pageLetterForm").classList.add("active");
+        navHistory.push("pageLetterForm");
+        document
+          .getElementById("lfSave")
+          .addEventListener("click", function () {
+            const title =
+              document.getElementById("lfTitle").value.trim() || "给TA的情书";
+            const date = document.getElementById("lfDate").value;
+            const content = document.getElementById("lfContent").value.trim();
+            if (!date || !content) {
+              alert("请填写完整");
+              return;
+            }
+            if (isEdit) {
+              const idx = data.love.loveLetters.findIndex(
+                (d) => d.id === item.id,
+              );
+              if (idx !== -1) {
+                data.love.loveLetters[idx] = { ...item, title, date, content };
+                saveData();
+                goBack();
+                renderLetter();
+              }
+            } else {
+              data.love.loveLetters.push({ id: genId(), title, date, content });
+              saveData();
+              fireConfetti();
+              goBack();
+              renderLetter();
+            }
+          });
+        const delBtn = document.getElementById("lfDelete");
+        if (delBtn) {
+          delBtn.addEventListener("click", function () {
+            showConfirmDialog("确定删除吗？", () => {
+              data.love.loveLetters = data.love.loveLetters.filter(
+                (d) => d.id !== item.id,
+              );
+              saveData();
+              goBack();
+              renderLetter();
+            });
+          });
+        }
+      }
+      document
+        .getElementById("addLetterBtn")
+        .addEventListener("click", () => showLetterForm(null));
+      document
+        .getElementById("letterFormBack")
+        .addEventListener("click", goBack);
+      document
+        .getElementById("letterListBack")
+        .addEventListener("click", goBack);
+
+      // 爱情树
       function renderTree() {
-        /* 完整实现已在上方包含 */
+        const container = document.getElementById("treeContent");
+        const tree = data.love.loveTree || {
+          level: 1,
+          exp: 0,
+          waterCount: 0,
+          lastWaterDate: "",
+        };
+        const expNeeded = tree.level * 15;
+        const progress = Math.min(
+          100,
+          Math.round((tree.exp / expNeeded) * 100),
+        );
+        const emojis = ["🌱", "🌿", "🌳", "🌲", "🎄", "🌴"];
+        const levelEmoji =
+          emojis[Math.min(tree.level - 1, emojis.length - 1)] || "🌳";
+        const canWater = tree.lastWaterDate !== todayStr();
+        const html = `<div class="tree-ring" style="--progress:${progress}%;"><div class="tree-inner"><span class="tree-emoji">${levelEmoji}</span></div><span class="tree-level">Lv.${tree.level}</span></div>
+            <div style="text-align:center;font-size:14px;color:var(--text);">❤️ 经验 ${tree.exp}/${expNeeded}</div>
+            <div style="text-align:center;font-size:12px;color:var(--text2);">💧 浇水 ${tree.waterCount} 次</div>
+            <div class="tree-action-row"><button class="btn-primary" id="waterTree" ${!canWater ? "disabled" : ""}>💧 浇水 +${tree.level * 2} 经验</button><button class="btn-primary" id="growTree">🌱 成长（需满经验）</button></div>
+            <div class="exp-rules"><div class="rule-item"><span class="rule-emoji">💧</span><span class="rule-label">浇水</span><span class="rule-exp">+${tree.level * 2} 经验</span></div><div class="rule-item"><span class="rule-emoji">🎉</span><span class="rule-label">快乐</span><span class="rule-exp">+3 经验</span></div><div class="rule-item"><span class="rule-emoji">✈️</span><span class="rule-label">旅行</span><span class="rule-exp">+5 经验</span></div></div>`;
+        container.innerHTML = html;
+        document
+          .getElementById("waterTree")
+          .addEventListener("click", function () {
+            if (tree.lastWaterDate === todayStr()) {
+              showToast("今天已经浇过水啦");
+              return;
+            }
+            const gain = tree.level * 2;
+            tree.exp += gain;
+            tree.waterCount = (tree.waterCount || 0) + 1;
+            tree.lastWaterDate = todayStr();
+            saveData();
+            renderTree();
+            showToast(`💧 浇水成功！+${gain} 经验`);
+          });
+        document
+          .getElementById("growTree")
+          .addEventListener("click", function () {
+            const needed = tree.level * 15;
+            if (tree.exp < needed) {
+              showToast(`💪 需要 ${needed} 经验才能升级`);
+              return;
+            }
+            tree.exp -= needed;
+            tree.level += 1;
+            saveData();
+            renderTree();
+            fireConfetti();
+            showToast(`🌱 升级了！现在是 Lv.${tree.level}`);
+            updateAchievements();
+          });
       }
+      document.getElementById("treeListBack").addEventListener("click", goBack);
 
+      // 打卡挑战
       function renderChallenge() {
-        /* 完整实现已在上方包含 */
+        const container = document.getElementById("challengeList");
+        const list = data.love.challenges || [];
+        const total = list.length;
+        const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+        let page = parseInt(localStorage.getItem("challengePage")) || 1;
+        if (page > totalPages) page = totalPages;
+        const start = (page - 1) * PAGE_SIZE;
+        const end = Math.min(start + PAGE_SIZE, total);
+        const pageData = list.slice(start, end);
+        if (pageData.length === 0) {
+          container.innerHTML = `<div class="empty-state"><span class="empty-emoji">✅</span><div class="empty-title">还没有打卡</div><div class="empty-desc">建立你们的挑战习惯</div></div>`;
+        } else {
+          container.innerHTML = pageData
+            .map(
+              (item) => `
+            <div class="list-item-card" data-id="${item.id}">
+              <div class="item-left"><div class="item-title">${item.content || "打卡"}</div><div class="item-sub">📅 ${formatDate(item.date)} ${item.done ? "✅ 已完成" : "⏳ 进行中"}</div></div>
+              <span class="status-badge ${item.done ? "done" : "pending"}" data-id="${item.id}">${item.done ? "✅ 完成" : "⏳ 未完成"}</span>
+              <button class="del-btn" data-id="${item.id}">❌</button>
+            </div>
+          `,
+            )
+            .join("");
+          container.querySelectorAll(".status-badge").forEach((badge) => {
+            badge.addEventListener("click", function (e) {
+              e.stopPropagation();
+              const id = this.dataset.id;
+              const item = data.love.challenges.find((d) => d.id === id);
+              if (item) {
+                item.done = !item.done;
+                saveData();
+                renderChallenge();
+              }
+            });
+          });
+          container.querySelectorAll(".del-btn").forEach((btn) => {
+            btn.addEventListener("click", function (e) {
+              e.stopPropagation();
+              const id = this.dataset.id;
+              showConfirmDialog("确定删除吗？", () => {
+                data.love.challenges = data.love.challenges.filter(
+                  (d) => d.id !== id,
+                );
+                saveData();
+                renderChallenge();
+              });
+            });
+          });
+          container.querySelectorAll(".list-item-card").forEach((el) => {
+            const id = el.dataset.id;
+            if (id) setupLongPress(el, id, "challenge");
+          });
+        }
+        renderPagination(
+          "challengePagination",
+          "challengePageInfo",
+          "challengePrev",
+          "challengeNext",
+          page,
+          totalPages,
+        );
+        document.getElementById("challengePrev").onclick = function () {
+          if (page > 1) {
+            localStorage.setItem("challengePage", page - 1);
+            renderChallenge();
+          }
+        };
+        document.getElementById("challengeNext").onclick = function () {
+          if (page < totalPages) {
+            localStorage.setItem("challengePage", page + 1);
+            renderChallenge();
+          }
+        };
       }
 
+      function showChallengeForm(editItem) {
+        const isEdit = !!editItem;
+        const item = isEdit ? editItem : null;
+        const html = `<div class="form-group"><label>打卡内容</label><input type="text" id="cfContent" value="${isEdit ? item.content : ""}" placeholder="每天运动30分钟" /></div>
+            <div class="form-group"><label>日期</label><input type="date" id="cfDate" value="${isEdit ? item.date : todayStr()}" /></div>
+            <div class="form-group"><label>已完成</label><select id="cfDone" style="width:100%;padding:10px 12px;border-radius:var(--radius);border:0.5px solid var(--border);font-size:15px;background:var(--card);"><option value="0" ${isEdit && !item.done ? "selected" : ""}>未完成</option><option value="1" ${isEdit && item.done ? "selected" : ""}>已完成</option></select></div>
+            ${isEdit ? `<div class="btn-row"><button class="btn-primary" id="cfSave">💾 更新</button><button class="btn-danger" id="cfDelete">🗑️ 删除</button></div>` : `<button class="btn-primary" id="cfSave">💾 保存</button>`}`;
+        document.getElementById("challengeFormBody").innerHTML = html;
+        document.getElementById("challengeFormTitle").textContent = isEdit
+          ? "编辑打卡"
+          : "添加打卡";
+        document.getElementById("pageChallenge").classList.remove("active");
+        document.getElementById("pageChallengeForm").classList.add("active");
+        navHistory.push("pageChallengeForm");
+        document
+          .getElementById("cfSave")
+          .addEventListener("click", function () {
+            const content = document.getElementById("cfContent").value.trim();
+            const date = document.getElementById("cfDate").value;
+            const done = document.getElementById("cfDone").value === "1";
+            if (!content || !date) {
+              alert("请填写完整");
+              return;
+            }
+            if (isEdit) {
+              const idx = data.love.challenges.findIndex(
+                (d) => d.id === item.id,
+              );
+              if (idx !== -1) {
+                data.love.challenges[idx] = { ...item, content, date, done };
+                saveData();
+                goBack();
+                renderChallenge();
+              }
+            } else {
+              data.love.challenges.push({ id: genId(), content, date, done });
+              saveData();
+              fireConfetti();
+              goBack();
+              renderChallenge();
+            }
+          });
+        const delBtn = document.getElementById("cfDelete");
+        if (delBtn) {
+          delBtn.addEventListener("click", function () {
+            showConfirmDialog("确定删除吗？", () => {
+              data.love.challenges = data.love.challenges.filter(
+                (d) => d.id !== item.id,
+              );
+              saveData();
+              goBack();
+              renderChallenge();
+            });
+          });
+        }
+      }
+      document
+        .getElementById("addChallengeBtn")
+        .addEventListener("click", () => showChallengeForm(null));
+      document
+        .getElementById("challengeFormBack")
+        .addEventListener("click", goBack);
+      document
+        .getElementById("challengeListBack")
+        .addEventListener("click", goBack);
+
+      // 足迹（简略）
       function renderFootprint() {
-        /* 完整实现已在上方包含 */
+        const container = document.getElementById("footprintContent");
+        const happy = data.happy || [];
+        const travel = data.travel || [];
+        const items = [
+          ...happy.map((h) => ({
+            ...h,
+            type: "happy",
+            icon: "😊",
+            location: h.location || "快乐时刻",
+          })),
+          ...travel.map((t) => ({
+            ...t,
+            type: "travel",
+            icon: "✈️",
+            location: t.location || "旅行",
+          })),
+        ].sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
+        if (items.length === 0) {
+          container.innerHTML = `<div class="empty-state"><span class="empty-emoji">👣</span><div class="empty-title">还没有足迹</div><div class="empty-desc">每一次快乐和旅行都是你们的足迹</div></div>`;
+          return;
+        }
+        let html = `<div style="max-height:500px;overflow-y:auto;">`;
+        items.slice(0, 30).forEach((item) => {
+          html += `<div class="footprint-item"><span class="fp-icon">${item.icon}</span><div class="fp-info"><div class="fp-date">${formatDate(item.startDate)}</div><div class="fp-location">${item.location || "未知地点"}</div></div><span class="fp-type">${item.type === "happy" ? "😊 快乐" : "✈️ 旅行"}</span></div>`;
+        });
+        html += `</div>`;
+        container.innerHTML = html;
       }
+      document
+        .getElementById("footprintListBack")
+        .addEventListener("click", goBack);
 
+      // 年度报告（简略）
       function renderYearlyReport() {
-        /* 完整实现已在上方包含 */
+        const container = document.getElementById("yearlyReportContent");
+        const happy = data.happy || [];
+        const travel = data.travel || [];
+        const year = new Date().getFullYear();
+        const yearHappy = happy.filter(
+          (h) => new Date(h.startDate).getFullYear() === year,
+        );
+        const yearTravel = travel.filter(
+          (t) => new Date(t.startDate).getFullYear() === year,
+        );
+        const days = getLoveDays();
+        const html = `<div style="padding:8px 0;">
+            <div style="text-align:center;font-size:20px;font-weight:700;color:var(--primary);margin-bottom:12px;">📈 ${year} 年度报告</div>
+            <div class="yearly-report-grid">
+                <div class="yr-item"><div class="yr-number">${yearHappy.length}</div><div class="yr-label">😊 快乐次数</div></div>
+                <div class="yr-item"><div class="yr-number">${yearTravel.length}</div><div class="yr-label">✈️ 旅行次数</div></div>
+                <div class="yr-item"><div class="yr-number">${days}</div><div class="yr-label">💕 恋爱天数</div></div>
+                <div class="yr-item"><div class="yr-number">${data.love.anniversaries?.length || 0}</div><div class="yr-label">🎉 纪念日</div></div>
+            </div>
+            <div style="text-align:center;font-size:14px;color:var(--text2);padding:12px 0;">💕 继续创造属于你们的美好回忆</div>
+        </div>`;
+        container.innerHTML = html;
       }
+      document
+        .getElementById("yearlyReportListBack")
+        .addEventListener("click", goBack);
 
       // ====================================================================
       // Toast
@@ -8930,10 +10169,18 @@
         const menu = document.createElement("div");
         menu.className = "longpress-menu";
         let menuItems = [];
-        menuItems.push(
-          { icon: "✏️", label: "编辑", action: "edit", danger: false },
-          { icon: "🗑️", label: "删除", action: "delete", danger: true },
-        );
+        menuItems.push({
+          icon: "✏️",
+          label: "编辑",
+          action: "edit",
+          danger: false,
+        });
+        menuItems.push({
+          icon: "🗑️",
+          label: "删除",
+          action: "delete",
+          danger: true,
+        });
         if (itemType === "challenge") {
           menuItems.splice(1, 0, {
             icon: "🔄",
@@ -9124,6 +10371,205 @@
       }
 
       // ====================================================================
+      // 日历（修复日期比较 + 标题不乱 + 显示标记）
+      // ====================================================================
+      // 辅助：创建本地日期对象（避免时区偏移）
+      function makeDate(y, m, d) {
+        return new Date(y, m, d, 0, 0, 0, 0);
+      }
+      function dateStrToLocal(dateStr) {
+        if (!dateStr) return null;
+        const parts = dateStr.split("-");
+        if (parts.length !== 3) return null;
+        const y = parseInt(parts[0]),
+          mo = parseInt(parts[1]) - 1,
+          d = parseInt(parts[2]);
+        if (isNaN(y) || isNaN(mo) || isNaN(d)) return null;
+        return makeDate(y, mo, d);
+      }
+
+      // 日历显示函数（在模态框中）
+      function showDayDetailInCalendar(year, month, day) {
+        // 更新标题（不累积）
+        const titleEl = document.querySelector(".cal-nav .cal-month-year");
+        if (titleEl) {
+          // 取当前年月（从标题中提取，防止多次追加）
+          const currentText = titleEl.textContent;
+          let base = currentText;
+          // 如果已经包含 "·"，则截取前面部分
+          if (base.includes("·")) {
+            base = base.split("·")[0].trim();
+          }
+          titleEl.textContent = `${base} · ${day}日`;
+        }
+
+        // 查找记录
+        const dateObj = makeDate(year, month, day);
+        const y = dateObj.getFullYear(),
+          m = dateObj.getMonth(),
+          d = dateObj.getDate();
+        let items = [];
+
+        // 快乐
+        data.happy.forEach((h) => {
+          if (!h.startDate) return;
+          const dt = dateStrToLocal(h.startDate);
+          if (
+            dt &&
+            dt.getFullYear() === y &&
+            dt.getMonth() === m &&
+            dt.getDate() === d
+          ) {
+            items.push({
+              type: "😊 快乐",
+              text: h.location || "快乐时刻",
+              detail: h.content || "",
+            });
+          }
+        });
+        // 旅行
+        data.travel.forEach((t) => {
+          if (!t.startDate) return;
+          const dt = dateStrToLocal(t.startDate);
+          if (
+            dt &&
+            dt.getFullYear() === y &&
+            dt.getMonth() === m &&
+            dt.getDate() === d
+          ) {
+            items.push({
+              type: "✈️ 旅行",
+              text: t.location || "旅行",
+              detail: t.content || "",
+            });
+          }
+        });
+        // 月经
+        data.menstrual.forEach((men) => {
+          if (!men.startDate) return;
+          const start = dateStrToLocal(men.startDate);
+          if (!start) return;
+          const days = men.days || men.dayDetails?.length || 1;
+          for (let i = 0; i < days; i++) {
+            const dd = new Date(start);
+            dd.setDate(dd.getDate() + i);
+            if (
+              dd.getFullYear() === y &&
+              dd.getMonth() === m &&
+              dd.getDate() === d
+            ) {
+              const flow = men.dayDetails?.[i]?.flow || "中量";
+              items.push({
+                type: "🩸 月经",
+                text: `第${i + 1}天 · ${flow}`,
+                detail: "",
+              });
+            }
+          }
+        });
+
+        const detailArea = document.getElementById("calendarDetailArea");
+        if (!detailArea) return;
+        if (items.length === 0) {
+          detailArea.innerHTML = `<div class="empty-detail">📅 这一天没有记录 ✨</div>`;
+          return;
+        }
+        let html = "";
+        items.forEach((item) => {
+          html += `<div class="detail-item"><span class="dtype">${item.type}</span><span class="dtext">${item.text}</span>${item.detail ? `<span class="dsub"> · ${item.detail}</span>` : ""}</div>`;
+        });
+        detailArea.innerHTML = html;
+      }
+
+      // 构建日历网格（带彩色圆点）
+      function buildCalGridWithDetail(y, m) {
+        const fd = new Date(y, m, 1).getDay();
+        const dim = new Date(y, m + 1, 0).getDate();
+        let g = '<div class="cal-grid">';
+        const weekdays = ["日", "一", "二", "三", "四", "五", "六"];
+        weekdays.forEach((w) => {
+          g += `<div class="cal-weekday">${w}</div>`;
+        });
+        for (let i = 0; i < fd; i++) {
+          g += `<div class="cal-day" style="background:transparent;"></div>`;
+        }
+        const today = new Date();
+        const todayY = today.getFullYear(),
+          todayM = today.getMonth(),
+          todayD = today.getDate();
+
+        for (let day = 1; day <= dim; day++) {
+          const isToday = y === todayY && m === todayM && day === todayD;
+
+          // 检查是否有记录（使用本地日期比较）
+          const hasHappy = data.happy.some((h) => {
+            if (!h.startDate) return false;
+            const dt = dateStrToLocal(h.startDate);
+            return (
+              dt &&
+              dt.getFullYear() === y &&
+              dt.getMonth() === m &&
+              dt.getDate() === day
+            );
+          });
+          const hasTravel = data.travel.some((t) => {
+            if (!t.startDate) return false;
+            const dt = dateStrToLocal(t.startDate);
+            return (
+              dt &&
+              dt.getFullYear() === y &&
+              dt.getMonth() === m &&
+              dt.getDate() === day
+            );
+          });
+          let hasMenstrual = false;
+          data.menstrual.forEach((men) => {
+            if (!men.startDate) return;
+            const start = dateStrToLocal(men.startDate);
+            if (!start) return;
+            const days = men.days || men.dayDetails?.length || 1;
+            for (let i = 0; i < days; i++) {
+              const dd = new Date(start);
+              dd.setDate(dd.getDate() + i);
+              if (
+                dd.getFullYear() === y &&
+                dd.getMonth() === m &&
+                dd.getDate() === day
+              ) {
+                hasMenstrual = true;
+              }
+            }
+          });
+          const hasEvent = hasHappy || hasTravel || hasMenstrual;
+
+          // 构建彩色圆点（多色）
+          let dotsHtml = "";
+          let dotPositions = [];
+          if (hasHappy) dotPositions.push({ color: "#ff6b8a", pos: "20%" });
+          if (hasTravel) dotPositions.push({ color: "#4a9eff", pos: "50%" });
+          if (hasMenstrual) dotPositions.push({ color: "#9b59b6", pos: "80%" });
+          // 如果只有一个，居中
+          if (dotPositions.length === 1) {
+            dotPositions[0].pos = "50%";
+          } else if (dotPositions.length === 2) {
+            dotPositions[0].pos = "30%";
+            dotPositions[1].pos = "70%";
+          } else if (dotPositions.length === 3) {
+            dotPositions[0].pos = "20%";
+            dotPositions[1].pos = "50%";
+            dotPositions[2].pos = "80%";
+          }
+          dotPositions.forEach((dp) => {
+            dotsHtml += `<span class="event-dot" style="background:${dp.color};left:${dp.pos};"></span>`;
+          });
+
+          g += `<div class="cal-day ${hasEvent ? "has-event" : ""}" style="${isToday ? "border-color:var(--primary);" : ""}" data-year="${y}" data-month="${m}" data-day="${day}">${day}${dotsHtml}</div>`;
+        }
+        g += "</div>";
+        return g;
+      }
+
+      // ====================================================================
       // 初始化
       // ====================================================================
       function init() {
@@ -9200,11 +10646,10 @@
                 });
               });
             } else if (action === "calendar") {
+              // 打开日历（修复版）
               const now = new Date();
               const year = now.getFullYear(),
                 month = now.getMonth();
-              const firstDay = new Date(year, month, 1).getDay();
-              const daysInMonth = new Date(year, month + 1, 0).getDate();
               const monthNames = [
                 "1月",
                 "2月",
@@ -9219,102 +10664,88 @@
                 "11月",
                 "12月",
               ];
-              let gridHtml = '<div class="cal-grid">';
-              const weekdays = ["日", "一", "二", "三", "四", "五", "六"];
-              weekdays.forEach((w) => {
-                gridHtml += `<div class="cal-weekday">${w}</div>`;
-              });
-              for (let i = 0; i < firstDay; i++) {
-                gridHtml += `<div class="cal-day" style="background:transparent;"></div>`;
-              }
-              const today = new Date();
-              for (let d = 1; d <= daysInMonth; d++) {
-                const dateObj = new Date(year, month, d);
-                const isToday = dateObj.toDateString() === today.toDateString();
-                const hasEvent =
-                  data.happy.some(
-                    (h) =>
-                      new Date(h.startDate).toDateString() ===
-                      dateObj.toDateString(),
-                  ) ||
-                  data.travel.some(
-                    (t) =>
-                      new Date(t.startDate).toDateString() ===
-                      dateObj.toDateString(),
-                  ) ||
-                  data.love.anniversaries.some(
-                    (a) =>
-                      new Date(a.date).toDateString() ===
-                      dateObj.toDateString(),
-                  );
-                gridHtml += `<div class="cal-day ${hasEvent ? "has-event" : ""}" style="${isToday ? "border-color:var(--primary);" : ""}">${d}${hasEvent ? '<span class="event-dot"></span>' : ""}</div>`;
-              }
-              gridHtml += "</div>";
-              const html = `<div class="cal-nav"><button id="calPrev">‹</button><span class="cal-month-year">${year}年 ${monthNames[month]}</span><button id="calNext">›</button></div>${gridHtml}`;
-              showModal("📅 日历", html);
+
               let currentYear = year,
                 currentMonth = month;
+              const gridHtml = buildCalGridWithDetail(
+                currentYear,
+                currentMonth,
+              );
+              const legendHtml = `<div class="cal-legend">
+                <span class="leg-item"><span class="leg-dot happy-dot"></span> 快乐</span>
+                <span class="leg-item"><span class="leg-dot travel-dot"></span> 旅行</span>
+                <span class="leg-item"><span class="leg-dot menstrual-dot"></span> 月经</span>
+              </div>`;
+              const detailHtml = `<div class="cal-detail-area" id="calendarDetailArea"><div class="empty-detail">📅 点击某一天查看记录</div></div>`;
+              const html = `<div class="cal-nav"><button id="calPrev">‹</button><span class="cal-month-year">${currentYear}年 ${monthNames[currentMonth]}</span><button id="calNext">›</button></div>${gridHtml}${legendHtml}${detailHtml}`;
 
-              function renderCal(y, m) {
-                const fd = new Date(y, m, 1).getDay();
-                const dim = new Date(y, m + 1, 0).getDate();
-                let g = '<div class="cal-grid">';
-                weekdays.forEach((w) => {
-                  g += `<div class="cal-weekday">${w}</div>`;
-                });
-                for (let i = 0; i < fd; i++) {
-                  g += `<div class="cal-day" style="background:transparent;"></div>`;
-                }
-                const t = new Date();
-                for (let d = 1; d <= dim; d++) {
-                  const dateObj = new Date(y, m, d);
-                  const isToday = dateObj.toDateString() === t.toDateString();
-                  const hasEvent =
-                    data.happy.some(
-                      (h) =>
-                        new Date(h.startDate).toDateString() ===
-                        dateObj.toDateString(),
-                    ) ||
-                    data.travel.some(
-                      (t2) =>
-                        new Date(t2.startDate).toDateString() ===
-                        dateObj.toDateString(),
-                    ) ||
-                    data.love.anniversaries.some(
-                      (a) =>
-                        new Date(a.date).toDateString() ===
-                        dateObj.toDateString(),
-                    );
-                  g += `<div class="cal-day ${hasEvent ? "has-event" : ""}" style="${isToday ? "border-color:var(--primary);" : ""}">${d}${hasEvent ? '<span class="event-dot"></span>' : ""}</div>`;
-                }
-                g += "</div>";
-                const container = document.querySelector(
-                  "#modalBody .cal-grid",
-                );
-                if (container) container.outerHTML = g;
-                document.querySelector(".cal-month-year").textContent =
-                  `${y}年 ${monthNames[m]}`;
-              }
-              document
-                .getElementById("calPrev")
-                .addEventListener("click", function () {
-                  currentMonth--;
-                  if (currentMonth < 0) {
-                    currentMonth = 11;
-                    currentYear--;
+              showModal("📅 日历", html, () => {
+                // 事件委托
+                const bodyEl = document.getElementById("modalBody");
+                bodyEl.addEventListener("click", function (e) {
+                  const dayEl = e.target.closest(".cal-day");
+                  if (dayEl && dayEl.dataset.year) {
+                    const y = parseInt(dayEl.dataset.year);
+                    const m = parseInt(dayEl.dataset.month);
+                    const d = parseInt(dayEl.dataset.day);
+                    if (!isNaN(y) && !isNaN(m) && !isNaN(d)) {
+                      showDayDetailInCalendar(y, m, d);
+                    }
                   }
-                  renderCal(currentYear, currentMonth);
                 });
-              document
-                .getElementById("calNext")
-                .addEventListener("click", function () {
-                  currentMonth++;
-                  if (currentMonth > 11) {
-                    currentMonth = 0;
-                    currentYear++;
-                  }
-                  renderCal(currentYear, currentMonth);
-                });
+
+                function renderCal(y, m) {
+                  const newGrid = buildCalGridWithDetail(y, m);
+                  const container = document.querySelector(
+                    "#modalBody .cal-grid",
+                  );
+                  if (container) container.outerHTML = newGrid;
+                  // 重置标题（不带日期）
+                  const titleEl = document.querySelector(
+                    ".cal-nav .cal-month-year",
+                  );
+                  if (titleEl) titleEl.textContent = `${y}年 ${monthNames[m]}`;
+                  // 重置详情
+                  const detailArea =
+                    document.getElementById("calendarDetailArea");
+                  if (detailArea)
+                    detailArea.innerHTML = `<div class="empty-detail">📅 点击某一天查看记录</div>`;
+                  // 重新绑定事件
+                  const bodyEl2 = document.getElementById("modalBody");
+                  bodyEl2.addEventListener("click", function (e) {
+                    const dayEl = e.target.closest(".cal-day");
+                    if (dayEl && dayEl.dataset.year) {
+                      const y2 = parseInt(dayEl.dataset.year);
+                      const m2 = parseInt(dayEl.dataset.month);
+                      const d2 = parseInt(dayEl.dataset.day);
+                      if (!isNaN(y2) && !isNaN(m2) && !isNaN(d2)) {
+                        showDayDetailInCalendar(y2, m2, d2);
+                      }
+                    }
+                  });
+                }
+
+                document
+                  .getElementById("calPrev")
+                  .addEventListener("click", function () {
+                    currentMonth--;
+                    if (currentMonth < 0) {
+                      currentMonth = 11;
+                      currentYear--;
+                    }
+                    renderCal(currentYear, currentMonth);
+                  });
+                document
+                  .getElementById("calNext")
+                  .addEventListener("click", function () {
+                    currentMonth++;
+                    if (currentMonth > 11) {
+                      currentMonth = 0;
+                      currentYear++;
+                    }
+                    renderCal(currentYear, currentMonth);
+                  });
+              });
             } else if (action === "random") {
               const randomQuote =
                 LOVE_QUOTES[Math.floor(Math.random() * LOVE_QUOTES.length)];
@@ -9351,7 +10782,7 @@
         renderChallenge();
         renderFootprint();
         renderYearlyReport();
-        renderArchive(); // 渲染档案
+        renderArchive();
         renderHundredThings();
         renderCoupleQuiz();
         renderLoveFortune();
@@ -9399,7 +10830,7 @@
         });
 
         setInterval(saveData, 30000);
-        console.log("💕 Love·轨迹 已启动 (完整修复版)");
+        console.log("💕 Love·轨迹 已启动 (日历多色+小桃智能版 + AI)");
       }
 
       if (document.readyState === "loading") {
