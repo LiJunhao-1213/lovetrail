@@ -249,69 +249,6 @@
         margin: 0;
         white-space: nowrap;
       }
-      /* 锁屏 */
-      #lockOverlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.85);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        z-index: 99999;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        color: #fff;
-        padding: 40px;
-      }
-      #lockOverlay.show {
-        display: flex;
-      }
-      #lockOverlay .lock-title {
-        font-size: 24px;
-        font-weight: 600;
-        margin-bottom: 20px;
-      }
-      #lockOverlay .lock-input {
-        width: 200px;
-        padding: 12px 16px;
-        border-radius: 12px;
-        border: none;
-        font-size: 20px;
-        text-align: center;
-        background: rgba(255, 255, 255, 0.15);
-        color: #fff;
-        letter-spacing: 8px;
-        outline: none;
-      }
-      #lockOverlay .lock-input::placeholder {
-        color: rgba(255, 255, 255, 0.4);
-        letter-spacing: 0;
-      }
-      #lockOverlay .lock-error {
-        color: #ff6b6b;
-        margin-top: 12px;
-        font-size: 14px;
-        min-height: 20px;
-      }
-      #lockOverlay .lock-hint {
-        color: rgba(255, 255, 255, 0.5);
-        font-size: 13px;
-        margin-top: 8px;
-      }
-      #lockOverlay .lock-setup {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 12px;
-      }
-      #lockOverlay .lock-setup .lock-sub {
-        font-size: 14px;
-        opacity: 0.6;
-      }
       /* 表单 */
       .form-group {
         margin-bottom: 14px;
@@ -2639,6 +2576,8 @@
         min-height: 0;
       }
       .cal-grid .cal-day.has-event {
+        font-weight: 600;
+        color: #fff;
         border-radius: 50%;
       }
       .cal-grid .cal-day .event-dot {
@@ -4031,9 +3970,6 @@
         align-items: center;
         gap: 6px;
       }
-      .cal-detail-area .detail-item:last-child {
-        border-bottom: none;
-      }
       .cal-detail-area .detail-item .dtype {
         font-weight: 500;
         color: var(--primary);
@@ -4051,36 +3987,8 @@
   <body>
     <div id="app">
       <canvas id="particleCanvas"></canvas>
-      <div id="lockOverlay">
-        <div class="lock-title">🔒 输入密码</div>
-        <input
-          class="lock-input"
-          id="lockInput"
-          type="password"
-          maxlength="6"
-          placeholder="请输入密码"
-          autofocus
-        />
-        <div class="lock-error" id="lockError"></div>
-        <div class="lock-hint" id="lockHint"></div>
-        <div class="lock-setup" id="lockSetup" style="display: none">
-          <div class="lock-sub">首次使用，请设置一个6位数字密码</div>
-          <input
-            class="lock-input"
-            id="lockSetupInput"
-            type="password"
-            maxlength="6"
-            placeholder="设置密码"
-          />
-          <button
-            class="btn-primary"
-            id="lockSetupBtn"
-            style="width: auto; padding: 8px 30px"
-          >
-            设置
-          </button>
-        </div>
-      </div>
+      <!-- 锁屏已移除 -->
+
       <nav class="nav-bar" id="mainNav">
         <div class="nav-title">❤️Love·轨迹 <span>520.1314</span></div>
         <div class="nav-actions">
@@ -5331,64 +5239,8 @@
       }
 
       // ====================================================================
-      // LOCK
+      // LOCK - 已移除
       // ====================================================================
-      function checkLock() {
-        const lock = data.appLock;
-        if (!lock || !lock.enabled) return;
-        const overlay = document.getElementById("lockOverlay");
-        overlay.classList.add("show");
-        const input = document.getElementById("lockInput");
-        input.value = "";
-        input.focus();
-        document.getElementById("lockError").textContent = "";
-        document.getElementById("lockSetup").style.display = "none";
-        input.oninput = function () {
-          if (this.value.length === 6) {
-            if (this.value === lock.password) {
-              overlay.classList.remove("show");
-              this.value = "";
-            } else {
-              document.getElementById("lockError").textContent =
-                "密码错误，请重试";
-              this.value = "";
-            }
-          }
-        };
-      }
-
-      function setupLock() {
-        const lock = data.appLock;
-        if (!lock.enabled || !lock.password) {
-          const overlay = document.getElementById("lockOverlay");
-          overlay.classList.add("show");
-          document.getElementById("lockInput").style.display = "none";
-          document.getElementById("lockError").textContent = "";
-          document.getElementById("lockHint").textContent = "";
-          const setupDiv = document.getElementById("lockSetup");
-          setupDiv.style.display = "flex";
-          const setupInput = document.getElementById("lockSetupInput");
-          setupInput.value = "";
-          setupInput.focus();
-          document.getElementById("lockSetupBtn").onclick = function () {
-            const pwd = setupInput.value.trim();
-            if (pwd.length !== 6 || !/^\d{6}$/.test(pwd)) {
-              document.getElementById("lockError").textContent =
-                "请输入6位数字密码";
-              return;
-            }
-            lock.enabled = true;
-            lock.password = pwd;
-            saveData();
-            setupDiv.style.display = "none";
-            document.getElementById("lockInput").style.display = "block";
-            overlay.classList.remove("show");
-            document.getElementById("lockInput").value = "";
-          };
-        } else {
-          checkLock();
-        }
-      }
 
       // ====================================================================
       // QUOTE & ANNIVERSARY
@@ -6501,10 +6353,9 @@
       }
 
       // ====================================================================
-      // 设置（含AI配置）
+      // 设置（含AI配置，移除锁）
       // ====================================================================
       function showSettings() {
-        const lock = data.appLock;
         const ai = data.aiConfig || {
           enabled: false,
           provider: "deepseek",
@@ -6512,18 +6363,6 @@
           model: "deepseek-chat",
         };
         const html = `<div style="padding:6px 0;">
-            <div class="form-group" style="padding:8px 0;background:none;box-shadow:none;border:none;">
-                <div style="display:flex;justify-content:space-between;align-items:center;">
-                    <span style="font-weight:500;">🔒 应用锁</span>
-                    <label style="display:flex;align-items:center;gap:8px;">
-                        <span style="font-size:14px;color:var(--text2);">${lock.enabled ? "已启用" : "已禁用"}</span>
-                        <input type="checkbox" id="lockToggle" ${lock.enabled ? "checked" : ""} style="width:40px;height:24px;cursor:pointer;">
-                    </label>
-                </div>
-                ${lock.enabled ? `<div style="font-size:13px;color:var(--text2);margin-top:4px;">密码: ${"*".repeat(lock.password.length)}</div>` : ""}
-                <button class="btn-primary" id="lockChangePwd" style="margin-top:8px;width:auto;padding:6px 16px;">${lock.enabled ? "修改密码" : "设置密码"}</button>
-            </div>
-            <hr class="form-divider" />
             <div class="form-group" style="padding:8px 0;background:none;box-shadow:none;border:none;">
                 <div style="font-weight:600;font-size:15px;margin-bottom:6px;">🤖 AI 智能助手（小桃）</div>
                 <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;">
@@ -6552,45 +6391,6 @@
             </div>
         </div>`;
         showModal("⚙️ 设置", html, () => {
-          document
-            .getElementById("lockToggle")
-            .addEventListener("change", function () {
-              if (this.checked) {
-                const pwd = prompt("请设置6位数字密码:", "");
-                if (pwd && /^\d{6}$/.test(pwd)) {
-                  data.appLock.enabled = true;
-                  data.appLock.password = pwd;
-                  saveData();
-                  hideModal();
-                  showSettings();
-                } else if (pwd !== null) {
-                  alert("密码必须为6位数字");
-                  this.checked = false;
-                } else {
-                  this.checked = false;
-                }
-              } else {
-                data.appLock.enabled = false;
-                data.appLock.password = "";
-                saveData();
-                hideModal();
-                showSettings();
-              }
-            });
-          document
-            .getElementById("lockChangePwd")
-            .addEventListener("click", function () {
-              const pwd = prompt("请输入新的6位数字密码:", "");
-              if (pwd && /^\d{6}$/.test(pwd)) {
-                data.appLock.password = pwd;
-                data.appLock.enabled = true;
-                saveData();
-                hideModal();
-                showSettings();
-              } else if (pwd !== null) {
-                alert("密码必须为6位数字");
-              }
-            });
           document
             .getElementById("clearDataBtnSettings")
             .addEventListener("click", function () {
@@ -7814,12 +7614,14 @@
       }
 
       // ====================================================================
-      // 渲染快乐
+      // 渲染快乐（按日期降序）
       // ====================================================================
       let happyPageNum = 1;
 
       function renderHappy(list) {
-        const source = list || data.happy;
+        const source = (list || data.happy)
+          .slice()
+          .sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
         const total = source.length;
         const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
         if (happyPageNum > totalPages) happyPageNum = totalPages;
@@ -7833,12 +7635,8 @@
             totalEl.innerHTML = total + ' <span class="unit">次</span>';
           const recentEl = document.getElementById("happyRecent");
           if (recentEl && total > 0) {
-            const sorted = [...source].sort(
-              (a, b) => new Date(b.startDate) - new Date(a.startDate),
-            );
-            const last = sorted[0];
-            recentEl.textContent = last.startDate
-              ? formatDate(last.startDate)
+            recentEl.textContent = source[0].startDate
+              ? formatDate(source[0].startDate)
               : "-";
           } else if (recentEl) recentEl.textContent = "-";
         }
@@ -8146,12 +7944,14 @@
         .addEventListener("click", goBack);
 
       // ====================================================================
-      // 渲染旅行
+      // 渲染旅行（按日期降序）
       // ====================================================================
       let travelPageNum = 1;
 
       function renderTravel(list) {
-        const source = list || data.travel;
+        const source = (list || data.travel)
+          .slice()
+          .sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
         const total = source.length;
         const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
         if (travelPageNum > totalPages) travelPageNum = totalPages;
@@ -8165,12 +7965,8 @@
             totalEl.innerHTML = total + ' <span class="unit">次</span>';
           const recentEl = document.getElementById("travelRecent");
           if (recentEl && total > 0) {
-            const sorted = [...source].sort(
-              (a, b) => new Date(b.startDate) - new Date(a.startDate),
-            );
-            const last = sorted[0];
-            recentEl.textContent = last.startDate
-              ? formatDate(last.startDate)
+            recentEl.textContent = source[0].startDate
+              ? formatDate(source[0].startDate)
               : "-";
           } else if (recentEl) recentEl.textContent = "-";
         }
@@ -8438,12 +8234,14 @@
         .addEventListener("click", goBack);
 
       // ====================================================================
-      // 渲染月经
+      // 渲染月经（按开始日期降序）
       // ====================================================================
       let menstrualPageNum = 1;
 
       function renderMenstrual(list) {
-        const source = list || data.menstrual;
+        const source = (list || data.menstrual)
+          .slice()
+          .sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
         const total = source.length;
         const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
         if (menstrualPageNum > totalPages) menstrualPageNum = totalPages;
@@ -9243,7 +9041,6 @@
 
       // ====================================================================
       // 占位函数（纪念日、吵架、分手、情书、树、打卡、足迹、年度报告）
-      // 这些函数已在原有代码中定义，为避免破坏，保留空实现或简单实现
       // ====================================================================
       function renderAnniversary() {
         const container = document.getElementById("anniversaryList");
@@ -10388,29 +10185,23 @@
         return makeDate(y, mo, d);
       }
 
-      // 日历显示函数（在模态框中）
       function showDayDetailInCalendar(year, month, day) {
-        // 更新标题（不累积）
         const titleEl = document.querySelector(".cal-nav .cal-month-year");
         if (titleEl) {
-          // 取当前年月（从标题中提取，防止多次追加）
           const currentText = titleEl.textContent;
           let base = currentText;
-          // 如果已经包含 "·"，则截取前面部分
           if (base.includes("·")) {
             base = base.split("·")[0].trim();
           }
           titleEl.textContent = `${base} · ${day}日`;
         }
 
-        // 查找记录
         const dateObj = makeDate(year, month, day);
         const y = dateObj.getFullYear(),
           m = dateObj.getMonth(),
           d = dateObj.getDate();
         let items = [];
 
-        // 快乐
         data.happy.forEach((h) => {
           if (!h.startDate) return;
           const dt = dateStrToLocal(h.startDate);
@@ -10427,7 +10218,6 @@
             });
           }
         });
-        // 旅行
         data.travel.forEach((t) => {
           if (!t.startDate) return;
           const dt = dateStrToLocal(t.startDate);
@@ -10444,7 +10234,6 @@
             });
           }
         });
-        // 月经
         data.menstrual.forEach((men) => {
           if (!men.startDate) return;
           const start = dateStrToLocal(men.startDate);
@@ -10481,7 +10270,6 @@
         detailArea.innerHTML = html;
       }
 
-      // 构建日历网格（带彩色圆点）
       function buildCalGridWithDetail(y, m) {
         const fd = new Date(y, m, 1).getDay();
         const dim = new Date(y, m + 1, 0).getDate();
@@ -10501,7 +10289,6 @@
         for (let day = 1; day <= dim; day++) {
           const isToday = y === todayY && m === todayM && day === todayD;
 
-          // 检查是否有记录（使用本地日期比较）
           const hasHappy = data.happy.some((h) => {
             if (!h.startDate) return false;
             const dt = dateStrToLocal(h.startDate);
@@ -10542,13 +10329,11 @@
           });
           const hasEvent = hasHappy || hasTravel || hasMenstrual;
 
-          // 构建彩色圆点（多色）
           let dotsHtml = "";
           let dotPositions = [];
           if (hasHappy) dotPositions.push({ color: "#ff6b8a", pos: "20%" });
           if (hasTravel) dotPositions.push({ color: "#4a9eff", pos: "50%" });
           if (hasMenstrual) dotPositions.push({ color: "#9b59b6", pos: "80%" });
-          // 如果只有一个，居中
           if (dotPositions.length === 1) {
             dotPositions[0].pos = "50%";
           } else if (dotPositions.length === 2) {
@@ -10575,11 +10360,8 @@
       function init() {
         loadTheme();
         updateAchievements();
-        if (data.appLock && data.appLock.enabled) {
-          checkLock();
-        } else {
-          setupLock();
-        }
+        // 锁已移除
+
         document
           .getElementById("settingsBtn")
           .addEventListener("click", showSettings);
@@ -10646,7 +10428,6 @@
                 });
               });
             } else if (action === "calendar") {
-              // 打开日历（修复版）
               const now = new Date();
               const year = now.getFullYear(),
                 month = now.getMonth();
@@ -10680,7 +10461,6 @@
               const html = `<div class="cal-nav"><button id="calPrev">‹</button><span class="cal-month-year">${currentYear}年 ${monthNames[currentMonth]}</span><button id="calNext">›</button></div>${gridHtml}${legendHtml}${detailHtml}`;
 
               showModal("📅 日历", html, () => {
-                // 事件委托
                 const bodyEl = document.getElementById("modalBody");
                 bodyEl.addEventListener("click", function (e) {
                   const dayEl = e.target.closest(".cal-day");
@@ -10700,17 +10480,14 @@
                     "#modalBody .cal-grid",
                   );
                   if (container) container.outerHTML = newGrid;
-                  // 重置标题（不带日期）
                   const titleEl = document.querySelector(
                     ".cal-nav .cal-month-year",
                   );
                   if (titleEl) titleEl.textContent = `${y}年 ${monthNames[m]}`;
-                  // 重置详情
                   const detailArea =
                     document.getElementById("calendarDetailArea");
                   if (detailArea)
                     detailArea.innerHTML = `<div class="empty-detail">📅 点击某一天查看记录</div>`;
-                  // 重新绑定事件
                   const bodyEl2 = document.getElementById("modalBody");
                   bodyEl2.addEventListener("click", function (e) {
                     const dayEl = e.target.closest(".cal-day");
@@ -10830,7 +10607,9 @@
         });
 
         setInterval(saveData, 30000);
-        console.log("💕 Love·轨迹 已启动 (日历多色+小桃智能版 + AI)");
+        console.log(
+          "💕 Love·轨迹 已启动 (日历多色+小桃智能版 + AI, 已移除密码)",
+        );
       }
 
       if (document.readyState === "loading") {
