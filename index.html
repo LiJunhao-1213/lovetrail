@@ -249,7 +249,6 @@
         margin: 0;
         white-space: nowrap;
       }
-      /* 表单 */
       .form-group {
         margin-bottom: 14px;
         background: #ffffff;
@@ -269,6 +268,7 @@
       .form-group input[type="text"],
       .form-group input[type="number"],
       .form-group input[type="date"],
+      .form-group input[type="datetime-local"],
       .form-group textarea {
         width: 100%;
         max-width: 100%;
@@ -284,7 +284,8 @@
         box-sizing: border-box;
         overflow: hidden;
       }
-      .form-group input[type="date"] {
+      .form-group input[type="date"],
+      .form-group input[type="datetime-local"] {
         width: 100%;
         min-width: 0;
         box-sizing: border-box;
@@ -306,16 +307,21 @@
         background-size: 18px;
         padding-right: 36px;
       }
-      .form-group input[type="date"]::-webkit-datetime-edit {
+      .form-group input[type="date"]::-webkit-datetime-edit,
+      .form-group input[type="datetime-local"]::-webkit-datetime-edit {
         padding: 0;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
       }
-      .form-group input[type="date"]::-webkit-datetime-edit-fields-wrapper {
+      .form-group input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+      .form-group
+        input[type="datetime-local"]::-webkit-datetime-edit-fields-wrapper {
         white-space: nowrap;
       }
-      .form-group input[type="date"]::-webkit-calendar-picker-indicator {
+      .form-group input[type="date"]::-webkit-calendar-picker-indicator,
+      .form-group
+        input[type="datetime-local"]::-webkit-calendar-picker-indicator {
         opacity: 0;
         width: 100%;
         height: 100%;
@@ -355,7 +361,8 @@
         overflow: hidden;
       }
       .form-row .form-group input[type="date"],
-      .form-row .form-group input[type="number"] {
+      .form-row .form-group input[type="number"],
+      .form-row .form-group input[type="datetime-local"] {
         width: 100%;
         max-width: 100%;
       }
@@ -411,7 +418,6 @@
         margin: 0;
         text-align: center;
       }
-      /* Tab栏 */
       .tab-bar {
         height: auto;
         min-height: calc(var(--tab-height) + env(safe-area-inset-bottom, 0));
@@ -479,7 +485,6 @@
         background: var(--primary);
         border-radius: 0 0 4px 4px;
       }
-      /* 弹窗 */
       .modal-overlay {
         position: fixed;
         top: 0;
@@ -559,7 +564,6 @@
         opacity: 0.3;
         cursor: not-allowed;
       }
-      /* 列表卡片 */
       .list-item-card {
         background: var(--card);
         border-radius: var(--radius);
@@ -679,7 +683,6 @@
         transform: scale(0.94);
         opacity: 0.85;
       }
-      /* love卡片 */
       .love-profile-card {
         background: #ffffff;
         border-radius: var(--radius);
@@ -846,7 +849,6 @@
       .love-profile-card .hint:before {
         content: "👆 ";
       }
-      /* 档案 */
       .archive-profile-card {
         background: #ffffff;
         border-radius: 12px;
@@ -1084,7 +1086,6 @@
         transform: scale(0.96);
         opacity: 0.8;
       }
-      /* 成就 */
       .achievement-wall {
         background: var(--card);
         border-radius: var(--radius);
@@ -1202,7 +1203,6 @@
       .achieve-card .ach-right.locked .ach-status-text {
         color: #666;
       }
-      /* 记录卡片 - 移除了拖拽相关样式 */
       .record-card {
         background: var(--card);
         border-radius: var(--radius);
@@ -1389,7 +1389,7 @@
         border: 0.5px solid var(--border);
         background: var(--bg);
       }
-      /* 经期统计 */
+      /* ===== 经期统计卡片：统一字体大小 ===== */
       .menstrual-stats-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -1399,49 +1399,65 @@
       .menstrual-stat-card {
         background: var(--card);
         border-radius: var(--radius);
-        padding: 16px 12px;
+        padding: 14px 8px 10px 8px;
         box-shadow: var(--shadow);
         border: 0.5px solid var(--border);
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
-        min-height: 64px;
         position: relative;
         transition: all 0.2s;
         user-select: none;
+        text-align: center;
       }
       .menstrual-stat-card .ms-title {
-        position: absolute;
-        top: 8px;
-        left: 10px;
         font-size: 11px;
         font-weight: 500;
         color: var(--text2);
         display: flex;
         align-items: center;
-        gap: 2px;
+        gap: 3px;
+        margin-bottom: 8px;
+        width: 100%;
       }
       .menstrual-stat-card .ms-title .ms-emoji {
-        font-size: 12px;
+        font-size: 13px;
       }
       .menstrual-stat-card .ms-value {
         font-size: 18px;
         font-weight: 700;
         color: var(--primary);
-        line-height: 1.3;
-        margin-top: 20px;
+        line-height: 1.4;
         text-align: center;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         max-width: 100%;
+        margin-top: 0;
       }
       .menstrual-stat-card .ms-value .unit {
-        font-size: 11px;
+        font-size: 12px;
         font-weight: 400;
         color: var(--text2);
         margin-left: 2px;
+      }
+      /* 预测卡片特殊样式 */
+      .menstrual-stat-card[data-key="predict"] {
+        grid-column: span 3;
+        background: var(--primary-light);
+        min-height: 80px;
+        padding: 12px 10px;
+      }
+      .menstrual-stat-card[data-key="predict"] .ms-value {
+        font-size: 16px;
+        white-space: normal;
+        line-height: 1.5;
+      }
+      .menstrual-stat-card[data-key="predict"] .ms-sub {
+        font-size: 12px;
+        color: var(--text2);
+        margin-top: 2px;
+        line-height: 1.4;
       }
       .menstrual-record-card {
         background: var(--card);
@@ -1522,7 +1538,7 @@
         display: flex;
         align-items: center;
         gap: 4px;
-        min-width: 80px;
+        min-width: 70px;
         flex-shrink: 0;
         justify-content: flex-start;
       }
@@ -1533,7 +1549,7 @@
         .symptom-part {
         display: flex;
         align-items: center;
-        gap: 4px;
+        gap: 6px;
         flex-wrap: wrap;
         flex: 1;
         min-width: 0;
@@ -1557,7 +1573,6 @@
         transform: scale(0.92);
         opacity: 0.6;
       }
-      /* 总览 */
       .overview-small-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -1831,7 +1846,6 @@
         color: #fff;
         border-color: var(--primary);
       }
-      /* 主题预设 */
       .theme-preset-grid {
         display: grid;
         grid-template-columns: repeat(5, 1fr);
@@ -1913,7 +1927,6 @@
         border: 0.5px solid var(--border);
         transition: background 0.1s ease;
       }
-      /* 彩蛋 */
       .egg-overlay {
         position: fixed;
         top: 0;
@@ -2063,7 +2076,6 @@
           opacity: 0;
         }
       }
-      /* 足迹 */
       .footprint-item {
         display: flex;
         align-items: center;
@@ -2391,7 +2403,6 @@
       .ach-manager-list .ach-item .ach-actions .del-btn:active {
         background: #ffebee;
       }
-      /* 响应式 */
       @media (max-width: 430px) {
         #app {
           max-width: 100%;
@@ -2465,12 +2476,10 @@
         }
         .menstrual-stat-card {
           padding: 8px 4px 4px 4px;
-          min-height: 54px;
+          min-height: 60px;
         }
         .menstrual-stat-card .ms-title {
           font-size: 9px;
-          top: 3px;
-          left: 6px;
         }
         .menstrual-stat-card .ms-title .ms-emoji {
           font-size: 11px;
@@ -2511,7 +2520,6 @@
           font-size: 13px;
         }
       }
-      /* 日历 */
       .cal-nav {
         display: flex;
         align-items: center;
@@ -2604,11 +2612,35 @@
         border-radius: var(--radius);
         margin-bottom: 6px;
         gap: 8px;
+        border: 0.5px solid var(--border);
+        transition: all 0.2s;
       }
       .reminder-item .rem-text {
         flex: 1;
         font-size: 14px;
         color: var(--text);
+        font-weight: 500;
+      }
+      .reminder-item .rem-time {
+        font-size: 12px;
+        color: var(--text2);
+        flex-shrink: 0;
+        white-space: nowrap;
+      }
+      .reminder-item .rem-status {
+        font-size: 11px;
+        font-weight: 500;
+        padding: 2px 8px;
+        border-radius: 12px;
+        flex-shrink: 0;
+      }
+      .reminder-item .rem-status.triggered {
+        background: #e8f5e9;
+        color: #2e7d32;
+      }
+      .reminder-item .rem-status.pending {
+        background: #fff3e0;
+        color: #e65100;
       }
       .reminder-item .rem-del {
         font-size: 16px;
@@ -2617,12 +2649,12 @@
         border: none;
         color: var(--text2);
         padding: 4px;
+        line-height: 1;
       }
       .reminder-item .rem-del:active {
         transform: scale(0.85);
         color: #ff3b30;
       }
-      /* 爱情树 */
       .tree-ring {
         width: 120px;
         height: 120px;
@@ -3010,7 +3042,6 @@
           opacity: 0;
         }
       }
-      /* 100件小事 */
       .thing-item {
         display: flex;
         align-items: center;
@@ -3178,10 +3209,6 @@
         margin-top: 8px;
         opacity: 0.8;
       }
-
-      /* ================================================================
-             小桃 · 智能对话助手 (居中弹窗)
-             ================================================================ */
       .lingbao-container {
         position: fixed;
         bottom: 130px;
@@ -3509,8 +3536,6 @@
         transform: scale(0.88);
         opacity: 0.85;
       }
-
-      /* 全屏倒计时 */
       .countdown-overlay {
         position: fixed;
         top: 0;
@@ -3909,8 +3934,6 @@
       .longpress-menu .menu-item.danger:active {
         background: #ffebee;
       }
-
-      /* ===== 日历图例 ===== */
       .cal-legend {
         display: flex;
         gap: 18px;
@@ -3943,8 +3966,6 @@
       .cal-legend .leg-dot.menstrual-dot {
         background: #9b59b6;
       }
-
-      /* 日历详情区域 */
       .cal-detail-area {
         margin-top: 10px;
         padding: 10px 12px;
@@ -3987,7 +4008,6 @@
   <body>
     <div id="app">
       <canvas id="particleCanvas"></canvas>
-      <!-- 锁屏已移除 -->
 
       <nav class="nav-bar" id="mainNav">
         <div class="nav-title">❤️Love·轨迹 <span>520.1314</span></div>
@@ -4014,7 +4034,6 @@
         </div>
       </div>
       <div class="main-content" id="mainContent">
-        <!-- 快乐列表 -->
         <div class="page-container active" id="pageHappy">
           <div class="search-wrap">
             <input
@@ -4054,7 +4073,6 @@
           </div>
           <div id="happyFormBody"></div>
         </div>
-        <!-- 旅行列表 -->
         <div class="page-container" id="pageTravel">
           <div class="search-wrap">
             <input
@@ -4094,12 +4112,10 @@
           </div>
           <div id="travelFormBody"></div>
         </div>
-        <!-- 总览 -->
         <div class="page-container" id="pageOverview">
           <div class="search-wrap hidden-search"></div>
           <div id="overviewContent"></div>
         </div>
-        <!-- 月经 -->
         <div class="page-container" id="pageMenstrual">
           <div class="search-wrap">
             <input
@@ -4128,7 +4144,6 @@
           </div>
           <div id="menstrualFormBody"></div>
         </div>
-        <!-- 纪念日 -->
         <div class="page-container" id="pageAnniversary">
           <div class="form-nav">
             <button class="back-btn" id="anniversaryListBack">👈</button>
@@ -4151,7 +4166,6 @@
           </div>
           <div id="anniversaryFormBody"></div>
         </div>
-        <!-- 吵架 -->
         <div class="page-container" id="pageFight">
           <div class="form-nav">
             <button class="back-btn" id="fightListBack">👈</button>
@@ -4174,7 +4188,6 @@
           </div>
           <div id="fightFormBody"></div>
         </div>
-        <!-- 分手 -->
         <div class="page-container" id="pageBreakup">
           <div class="form-nav">
             <button class="back-btn" id="breakupListBack">👈</button>
@@ -4189,7 +4202,6 @@
           </div>
           <div id="breakupFormBody"></div>
         </div>
-        <!-- 情书 -->
         <div class="page-container" id="pageLetter">
           <div class="form-nav">
             <button class="back-btn" id="letterListBack">👈</button>
@@ -4212,7 +4224,6 @@
           </div>
           <div id="letterFormBody"></div>
         </div>
-        <!-- 爱情树 -->
         <div class="page-container" id="pageTree">
           <div class="form-nav">
             <button class="back-btn" id="treeListBack">👈</button>
@@ -4220,7 +4231,6 @@
           </div>
           <div id="treeContent"></div>
         </div>
-        <!-- 打卡 -->
         <div class="page-container" id="pageChallenge">
           <div class="form-nav">
             <button class="back-btn" id="challengeListBack">👈</button>
@@ -4243,7 +4253,6 @@
           </div>
           <div id="challengeFormBody"></div>
         </div>
-        <!-- 足迹 -->
         <div class="page-container" id="pageFootprint">
           <div class="form-nav">
             <button class="back-btn" id="footprintListBack">👈</button>
@@ -4251,7 +4260,6 @@
           </div>
           <div id="footprintContent"></div>
         </div>
-        <!-- 年度报告 -->
         <div class="page-container" id="pageYearlyReport">
           <div class="form-nav">
             <button class="back-btn" id="yearlyReportListBack">👈</button>
@@ -4259,7 +4267,6 @@
           </div>
           <div id="yearlyReportContent"></div>
         </div>
-        <!-- 恋爱档案 -->
         <div class="page-container" id="pageArchive">
           <div class="form-nav">
             <button class="back-btn" id="archiveListBack">👈</button>
@@ -4267,7 +4274,6 @@
           </div>
           <div id="archiveContent"></div>
         </div>
-        <!-- 100件小事 -->
         <div class="page-container" id="pageHundredThings">
           <div class="form-nav">
             <button class="back-btn" id="hundredThingsBack">👈</button>
@@ -4275,7 +4281,6 @@
           </div>
           <div id="hundredThingsContent"></div>
         </div>
-        <!-- 默契挑战 -->
         <div class="page-container" id="pageCoupleQuiz">
           <div class="form-nav">
             <button class="back-btn" id="coupleQuizBack">👈</button>
@@ -4283,7 +4288,6 @@
           </div>
           <div id="coupleQuizContent"></div>
         </div>
-        <!-- 爱情占卜 -->
         <div class="page-container" id="pageLoveFortune">
           <div class="form-nav">
             <button class="back-btn" id="loveFortuneBack">👈</button>
@@ -4291,7 +4295,6 @@
           </div>
           <div id="loveFortuneContent"></div>
         </div>
-        <!-- 更新日志 -->
         <div class="page-container" id="pageChangeLog">
           <div class="form-nav">
             <button class="back-btn" id="changeLogBack">👈</button>
@@ -4299,7 +4302,6 @@
           </div>
           <div id="changeLogContent"></div>
         </div>
-        <!-- 每日问答 -->
         <div class="page-container" id="pageDailyQuiz">
           <div class="form-nav">
             <button class="back-btn" id="dailyQuizBack">👈</button>
@@ -4307,13 +4309,11 @@
           </div>
           <div id="dailyQuizContent"></div>
         </div>
-        <!-- Love主页 -->
         <div class="page-container" id="pageLove">
           <div class="search-wrap hidden-search"></div>
           <div id="loveContent"></div>
         </div>
       </div>
-      <!-- Tab栏 -->
       <div class="tab-bar" id="tabBar">
         <button class="tab-item active" data-tab="happy">
           <span class="tab-emoji">😊</span><span class="tab-label">快乐</span>
@@ -4334,7 +4334,6 @@
       </div>
     </div>
 
-    <!-- ===== 小桃 · 智能对话助手（居中弹窗） ===== -->
     <div class="lingbao-container" id="lingbaoContainer">
       <div class="lingbao-bubble" id="lingbaoBubble">💕 今天也要加油哦</div>
       <div class="lingbao-main floating pulse" id="lingbaoMain">
@@ -4374,7 +4373,6 @@
       </div>
     </div>
 
-    <!-- 倒计时 -->
     <div class="countdown-overlay" id="countdownOverlay">
       <div class="countdown-content">
         <div class="cd-title">🌸 距离病娇女来姨妈</div>
@@ -4474,6 +4472,7 @@
       let lingbaoMenuOpen = false;
       let lingbaoBubbleTimer = null;
       let tempTheme = { hue: 340, sat: 70, lit: 55 };
+      let reminderCheckInterval = null;
 
       function getPresetAchievements() {
         return [
@@ -4766,7 +4765,6 @@
             trend: new Date().getFullYear(),
             compare: new Date().getFullYear(),
           },
-          // AI 配置
           aiConfig: {
             enabled: false,
             provider: "deepseek",
@@ -4839,6 +4837,42 @@
                 apiKey: "",
                 model: "deepseek-chat",
               };
+
+            if (
+              parsed.reminders &&
+              parsed.reminders.length > 0 &&
+              typeof parsed.reminders[0] === "string"
+            ) {
+              const now = new Date();
+              const defaultTime = new Date(now.getTime() + 3600000);
+              const defaultStr = defaultTime.toISOString().slice(0, 16);
+              parsed.reminders = parsed.reminders.map((text, idx) => ({
+                id: "rem_" + Date.now() + "_" + idx,
+                text: text,
+                dateTime: defaultStr,
+                triggered: false,
+              }));
+            }
+            if (Array.isArray(parsed.reminders)) {
+              parsed.reminders = parsed.reminders.map((r) => {
+                if (typeof r === "string") {
+                  const now = new Date();
+                  const dt = new Date(now.getTime() + 3600000);
+                  return {
+                    id:
+                      "rem_" +
+                      Date.now() +
+                      "_" +
+                      Math.random().toString(36).slice(2, 6),
+                    text: r,
+                    dateTime: dt.toISOString().slice(0, 16),
+                    triggered: false,
+                  };
+                }
+                return { ...r, triggered: r.triggered || false };
+              });
+            }
+
             parsed.menstrual.forEach((record) => {
               if (!record.dayDetails) {
                 record.dayDetails = [];
@@ -4913,6 +4947,23 @@
           "月" +
           String(dt.getDate()).padStart(2, "0") +
           "日"
+        );
+      }
+
+      function formatDateTime(dtStr) {
+        if (!dtStr) return "-";
+        const d = new Date(dtStr);
+        if (isNaN(d.getTime())) return dtStr;
+        return (
+          d.getFullYear() +
+          "年" +
+          String(d.getMonth() + 1).padStart(2, "0") +
+          "月" +
+          String(d.getDate()).padStart(2, "0") +
+          " " +
+          String(d.getHours()).padStart(2, "0") +
+          ":" +
+          String(d.getMinutes()).padStart(2, "0")
         );
       }
 
@@ -5239,10 +5290,6 @@
       }
 
       // ====================================================================
-      // LOCK - 已移除
-      // ====================================================================
-
-      // ====================================================================
       // QUOTE & ANNIVERSARY
       // ====================================================================
       function getDailyQuote() {
@@ -5363,7 +5410,7 @@
       }
 
       // ================================================================
-      // 小桃 · 智能对话引擎（居中弹窗 + 本地存储 + AI）
+      // 小桃 · 智能对话引擎
       // ================================================================
       let chatHistory = [];
       const CHAT_STORAGE_KEY = "lingbao_chat_history";
@@ -5384,7 +5431,6 @@
         } catch (e) {}
       }
 
-      // ---------- AI 调用 ----------
       async function callAI(userMessage) {
         const config = data.aiConfig || {
           enabled: false,
@@ -5414,7 +5460,7 @@
               },
               body: JSON.stringify({
                 model: config.model || "deepseek-chat",
-                messages: messages,
+                messages,
                 temperature: 0.9,
                 max_tokens: 300,
                 stream: false,
@@ -5437,7 +5483,6 @@
         }
       }
 
-      // ---------- 小桃核心 ----------
       function initLingbao() {
         const container = document.getElementById("lingbaoContainer");
         const main = document.getElementById("lingbaoMain");
@@ -5470,7 +5515,6 @@
           if (!text) return;
           addUserMessage(text);
           inputEl.value = "";
-          // 显示"正在思考..."
           const thinkingId = "thinking_" + Date.now();
           const time = new Date().toLocaleTimeString([], {
             hour: "2-digit",
@@ -5489,7 +5533,6 @@
             messagesEl.scrollTop = messagesEl.scrollHeight;
           }, 50);
 
-          // 尝试AI
           let reply = null;
           const config = data.aiConfig || { enabled: false, apiKey: "" };
           if (config.enabled && config.apiKey) {
@@ -5499,17 +5542,14 @@
               console.warn(e);
             }
           }
-          // 如果AI没返回，用本地回复
           if (!reply) {
             reply = getLocalReply(text);
           }
-          // 移除临时消息
           const tempIdx = chatHistory.findIndex((m) => m._id === thinkingId);
           if (tempIdx !== -1) {
             chatHistory.splice(tempIdx, 1);
             saveChatHistory();
           }
-          // 添加正式回复
           addBotMessage(reply);
         }
 
@@ -5531,9 +5571,9 @@
         renderMessages();
         if (chatHistory.length === 0) {
           setTimeout(() => {
-            const welcome =
-              "嗨！我是小桃 🍑 你的恋爱小助手～\n想聊天、查日子、听情话，都可以找我！\n也可以试试下面的快捷按钮哦 👇";
-            addBotMessage(welcome);
+            addBotMessage(
+              "嗨！我是小桃 🍑 你的恋爱小助手～\n想聊天、查日子、听情话，都可以找我！\n也可以试试下面的快捷按钮哦 👇",
+            );
           }, 300);
         }
 
@@ -5556,7 +5596,6 @@
           }
         }, 12000);
 
-        // 拖动
         let dragStartX,
           dragStartY,
           isDragging = false;
@@ -5639,6 +5678,7 @@
             container.style.bottom = "auto";
           }
         }
+
         function onMouseUp() {
           isMouseDown = false;
           document.removeEventListener("mousemove", onMouseMove);
@@ -5674,6 +5714,7 @@
           document.getElementById("lingbaoBubble").classList.remove("show");
           setTimeout(() => inputEl.focus(), 300);
         }
+
         function closeChat() {
           overlay.classList.remove("show");
         }
@@ -5906,7 +5947,7 @@
       }
 
       // ====================================================================
-      // 倒计时（供小桃调用）
+      // 倒计时
       // ====================================================================
       function showMenstrualCountdown() {
         const pred = getMenstrualPredictions();
@@ -6353,7 +6394,7 @@
       }
 
       // ====================================================================
-      // 设置（含AI配置，移除锁）
+      // 设置
       // ====================================================================
       function showSettings() {
         const ai = data.aiConfig || {
@@ -6444,7 +6485,6 @@
               };
               input.click();
             });
-          // AI 配置保存
           document
             .getElementById("aiSaveBtn")
             .addEventListener("click", function () {
@@ -6937,6 +6977,7 @@
       function setupDragDrop(element) {
         return;
       }
+
       function saveOrder(parent) {
         return;
       }
@@ -7614,7 +7655,7 @@
       }
 
       // ====================================================================
-      // 渲染快乐（按日期降序）
+      // 渲染快乐
       // ====================================================================
       let happyPageNum = 1;
 
@@ -7944,7 +7985,7 @@
         .addEventListener("click", goBack);
 
       // ====================================================================
-      // 渲染旅行（按日期降序）
+      // 渲染旅行
       // ====================================================================
       let travelPageNum = 1;
 
@@ -8274,8 +8315,8 @@
             last.setDate(last.getDate() + avgCycle);
             nextDate = formatDate(last);
           }
-          const lastRecord =
-            source.length > 0 ? source[source.length - 1] : null;
+          // 修复：取日期最近的记录（source[0]）作为"上次月经"
+          const lastRecord = source.length > 0 ? source[0] : null;
           const lastStart = lastRecord ? formatDate(lastRecord.startDate) : "-";
           const lastEnd =
             lastRecord && lastRecord.endDate
@@ -8348,7 +8389,7 @@
           const pred = getMenstrualPredictions();
           let predHtml = "";
           if (pred) {
-            predHtml = `<div class="menstrual-stat-card" style="grid-column:span 2;background:var(--primary-light);" data-key="predict"><div class="ms-title"><span class="ms-emoji">🔮</span> 预测</div><div class="ms-value" style="font-size:16px;">${pred.status}</div><div style="font-size:12px;color:var(--text2);margin-top:4px;">下次月经: ${formatDate(pred.nextStart)} (${pred.daysToNext > 0 ? pred.daysToNext + "天后" : "已过" + Math.abs(pred.daysToNext) + "天"})</div><div style="font-size:11px;color:var(--text2);">易孕期: ${formatDate(pred.fertileStart)} ~ ${formatDate(pred.fertileEnd)}</div></div>`;
+            predHtml = `<div class="menstrual-stat-card" style="grid-column:span 3;background:var(--primary-light);" data-key="predict"><div class="ms-title"><span class="ms-emoji">🔮</span> 预测</div><div class="ms-value" style="font-size:16px;">${pred.status}</div><div class="ms-sub">下次月经: ${formatDate(pred.nextStart)} (${pred.daysToNext > 0 ? pred.daysToNext + "天后" : "已过" + Math.abs(pred.daysToNext) + "天"})</div><div class="ms-sub">易孕期: ${formatDate(pred.fertileStart)} ~ ${formatDate(pred.fertileEnd)}</div></div>`;
           }
           const savedOrder = data.menstrualStatsOrder || [];
           let orderedItems = [...statItems];
@@ -8500,6 +8541,8 @@
       }
 
       let menstrualEditId = null;
+      // 用于编辑时存储 dayDetails 数据
+      let editDayDetails = null;
 
       function showMenstrualForm(editItem) {
         const isEdit = !!editItem;
@@ -8507,9 +8550,16 @@
         const item = isEdit ? editItem : null;
         const startDate = isEdit ? item.startDate : todayStr();
         const days = isEdit ? item.days || item.dayDetails?.length || 1 : 3;
-        const dayDetails = isEdit ? item.dayDetails || [] : [];
-        while (dayDetails.length < days)
-          dayDetails.push({ flow: "中量", symptoms: ["无"] });
+        // 深拷贝编辑数据
+        editDayDetails = isEdit
+          ? JSON.parse(JSON.stringify(item.dayDetails || []))
+          : [];
+        while (editDayDetails.length < days)
+          editDayDetails.push({ flow: "中量", symptoms: ["无"] });
+        // 截断到 days 长度
+        if (editDayDetails.length > days)
+          editDayDetails = editDayDetails.slice(0, days);
+
         document.getElementById("menstrualFormTitle").textContent = isEdit
           ? "编辑月经记录"
           : "月经记录";
@@ -8522,6 +8572,7 @@
           "🤱乳房肿胀",
           "🤢恶心",
         ];
+
         let html = `<div class="form-group"><label>开始时间</label><input type="date" id="mfStartDate" value="${startDate}" /></div>
             <div class="form-group"><label>持续天数</label><input type="number" id="mfDays" value="${days}" min="1" max="20" /></div>
             <hr class="form-divider" />
@@ -8537,31 +8588,60 @@
           const daysVal =
             parseInt(document.getElementById("mfDays").value) || 1;
           const container = document.getElementById("mfDayCards");
-          const currentDetails = [];
-          const existingCards = container.querySelectorAll(
-            ".menstrual-day-card",
-          );
-          existingCards.forEach((card, idx) => {
-            const flow =
-              card.querySelector(".flow-opt.active")?.dataset.value || "中量";
-            const symptoms = [];
-            card
-              .querySelectorAll(".symptom-opt.active")
-              .forEach((el) => symptoms.push(el.dataset.value));
-            if (symptoms.length === 0) symptoms.push("无");
-            currentDetails[idx] = { flow, symptoms };
-          });
-          while (currentDetails.length < daysVal)
-            currentDetails.push({ flow: "中量", symptoms: ["无"] });
-          const finalDetails = currentDetails.slice(0, daysVal);
+          // 如果 editDayDetails 有数据，使用它；否则从现有卡片读取
+          let currentDetails = [];
+          if (editDayDetails && editDayDetails.length > 0) {
+            // 使用编辑数据，确保长度与 daysVal 匹配
+            currentDetails = JSON.parse(JSON.stringify(editDayDetails));
+            while (currentDetails.length < daysVal)
+              currentDetails.push({ flow: "中量", symptoms: ["无"] });
+            if (currentDetails.length > daysVal)
+              currentDetails = currentDetails.slice(0, daysVal);
+          } else {
+            // 从DOM读取（新增模式）
+            const existingCards = container.querySelectorAll(
+              ".menstrual-day-card",
+            );
+            existingCards.forEach((card, idx) => {
+              const flow =
+                card.querySelector(".flow-opt.active")?.dataset.value || "中量";
+              const symptoms = [];
+              card
+                .querySelectorAll(".symptom-opt.active")
+                .forEach((el) => symptoms.push(el.dataset.value));
+              if (symptoms.length === 0) symptoms.push("无");
+              currentDetails[idx] = { flow, symptoms };
+            });
+            while (currentDetails.length < daysVal)
+              currentDetails.push({ flow: "中量", symptoms: ["无"] });
+            if (currentDetails.length > daysVal)
+              currentDetails = currentDetails.slice(0, daysVal);
+          }
+
           let cardsHtml = "";
-          finalDetails.forEach((d, idx) => {
+          currentDetails.forEach((d, idx) => {
             const dayNum = idx + 1;
             const flow = d.flow || "中量";
             const symptoms = d.symptoms || ["无"];
-            cardsHtml += `<div class="menstrual-day-card" data-day="${idx}"><div class="day-title">Day${dayNum}</div><div class="section-label">流量</div><div class="flow-options">${flowOptions.map((f) => `<span class="flow-opt ${flow === f ? "active" : ""}" data-value="${f}"><span></span> ${f}</span>`).join("")}</div><div class="section-label" style="margin-top:8px;">症状</div><div class="symptom-options">${symptomOptions.map((s) => `<span class="symptom-opt ${symptoms.includes(s) ? "active" : ""}" data-value="${s}"><span></span> ${s}</span>`).join("")}</div></div>`;
+            cardsHtml += `<div class="menstrual-day-card" data-day="${idx}"><div class="day-title">Day${dayNum}</div><div class="section-label">流量</div><div class="flow-options">${flowOptions
+              .map((f) => {
+                const val = f.replace(/[🩸😌😣😮‍💨😤🤱🤢]/g, "").trim();
+                const active = flow === val ? "active" : "";
+                return `<span class="flow-opt ${active}" data-value="${val}"><span></span> ${f}</span>`;
+              })
+              .join(
+                "",
+              )}</div><div class="section-label" style="margin-top:8px;">症状</div><div class="symptom-options">${symptomOptions
+              .map((s) => {
+                const val = s.replace(/[🩸😌😣😮‍💨😤🤱🤢]/g, "").trim();
+                const active = symptoms.includes(val) ? "active" : "";
+                return `<span class="symptom-opt ${active}" data-value="${val}"><span></span> ${s}</span>`;
+              })
+              .join("")}</div></div>`;
           });
           container.innerHTML = cardsHtml;
+
+          // 绑定流量点击事件（单选）
           container.querySelectorAll(".menstrual-day-card").forEach((card) => {
             card.querySelectorAll(".flow-opt").forEach((opt) => {
               opt.addEventListener("click", function (e) {
@@ -8571,42 +8651,88 @@
                   .querySelectorAll(".flow-opt")
                   .forEach((o) => o.classList.remove("active"));
                 this.classList.add("active");
+                // 更新 editDayDetails
+                const idx = parseInt(card.dataset.day);
+                if (!isNaN(idx) && editDayDetails && editDayDetails[idx]) {
+                  editDayDetails[idx].flow = this.dataset.value;
+                }
               });
             });
+            // 绑定症状点击事件：无 → 独占（单选），其他 → 多选
             card.querySelectorAll(".symptom-opt").forEach((opt) => {
               opt.addEventListener("click", function (e) {
                 e.stopPropagation();
                 const isNone = this.dataset.value === "无";
                 const parent = this.closest(".symptom-options");
+                const idx = parseInt(card.dataset.day);
                 if (isNone) {
+                  // 点击"无"：清空所有，只选中"无"
                   parent
                     .querySelectorAll(".symptom-opt")
                     .forEach((o) => o.classList.remove("active"));
                   this.classList.add("active");
+                  if (!isNaN(idx) && editDayDetails && editDayDetails[idx]) {
+                    editDayDetails[idx].symptoms = ["无"];
+                  }
                 } else {
+                  // 点击其他症状：取消"无"，切换当前（多选）
                   const noneOpt = parent.querySelector(
                     '.symptom-opt[data-value="无"]',
                   );
                   if (noneOpt) noneOpt.classList.remove("active");
                   this.classList.toggle("active");
+                  // 更新 editDayDetails
+                  if (!isNaN(idx) && editDayDetails && editDayDetails[idx]) {
+                    const activeSymptoms = [];
+                    parent
+                      .querySelectorAll(".symptom-opt.active")
+                      .forEach((el) => {
+                        const v = el.dataset.value;
+                        if (v !== "无") activeSymptoms.push(v);
+                      });
+                    if (activeSymptoms.length === 0) activeSymptoms.push("无");
+                    editDayDetails[idx].symptoms = activeSymptoms;
+                  }
                 }
               });
             });
           });
         }
+
         renderDayCards();
+
         document
           .getElementById("mfDays")
-          .addEventListener("change", renderDayCards);
+          .addEventListener("change", function () {
+            const newDays = parseInt(this.value) || 1;
+            if (editDayDetails) {
+              while (editDayDetails.length < newDays)
+                editDayDetails.push({ flow: "中量", symptoms: ["无"] });
+              if (editDayDetails.length > newDays)
+                editDayDetails = editDayDetails.slice(0, newDays);
+            }
+            renderDayCards();
+          });
         document
           .getElementById("mfDays")
-          .addEventListener("input", renderDayCards);
+          .addEventListener("input", function () {
+            const newDays = parseInt(this.value) || 1;
+            if (editDayDetails) {
+              while (editDayDetails.length < newDays)
+                editDayDetails.push({ flow: "中量", symptoms: ["无"] });
+              if (editDayDetails.length > newDays)
+                editDayDetails = editDayDetails.slice(0, newDays);
+            }
+            renderDayCards();
+          });
+
         document
           .getElementById("mfSave")
           .addEventListener("click", function () {
             const startDateVal = document.getElementById("mfStartDate").value;
             const daysVal =
               parseInt(document.getElementById("mfDays").value) || 1;
+            // 从 DOM 重新收集数据，确保与 editDayDetails 同步
             const dayDetails = [];
             document.querySelectorAll(".menstrual-day-card").forEach((card) => {
               const flow =
@@ -8632,7 +8758,7 @@
               id: isEdit ? menstrualEditId : genId(),
               startDate: startDateVal,
               days: daysVal,
-              dayDetails,
+              dayDetails: dayDetails,
               createdAt: isEdit
                 ? item?.createdAt || new Date().toISOString()
                 : new Date().toISOString(),
@@ -8672,6 +8798,7 @@
           });
         }
       }
+
       document
         .getElementById("addMenstrualBtn")
         .addEventListener("click", () => showMenstrualForm(null));
@@ -8909,7 +9036,7 @@
       }
 
       // ====================================================================
-      // 完整实现：恋爱档案 (renderArchive)
+      // 恋爱档案
       // ====================================================================
       function renderArchive() {
         const container = document.getElementById("archiveContent");
@@ -9040,7 +9167,7 @@
       }
 
       // ====================================================================
-      // 占位函数（纪念日、吵架、分手、情书、树、打卡、足迹、年度报告）
+      // 纪念日、吵架、分手、情书、树、打卡、足迹、年度报告
       // ====================================================================
       function renderAnniversary() {
         const container = document.getElementById("anniversaryList");
@@ -9057,12 +9184,11 @@
         } else {
           container.innerHTML = pageData
             .map(
-              (item) => `
-            <div class="list-item-card" data-id="${item.id}">
+              (item) =>
+                `<div class="list-item-card" data-id="${item.id}">
               <div class="item-left"><div class="item-title">${item.content || "纪念日"}</div><div class="item-sub">📅 ${formatDate(item.date)}</div></div>
               <button class="del-btn" data-id="${item.id}">❌</button>
-            </div>
-          `,
+            </div>`,
             )
             .join("");
           container.querySelectorAll(".del-btn").forEach((btn) => {
@@ -9178,7 +9304,6 @@
         .getElementById("anniversaryListBack")
         .addEventListener("click", goBack);
 
-      // 吵架
       function renderFight() {
         const container = document.getElementById("fightList");
         const list = data.love.fights || [];
@@ -9194,12 +9319,11 @@
         } else {
           container.innerHTML = pageData
             .map(
-              (item) => `
-            <div class="list-item-card" data-id="${item.id}">
+              (item) =>
+                `<div class="list-item-card" data-id="${item.id}">
               <div class="item-left"><div class="item-title">${item.content || "吵架"}</div><div class="item-sub">📅 ${formatDate(item.date)} ${item.reconcileDate ? "🤝 和好 " + formatDate(item.reconcileDate) : "⏳ 未和好"}</div></div>
               <button class="del-btn" data-id="${item.id}">❌</button>
-            </div>
-          `,
+            </div>`,
             )
             .join("");
           container.querySelectorAll(".del-btn").forEach((btn) => {
@@ -9320,7 +9444,6 @@
         .getElementById("fightListBack")
         .addEventListener("click", goBack);
 
-      // 分手
       function renderBreakup() {
         const container = document.getElementById("breakupContent");
         const breakup = data.love.breakup || { date: "", reconcileDate: "" };
@@ -9346,7 +9469,6 @@
         .getElementById("breakupFormBack")
         .addEventListener("click", goBack);
 
-      // 情书
       function renderLetter() {
         const container = document.getElementById("letterList");
         const list = data.love.loveLetters || [];
@@ -9362,12 +9484,11 @@
         } else {
           container.innerHTML = pageData
             .map(
-              (item) => `
-            <div class="list-item-card" data-id="${item.id}">
+              (item) =>
+                `<div class="list-item-card" data-id="${item.id}">
               <div class="item-left"><div class="item-title">${item.title || "无题"}</div><div class="item-sub">📅 ${formatDate(item.date)}</div><div class="item-desc">${item.content ? item.content.slice(0, 30) + (item.content.length > 30 ? "..." : "") : ""}</div></div>
               <button class="del-btn" data-id="${item.id}">❌</button>
-            </div>
-          `,
+            </div>`,
             )
             .join("");
           container.querySelectorAll(".del-btn").forEach((btn) => {
@@ -9482,7 +9603,6 @@
         .getElementById("letterListBack")
         .addEventListener("click", goBack);
 
-      // 爱情树
       function renderTree() {
         const container = document.getElementById("treeContent");
         const tree = data.love.loveTree || {
@@ -9540,7 +9660,6 @@
       }
       document.getElementById("treeListBack").addEventListener("click", goBack);
 
-      // 打卡挑战
       function renderChallenge() {
         const container = document.getElementById("challengeList");
         const list = data.love.challenges || [];
@@ -9556,13 +9675,12 @@
         } else {
           container.innerHTML = pageData
             .map(
-              (item) => `
-            <div class="list-item-card" data-id="${item.id}">
+              (item) =>
+                `<div class="list-item-card" data-id="${item.id}">
               <div class="item-left"><div class="item-title">${item.content || "打卡"}</div><div class="item-sub">📅 ${formatDate(item.date)} ${item.done ? "✅ 已完成" : "⏳ 进行中"}</div></div>
               <span class="status-badge ${item.done ? "done" : "pending"}" data-id="${item.id}">${item.done ? "✅ 完成" : "⏳ 未完成"}</span>
               <button class="del-btn" data-id="${item.id}">❌</button>
-            </div>
-          `,
+            </div>`,
             )
             .join("");
           container.querySelectorAll(".status-badge").forEach((badge) => {
@@ -9683,7 +9801,6 @@
         .getElementById("challengeListBack")
         .addEventListener("click", goBack);
 
-      // 足迹（简略）
       function renderFootprint() {
         const container = document.getElementById("footprintContent");
         const happy = data.happy || [];
@@ -9717,7 +9834,6 @@
         .getElementById("footprintListBack")
         .addEventListener("click", goBack);
 
-      // 年度报告（简略）
       function renderYearlyReport() {
         const container = document.getElementById("yearlyReportContent");
         const happy = data.happy || [];
@@ -10168,12 +10284,12 @@
       }
 
       // ====================================================================
-      // 日历（修复日期比较 + 标题不乱 + 显示标记）
+      // 日历
       // ====================================================================
-      // 辅助：创建本地日期对象（避免时区偏移）
       function makeDate(y, m, d) {
         return new Date(y, m, d, 0, 0, 0, 0);
       }
+
       function dateStrToLocal(dateStr) {
         if (!dateStr) return null;
         const parts = dateStr.split("-");
@@ -10355,12 +10471,59 @@
       }
 
       // ====================================================================
+      // 提醒功能
+      // ====================================================================
+      function requestNotificationPermission() {
+        if (!("Notification" in window)) return;
+        if (Notification.permission === "granted") return;
+        if (Notification.permission === "denied") return;
+        Notification.requestPermission();
+      }
+
+      function checkReminders() {
+        const reminders = data.reminders || [];
+        const now = new Date();
+        let triggeredAny = false;
+        reminders.forEach((r) => {
+          if (r.triggered) return;
+          if (!r.dateTime) return;
+          const remindTime = new Date(r.dateTime);
+          if (isNaN(remindTime.getTime())) return;
+          if (remindTime <= now) {
+            r.triggered = true;
+            triggeredAny = true;
+            try {
+              if (
+                "Notification" in window &&
+                Notification.permission === "granted"
+              ) {
+                new Notification("⏰ 提醒", { body: r.text, icon: "❤️" });
+              } else {
+                showToast(`⏰ 提醒：${r.text}`);
+              }
+            } catch (e) {
+              showToast(`⏰ 提醒：${r.text}`);
+            }
+          }
+        });
+        if (triggeredAny) {
+          saveData();
+        }
+      }
+
+      function startReminderChecker() {
+        if (reminderCheckInterval) clearInterval(reminderCheckInterval);
+        reminderCheckInterval = setInterval(checkReminders, 30000);
+        setTimeout(checkReminders, 1000);
+        requestNotificationPermission();
+      }
+
+      // ====================================================================
       // 初始化
       // ====================================================================
       function init() {
         loadTheme();
         updateAchievements();
-        // 锁已移除
 
         document
           .getElementById("settingsBtn")
@@ -10389,34 +10552,90 @@
               openThemeModal();
             } else if (action === "reminder") {
               const reminders = data.reminders || [];
-              let listHtml = reminders
-                .map(
-                  (r, idx) =>
-                    `<div class="reminder-item"><span class="rem-text">${r}</span><button class="rem-del" data-idx="${idx}">❌</button></div>`,
-                )
+              const sorted = reminders.slice().sort((a, b) => {
+                if (!a.dateTime) return 1;
+                if (!b.dateTime) return -1;
+                return new Date(a.dateTime) - new Date(b.dateTime);
+              });
+              let listHtml = sorted
+                .map((r, idx) => {
+                  const realIdx = data.reminders.indexOf(r);
+                  const statusText = r.triggered ? "✅ 已提醒" : "⏳ 待提醒";
+                  const statusCls = r.triggered ? "triggered" : "pending";
+                  const timeStr = r.dateTime
+                    ? formatDateTime(r.dateTime)
+                    : "无时间";
+                  return `<div class="reminder-item" data-idx="${realIdx}">
+                  <span class="rem-text">${r.text}</span>
+                  <span class="rem-time">${timeStr}</span>
+                  <span class="rem-status ${statusCls}">${statusText}</span>
+                  <button class="rem-del" data-idx="${realIdx}">❌</button>
+                </div>`;
+                })
                 .join("");
-              const html = `<div style="max-height:200px;overflow-y:auto;">${listHtml || '<div class="empty-state" style="padding:20px 0;"><span class="empty-emoji" style="font-size:32px;">⏰</span><div style="font-size:14px;">暂无提醒</div></div>'}</div><div style="display:flex;gap:8px;margin-top:8px;"><input type="text" id="reminderInput" placeholder="输入提醒内容" style="flex:1;padding:8px 12px;border-radius:var(--radius);border:0.5px solid var(--border);font-size:14px;" /><button class="btn-primary" id="addReminderBtn" style="width:auto;padding:8px 16px;margin:0;">➕</button></div>`;
+
+              const defaultDate = new Date(Date.now() + 3600000);
+              const defaultDateTime = defaultDate.toISOString().slice(0, 16);
+
+              const html = `
+                <div style="max-height:280px;overflow-y:auto;margin-bottom:12px;">
+                  ${listHtml || '<div class="empty-state" style="padding:20px 0;"><span class="empty-emoji" style="font-size:32px;">⏰</span><div style="font-size:14px;">暂无提醒</div></div>'}
+                </div>
+                <hr class="form-divider" style="margin:4px 0 12px 0;" />
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <input type="text" id="reminderInput" placeholder="提醒内容" style="flex:1;min-width:100px;padding:10px 12px;border-radius:var(--radius);border:0.5px solid var(--border);font-size:14px;" />
+                  </div>
+                  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <input type="datetime-local" id="reminderDateTime" value="${defaultDateTime}" style="flex:1;min-width:150px;padding:10px 12px;border-radius:var(--radius);border:0.5px solid var(--border);font-size:14px;" />
+                    <button class="btn-primary" id="addReminderBtn" style="width:auto;padding:8px 20px;margin:0;">➕ 添加</button>
+                  </div>
+                  <div style="font-size:11px;color:var(--text2);margin-top:4px;">💡 到时间会自动通知（需允许浏览器通知权限）</div>
+                </div>
+              `;
               showModal("⏰ 提醒", html, () => {
                 document
                   .getElementById("addReminderBtn")
                   .addEventListener("click", function () {
-                    const val = document
+                    const text = document
                       .getElementById("reminderInput")
                       .value.trim();
-                    if (val) {
-                      data.reminders.push(val);
-                      saveData();
-                      hideModal();
-                      showToast("✅ 提醒已添加");
-                      document.getElementById("moreBtn").click();
-                      document
-                        .querySelector('.more-item[data-action="reminder"]')
-                        .click();
+                    const dateTime =
+                      document.getElementById("reminderDateTime").value;
+                    if (!text) {
+                      alert("请输入提醒内容");
+                      return;
                     }
+                    if (!dateTime) {
+                      alert("请选择提醒时间");
+                      return;
+                    }
+                    const remindTime = new Date(dateTime);
+                    if (remindTime < new Date()) {
+                      if (!confirm("提醒时间已过去，确定要添加吗？")) return;
+                    }
+                    data.reminders.push({
+                      id:
+                        "rem_" +
+                        Date.now() +
+                        "_" +
+                        Math.random().toString(36).slice(2, 6),
+                      text: text,
+                      dateTime: dateTime,
+                      triggered: false,
+                    });
+                    saveData();
+                    hideModal();
+                    showToast("✅ 提醒已添加");
+                    document.getElementById("moreBtn").click();
+                    document
+                      .querySelector('.more-item[data-action="reminder"]')
+                      .click();
                   });
                 document.querySelectorAll(".rem-del").forEach((btn) => {
                   btn.addEventListener("click", function () {
                     const idx = parseInt(this.dataset.idx);
+                    if (isNaN(idx)) return;
                     data.reminders.splice(idx, 1);
                     saveData();
                     hideModal();
@@ -10546,6 +10765,8 @@
         initPageBackButtons();
         initImageViewer();
         initLingbao();
+        startReminderChecker();
+
         renderLove();
         renderHappy();
         renderTravel();
@@ -10607,9 +10828,7 @@
         });
 
         setInterval(saveData, 30000);
-        console.log(
-          "💕 Love·轨迹 已启动 (日历多色+小桃智能版 + AI, 已移除密码)",
-        );
+        console.log("💕 Love·轨迹 已启动 (提醒支持时间选择 + 通知)");
       }
 
       if (document.readyState === "loading") {
