@@ -1389,23 +1389,24 @@
         border: 0.5px solid var(--border);
         background: var(--bg);
       }
-      /* ===== 经期统计卡片：统一字体大小 ===== */
+      /* ===== 经期统计卡片：两列布局 ===== */
       .menstrual-stats-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr 1fr; /* 改为两列 */
         gap: 10px;
         margin-bottom: 12px;
       }
       .menstrual-stat-card {
         background: var(--card);
         border-radius: var(--radius);
-        padding: 10px;
+        padding: 14px 8px 10px 8px;
         box-shadow: var(--shadow);
         border: 0.5px solid var(--border);
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        min-height: 72px;
         position: relative;
         transition: all 0.2s;
         user-select: none;
@@ -1419,6 +1420,7 @@
         align-items: center;
         gap: 3px;
         margin-bottom: 2px;
+        justify-content: center;
         width: 100%;
       }
       .menstrual-stat-card .ms-title .ms-emoji {
@@ -1442,9 +1444,9 @@
         color: var(--text2);
         margin-left: 2px;
       }
-      /* 预测卡片特殊样式 */
+      /* 预测卡片占两列 */
       .menstrual-stat-card[data-key="predict"] {
-        grid-column: span 3;
+        grid-column: span 2;
         background: var(--primary-light);
         min-height: 80px;
         padding: 12px 10px;
@@ -8276,9 +8278,11 @@
         .addEventListener("click", goBack);
 
       // ====================================================================
-      // 渲染月经（按开始日期降序）
+      // 渲染月经（按开始日期降序 + 修正“上次月经”为最近日期）
       // ====================================================================
       let menstrualPageNum = 1;
+      // 用于编辑时保存 dayDetails 数据（全局）
+      let editDayDetails = null;
 
       function renderMenstrual(list) {
         const source = (list || data.menstrual)
@@ -8316,7 +8320,7 @@
             last.setDate(last.getDate() + avgCycle);
             nextDate = formatDate(last);
           }
-          // 修复：取日期最近的记录（source[0]）作为"上次月经"
+          // 修复：取日期最近的记录（source[0]）作为“上次月经”
           const lastRecord = source.length > 0 ? source[0] : null;
           const lastStart = lastRecord ? formatDate(lastRecord.startDate) : "-";
           const lastEnd =
@@ -8390,7 +8394,7 @@
           const pred = getMenstrualPredictions();
           let predHtml = "";
           if (pred) {
-            predHtml = `<div class="menstrual-stat-card" style="grid-column:span 3;background:var(--primary-light);" data-key="predict"><div class="ms-title"><span class="ms-emoji">🔮</span> 预测</div><div class="ms-value" style="font-size:16px;">${pred.status}</div><div class="ms-sub">下次月经: ${formatDate(pred.nextStart)} (${pred.daysToNext > 0 ? pred.daysToNext + "天后" : "已过" + Math.abs(pred.daysToNext) + "天"})</div><div class="ms-sub">易孕期: ${formatDate(pred.fertileStart)} ~ ${formatDate(pred.fertileEnd)}</div></div>`;
+            predHtml = `<div class="menstrual-stat-card" data-key="predict"><div class="ms-title"><span class="ms-emoji">🔮</span> 预测</div><div class="ms-value" style="font-size:16px;">${pred.status}</div><div class="ms-sub">下次月经: ${formatDate(pred.nextStart)} (${pred.daysToNext > 0 ? pred.daysToNext + "天后" : "已过" + Math.abs(pred.daysToNext) + "天"})</div><div class="ms-sub">易孕期: ${formatDate(pred.fertileStart)} ~ ${formatDate(pred.fertileEnd)}</div></div>`;
           }
           const savedOrder = data.menstrualStatsOrder || [];
           let orderedItems = [...statItems];
@@ -8416,7 +8420,7 @@
             });
             orderedItems = ordered;
           }
-          let statsHtml = `<div class="menstrual-stats-grid" id="menstrualStatsGrid">`;
+          let statsHtml = `<div class="menstrual-stats-grid">`;
           orderedItems.forEach((item) => {
             statsHtml += `<div class="menstrual-stat-card" data-key="${item.key}"><div class="ms-title"><span class="ms-emoji">${item.emoji}</span> ${item.label}</div><div class="ms-value">${item.value}${item.unit ? ' <span class="unit">' + item.unit + "</span>" : ""}</div></div>`;
           });
@@ -8521,6 +8525,7 @@
           (d.symptoms || []).forEach((s) => {
             if (s !== "无") symptomCount[s] = (symptomCount[s] || 0) + 1;
           });
+          // 症状按顺序显示，无则显示 ✅ 无
           const daySymptoms = (d.symptoms || [])
             .filter((s) => s !== "无")
             .map((s) => getSymptomEmoji(s) + s)
@@ -8542,8 +8547,6 @@
       }
 
       let menstrualEditId = null;
-      // 用于编辑时存储 dayDetails 数据
-      let editDayDetails = null;
 
       function showMenstrualForm(editItem) {
         const isEdit = !!editItem;
@@ -8557,7 +8560,6 @@
           : [];
         while (editDayDetails.length < days)
           editDayDetails.push({ flow: "中量", symptoms: ["无"] });
-        // 截断到 days 长度
         if (editDayDetails.length > days)
           editDayDetails = editDayDetails.slice(0, days);
 
@@ -8589,34 +8591,18 @@
           const daysVal =
             parseInt(document.getElementById("mfDays").value) || 1;
           const container = document.getElementById("mfDayCards");
-          // 如果 editDayDetails 有数据，使用它；否则从现有卡片读取
+          // 使用 editDayDetails（全局）
           let currentDetails = [];
           if (editDayDetails && editDayDetails.length > 0) {
-            // 使用编辑数据，确保长度与 daysVal 匹配
             currentDetails = JSON.parse(JSON.stringify(editDayDetails));
             while (currentDetails.length < daysVal)
               currentDetails.push({ flow: "中量", symptoms: ["无"] });
             if (currentDetails.length > daysVal)
               currentDetails = currentDetails.slice(0, daysVal);
           } else {
-            // 从DOM读取（新增模式）
-            const existingCards = container.querySelectorAll(
-              ".menstrual-day-card",
-            );
-            existingCards.forEach((card, idx) => {
-              const flow =
-                card.querySelector(".flow-opt.active")?.dataset.value || "中量";
-              const symptoms = [];
-              card
-                .querySelectorAll(".symptom-opt.active")
-                .forEach((el) => symptoms.push(el.dataset.value));
-              if (symptoms.length === 0) symptoms.push("无");
-              currentDetails[idx] = { flow, symptoms };
-            });
-            while (currentDetails.length < daysVal)
+            // 新增模式（实际上不会走到这里，因为 editDayDetails 已初始化）
+            for (let i = 0; i < daysVal; i++)
               currentDetails.push({ flow: "中量", symptoms: ["无"] });
-            if (currentDetails.length > daysVal)
-              currentDetails = currentDetails.slice(0, daysVal);
           }
 
           let cardsHtml = "";
@@ -8652,7 +8638,6 @@
                   .querySelectorAll(".flow-opt")
                   .forEach((o) => o.classList.remove("active"));
                 this.classList.add("active");
-                // 更新 editDayDetails
                 const idx = parseInt(card.dataset.day);
                 if (!isNaN(idx) && editDayDetails && editDayDetails[idx]) {
                   editDayDetails[idx].flow = this.dataset.value;
@@ -8667,7 +8652,6 @@
                 const parent = this.closest(".symptom-options");
                 const idx = parseInt(card.dataset.day);
                 if (isNone) {
-                  // 点击"无"：清空所有，只选中"无"
                   parent
                     .querySelectorAll(".symptom-opt")
                     .forEach((o) => o.classList.remove("active"));
@@ -8676,13 +8660,11 @@
                     editDayDetails[idx].symptoms = ["无"];
                   }
                 } else {
-                  // 点击其他症状：取消"无"，切换当前（多选）
                   const noneOpt = parent.querySelector(
                     '.symptom-opt[data-value="无"]',
                   );
                   if (noneOpt) noneOpt.classList.remove("active");
                   this.classList.toggle("active");
-                  // 更新 editDayDetails
                   if (!isNaN(idx) && editDayDetails && editDayDetails[idx]) {
                     const activeSymptoms = [];
                     parent
@@ -8733,20 +8715,33 @@
             const startDateVal = document.getElementById("mfStartDate").value;
             const daysVal =
               parseInt(document.getElementById("mfDays").value) || 1;
-            // 从 DOM 重新收集数据，确保与 editDayDetails 同步
+            // 从 editDayDetails 获取最新数据（由事件同步）
             const dayDetails = [];
-            document.querySelectorAll(".menstrual-day-card").forEach((card) => {
-              const flow =
-                card.querySelector(".flow-opt.active")?.dataset.value || "中量";
-              const symptoms = [];
-              card
-                .querySelectorAll(".symptom-opt.active")
-                .forEach((el) => symptoms.push(el.dataset.value));
-              if (symptoms.length === 0) symptoms.push("无");
-              if (symptoms.includes("无"))
-                dayDetails.push({ flow, symptoms: ["无"] });
-              else dayDetails.push({ flow, symptoms });
-            });
+            if (editDayDetails) {
+              // 确保长度匹配
+              while (editDayDetails.length < daysVal)
+                editDayDetails.push({ flow: "中量", symptoms: ["无"] });
+              if (editDayDetails.length > daysVal)
+                editDayDetails = editDayDetails.slice(0, daysVal);
+              dayDetails.push(...editDayDetails);
+            } else {
+              // 降级：从DOM读取
+              document
+                .querySelectorAll(".menstrual-day-card")
+                .forEach((card) => {
+                  const flow =
+                    card.querySelector(".flow-opt.active")?.dataset.value ||
+                    "中量";
+                  const symptoms = [];
+                  card
+                    .querySelectorAll(".symptom-opt.active")
+                    .forEach((el) => symptoms.push(el.dataset.value));
+                  if (symptoms.length === 0) symptoms.push("无");
+                  if (symptoms.includes("无"))
+                    dayDetails.push({ flow, symptoms: ["无"] });
+                  else dayDetails.push({ flow, symptoms });
+                });
+            }
             if (!startDateVal) {
               alert("请选择开始日期");
               return;
@@ -10438,7 +10433,7 @@
               if (
                 dd.getFullYear() === y &&
                 dd.getMonth() === m &&
-                dd.getDate() === day
+                dd.getDate() === d
               ) {
                 hasMenstrual = true;
               }
