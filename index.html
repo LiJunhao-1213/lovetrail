@@ -135,7 +135,7 @@
         background: var(--hd-bg);
         -webkit-backdrop-filter: saturate(200%) blur(24px);
         backdrop-filter: saturate(200%) blur(24px);
-        padding: calc(env(safe-area-inset-top, 0px) + 4px) 16px 8px;
+        padding: calc(env(safe-area-inset-top, 0px) + 0px) 16px 6px;
         border-bottom: 0.5px solid var(--hd-bd);
       }
       .hd-row {
@@ -243,7 +243,7 @@
       #main {
         position: fixed;
         top: 0;
-        bottom: calc(var(--tab-h) + var(--safe-b));
+        bottom: calc(var(--tab-h));
         left: 0;
         right: 0;
         overflow: hidden;
@@ -282,8 +282,8 @@
         background: var(--card);
         border-top: 1px solid var(--line);
         display: flex;
-        height: calc(var(--tab-h) + var(--safe-b));
-        padding-bottom: var(--safe-b);
+        height: calc(var(--tab-h));
+        padding-bottom: 0;
         box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.04);
       }
       .tab {
@@ -2369,8 +2369,8 @@
       .dt-picker .dp-body {
         padding: 4px 0 4px;
         display: flex;
-        gap: 16px;
-        justify-content: center;
+        gap: 0;
+        justify-content: space-between;
         position: relative;
       }
       /* 贯穿三列的高亮参考线，让选中行看起来严格水平对齐 */
@@ -2416,7 +2416,7 @@
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
         scroll-snap-type: y mandatory;
-        padding: 46px 0;
+        padding: 66px 0;
       }
       .dt-picker .dp-col .dp-scroll::-webkit-scrollbar {
         display: none;
@@ -16443,9 +16443,9 @@
           C.loveStart
             ? `
           <div class="sec love-timer-card" id="loveTimerCard">
-            <div class="lt-header">💕 恋爱计时</div>
-            <div class="lt-status">在一起</div>
-            <div class="lt-time" id="lvTime">0天 0时0分0秒</div>
+            <div class="lt-header" style="justify-content:flex-start;font-size:14px;font-weight:600;color:var(--sub);">💕 恋爱计时</div>
+            <div class="lt-status" style="font-size:13px;color:var(--sub);margin-top:0;">在一起</div>
+            <div class="lt-time" id="lvTime" style="font-size:20px;letter-spacing:3px;">0 <span style="color:#000">天</span> 0 时 0 分 0 秒</div>
             <div class="lt-phase">💗 ${esc(emoji)}</div>
             <div class="lt-start">始于 ${loveStartYMD()}</div>
           </div>
@@ -16558,13 +16558,13 @@
             <div class="ac-avatar">${p.emoji}</div>
             <div class="ac-info">
               <div class="ac-name">${esc(p.label)}</div>
-              <div class="ac-age"><strong>${detail.totalDays}</strong> 天 · ${detail.years}岁 ${detail.months}月 ${detail.days}天</div>
+              <div class="ac-age"><strong>${detail.totalDays}</strong> 天 · ${detail.years}岁</div>
               <div class="ac-detail">
                 <span class="ac-emoji">${detail.zodiacEmoji}</span>${detail.zodiac}座 ·
                 <span class="ac-emoji">${detail.shengxiaoEmoji}</span>${detail.shengxiao}年 ·
                 农历 ${lunarStr}
               </div>
-              <div class="ac-birthday">距生日 ${detail.daysToBirthday} 天</div>
+              <div class="ac-birthday">距下次生日还有 ${detail.daysToBirthday} 天</div>
             </div>
           </div>`;
         }
@@ -16973,7 +16973,7 @@
           const h = Math.floor(ms / 36e5) % 24,
             m = Math.floor(ms / 6e4) % 60,
             sec = Math.floor(ms / 1e3) % 60;
-          el.textContent = `${days}天 ${h}时${m}分${sec}秒`;
+          el.textContent = `${days} 天 ${h} 时 ${m} 分 ${sec} 秒`;
         };
         upd();
         lvInt = setInterval(upd, 1000);
@@ -17873,25 +17873,25 @@
         <div class="card couple-profile" onclick="profileEdit()" style="cursor:pointer;">
           <div class="cp-header">
             <span class="cp-title">👫 情侣资料</span>
-            <span class="cp-together">${C.loveStart ? loveDayTxt + " 在一起" : "未设置恋爱日"}</span>
+            <span class="cp-together" style="display:none;">${C.loveStart ? loveDayTxt + " 在一起" : "未设置恋爱日"}</span>
           </div>
           <div class="cp-body">
             ${renderProfilePerson(C.me, false)}
             <div class="cp-divider">${C.paired ? "❤️" : "💗"}</div>
             ${renderProfilePerson(C.partner, true)}
           </div>
-          <div class="cp-footer">
-            <div class="cp-f-item">
-              <span class="cp-f-num">${nextAnniversary !== null ? nextAnniversary : "—"}</span>
-              <span class="cp-f-label">距离周年</span>
+          <div class="cp-footer" style="display:flex;justify-content:space-around;align-items:baseline;">
+            <div class="cp-f-item" style="flex:1;text-align:center;">
+              <span class="cp-f-num" style="color:var(--primary);font-size:20px;">${nextAnniversary !== null ? nextAnniversary : "—"}</span>
+              <span class="cp-f-label" style="display:block;font-size:11px;color:var(--sub);">距离下一个周年日</span>
             </div>
-            <div class="cp-f-item">
-              <span class="cp-f-num">${loveDayTxt}</span>
-              <span class="cp-f-label">已在一起</span>
+            <div class="cp-f-item" style="flex:1;text-align:center;">
+              <span class="cp-f-num" style="color:var(--primary);font-size:20px;">${loveDayTxt}</span>
+              <span class="cp-f-label" style="display:block;font-size:11px;color:var(--sub);">已在一起</span>
             </div>
-            <div class="cp-f-item">
-              <span class="cp-f-num" style="font-size:14px">${C.loveStart ? loveStartYMD() : "—"}</span>
-              <span class="cp-f-label">恋爱起始</span>
+            <div class="cp-f-item" style="flex:1;text-align:center;">
+              <span class="cp-f-num" style="color:var(--primary);font-size:14px;">${C.loveStart ? loveStartYMD() : "—"}</span>
+              <span class="cp-f-label" style="display:block;font-size:11px;color:var(--sub);">恋爱起始</span>
             </div>
           </div>
         </div>
@@ -17905,15 +17905,14 @@
               ? capsules
                   .map((c) => {
                     const days = dayDiff(c.date, today());
-                    return `<div class="capsule-card" onclick="capsuleDetail('${c.id}')">
+                    return `<div class="capsule-card" onclick="capsuleDetail('${c.id}')" style="border-left:4px solid var(--primary);">
               <div class="cc-header">
-                <span class="cc-name">${esc(c.name)}</span>
-                <span class="cc-date">${fmtCN(c.date)}</span>
+                <span class="cc-name" style="font-weight:700">${esc(c.name)}</span>
+                <span class="cc-date" style="font-weight:600;color:var(--primary);font-size:15px;">📅 ${fmtCN(c.date)}</span>
               </div>
-              <div class="cc-days">
-                <span class="num">${Math.max(0, days)}</span>
-                <span class="unit">天</span>
-                <span style="font-size:13px;color:var(--sub);margin-left:6px;">${days >= 0 ? "已经" : "还有"} ${Math.abs(days)} 天</span>
+              <div class="cc-days" style="display:flex;flex-direction:column;gap:2px;margin-top:4px;">
+                <span style="font-size:15px;font-weight:600;color:var(--text);">已经 <b style="color:var(--primary);font-size:22px;">${Math.max(0, days)}</b> 天</span>
+    <span style="font-size:13px;color:var(--sub);">距下次该纪念日还有 <b style="color:var(--primary);">${Math.max(0, 365 - (days % 365))}</b> 天</span>
               </div>
               <div class="cc-sub">${fmtCN(c.date)} · ${weekday(c.date)}</div>
             </div>`;
@@ -18027,8 +18026,9 @@
             <div class="cd-row"><span class="cd-label">创建时间</span><span class="cd-value">${c.createdAt ? fmtCN(c.createdAt.slice(0, 10)) : "—"}</span></div>
           </div>
           <div style="display:flex;gap:10px;margin-top:14px;">
-            <button class="btn ghost" style="flex:1" onclick="capsuleEdit('${id}')">✏️ 编辑</button>
+            
             <button class="btn danger" style="flex:1" onclick="confirmBox('删除此时间胶囊？',()=>{DB.timeCapsules=DB.timeCapsules.filter(x=>x.id!=='${id}');save();closeSub();toast('已删除')})">🗑 删除</button>
+            <button class="btn ghost" style="flex:1" onclick="capsuleEdit('${id}')">✏️ 编辑</button>
           </div>`;
         });
       }
@@ -19204,7 +19204,7 @@
         openSub("情侣备忘录", (el) => {
           const draw = () => {
             el.innerHTML = `<div style="display:flex;gap:8px;margin-top:8px">
-            <input class="input" id="memoIn" placeholder="记一件小事、待办或心愿…">
+            <input class="input" id="memoIn" placeholder="记一件小事、待办或心愿…" style="background:var(--card);border:1px solid var(--line);">
             <button class="btn" id="memoAdd" style="flex:none">添加</button></div>
           <div class="glist" style="margin-top:12px">
             ${
