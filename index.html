@@ -617,6 +617,34 @@
         font-weight: 500;
         margin-top: 12px;
       }
+      .rec-hint {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        background: var(--accent-weak);
+        color: var(--accent);
+        border-radius: 12px;
+        padding: 10px 12px 10px 14px;
+        font-size: 12.5px;
+        line-height: 1.5;
+        margin: 10px 0 14px;
+      }
+      .rec-hint b {
+        color: var(--accent);
+      }
+      .rec-hint .rec-hint-x {
+        flex: none;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: rgba(0, 122, 255, 0.12);
+        color: var(--accent);
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
       .empty .e-d {
         font-size: 13px;
         color: var(--sub);
@@ -727,6 +755,30 @@
       #toast.on {
         opacity: 1;
         transform: translateX(-50%) translateY(-4px);
+      }
+      #toast.undo {
+        pointer-events: auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 10px 8px 18px;
+        text-align: left;
+      }
+      .toast-act {
+        flex: none;
+        background: rgba(255, 255, 255, 0.18);
+        color: #fff;
+        border: 0;
+        border-radius: 14px;
+        padding: 5px 12px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        line-height: 1;
+      }
+      .toast-act:active {
+        transform: scale(0.95);
+        opacity: 0.8;
       }
 
       /* ============ ActionSheet ============ */
@@ -1133,6 +1185,333 @@
         gap: 6px;
         margin-top: 6px;
         flex-wrap: wrap;
+      }
+      /* ---- 经期分析卡片（重构：分区块清晰排版） ---- */
+      .pa-card {
+        margin-top: 12px;
+        background: var(--card);
+        border-radius: var(--card-radius, var(--r));
+        padding: 16px;
+        box-shadow: var(--shadow, 0 2px 12px rgba(0, 0, 0, 0.06));
+      }
+      .pa-hd {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 4px;
+      }
+      .pa-hd .t {
+        font-size: 15px;
+        font-weight: 700;
+      }
+      .pa-hd .badge {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 3px 9px;
+        border-radius: 20px;
+        background: var(--accent-weak);
+        color: var(--accent);
+      }
+      .pa-hd .badge.live {
+        background: var(--primary-weak);
+        color: var(--primary);
+      }
+      .pa-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        margin: 12px 0 2px;
+      }
+      .pa-stat {
+        background: #f6f7f9;
+        border-radius: 12px;
+        padding: 10px 4px 9px;
+        text-align: center;
+      }
+      .pa-stat .n {
+        font-size: 17px;
+        font-weight: 700;
+        color: var(--text);
+        line-height: 1.1;
+      }
+      .pa-stat .n small {
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--sub);
+      }
+      .pa-stat .k {
+        font-size: 11px;
+        color: var(--sub);
+        margin-top: 3px;
+      }
+      .pa-next {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 12px 0 0;
+        padding: 12px 14px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, var(--accent-weak), #f0f7ff);
+        border: 1px solid rgba(0, 122, 255, 0.15);
+      }
+      .pa-next .ico {
+        font-size: 22px;
+        flex: none;
+      }
+      .pa-next .mx {
+        flex: 1;
+        min-width: 0;
+      }
+      .pa-next .mx .d {
+        font-size: 15px;
+        font-weight: 700;
+      }
+      .pa-next .mx .s {
+        font-size: 12px;
+        color: var(--sub);
+        margin-top: 1px;
+      }
+      .pa-next .go {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--accent);
+        background: #fff;
+        border-radius: 20px;
+        padding: 6px 12px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+      }
+      .pa-blk {
+        margin-top: 14px;
+        padding-top: 4px;
+      }
+      .pa-blk-t {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--sub);
+        margin: 0 2px 8px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .pa-next .badge {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 5px 10px;
+        border-radius: 20px;
+        background: var(--card);
+        color: var(--accent);
+        border: 1px solid rgba(0, 122, 255, 0.2);
+        flex: none;
+      }
+      .pa-next .badge.live {
+        background: var(--primary-weak);
+        color: var(--primary);
+        border-color: rgba(255, 45, 85, 0.2);
+      }
+      .pa-pillrow {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 10px;
+        padding: 9px 10px;
+        border-radius: 12px;
+        background: #f8f9fb;
+      }
+      .pa-pillrow:last-child {
+        margin-bottom: 0;
+      }
+      .pa-pillrow .pa-l {
+        flex: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text);
+        min-width: 72px;
+      }
+      .pa-pillrow .pa-l span {
+        font-size: 15px;
+      }
+      .pa-pillrow .pa-v {
+        flex: 1;
+        text-align: right;
+        font-size: 11px;
+        color: var(--sub);
+        line-height: 1.35;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 4px;
+      }
+      .pa-pillrow .pa-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .pa-reg {
+        margin-top: 4px;
+      }
+      .pa-reg .segrow {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 12px;
+        color: var(--sub);
+        margin-top: 8px;
+      }
+      .pa-reg .segrow .track {
+        flex: 1;
+        height: 8px;
+        border-radius: 6px;
+        background: #eef0f3;
+        overflow: hidden;
+        display: flex;
+      }
+      .pa-reg .segrow .track i {
+        display: block;
+        height: 100%;
+      }
+      .pa-reg .segrow .cnt {
+        flex: none;
+        font-weight: 600;
+        color: var(--text);
+      }
+      .pa-note {
+        font-size: 10.5px;
+        color: var(--sub);
+        margin-top: 12px;
+        line-height: 1.6;
+        border-top: 1px dashed var(--line);
+        padding-top: 9px;
+      }
+      /* 本周期详解折叠 */
+      .pa-detail {
+        margin-top: 12px;
+        border-top: 1px solid var(--line);
+        padding-top: 2px;
+      }
+      .pa-detail-hd {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 11px 2px;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text);
+        cursor: pointer;
+        user-select: none;
+        -webkit-user-select: none;
+        border-radius: 8px;
+      }
+      .pa-detail-hd:active {
+        background: #f5f5f7;
+      }
+      .pa-detail-hd .pa-caret {
+        font-size: 13px;
+        color: var(--sub);
+        transition: transform 0.2s;
+      }
+      .pa-detail-body {
+        padding: 2px 2px 4px;
+      }
+      /* ---- 经期历史：按“每次经期”分组卡片 ---- */
+      .pep-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--card-radius, var(--r));
+        padding: 13px 14px;
+        margin-bottom: 9px;
+        box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04);
+      }
+      .pep-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .pep-top .dt {
+        font-size: 14.5px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .pep-top .dt .dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--primary);
+        flex: none;
+      }
+      .pep-top .meta {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+      }
+      .pep-top .meta .tag {
+        font-size: 11px;
+      }
+      .pep-top .meta .yr {
+        color: var(--sub);
+        font-size: 11px;
+      }
+      .pep-days {
+        margin-top: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .pep-day {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: #f7f8fa;
+        border-radius: 10px;
+        padding: 7px 10px;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .pep-day:active {
+        background: #eff1f4;
+      }
+      .pep-day .dd {
+        flex: none;
+        width: 52px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .pep-day .dd small {
+        display: block;
+        font-size: 10px;
+        color: var(--sub);
+        font-weight: 400;
+      }
+      .pep-day .df {
+        flex: none;
+      }
+      .pep-day .chips {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .pep-day .n {
+        font-size: 11px;
+        color: var(--sub);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 80px;
       }
 
       /* ============ 相册、日历、地图等 ============ */
@@ -1885,13 +2264,13 @@
         font-size: 13px;
       }
 
-      /* 逐日可编辑行 */
+      /* 逐日可编辑行（紧凑版） */
       .pb-day-row {
         background: var(--card);
         border: 1px solid var(--line);
-        border-radius: 14px;
-        padding: 10px 12px;
-        margin-bottom: 10px;
+        border-radius: 12px;
+        padding: 8px 10px;
+        margin-bottom: 8px;
       }
       .pb-day-row:last-child {
         margin-bottom: 0;
@@ -1900,30 +2279,35 @@
         display: flex;
         align-items: center;
         gap: 8px;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         margin-bottom: 8px;
       }
+      .pb-day-t {
+        flex: none;
+        display: flex;
+        flex-direction: column;
+        min-width: 44px;
+      }
       .pb-day-date {
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 700;
         color: var(--text);
-        min-width: 48px;
       }
       .pb-day-week {
-        font-size: 12px;
+        font-size: 10px;
         color: var(--sub);
-        width: 24px;
       }
       .pb-day-flow {
-        display: flex;
-        gap: 4px;
         flex: 1;
+        display: flex;
+        gap: 3px;
+        min-width: 0;
       }
       .pb-day-flow button {
         flex: 1;
         min-width: 0;
-        padding: 5px 2px;
-        border-radius: 8px;
+        padding: 5px 0;
+        border-radius: 7px;
         border: 1px solid var(--line);
         background: var(--card);
         color: var(--text);
@@ -1936,26 +2320,68 @@
         color: #fff;
       }
       .pb-day-mood {
+        flex: none;
         display: flex;
-        gap: 4px;
+        gap: 3px;
       }
-      .pb-day-mood .chip,
-      .pb-day-sym .chip {
-        padding: 4px 8px;
-        font-size: 11px;
+      .pb-day-mood button {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        border: 1px solid var(--line);
+        background: var(--card);
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+      .pb-day-mood button.on {
+        background: var(--accent-weak);
+        border-color: var(--accent);
+      }
+      .pb-day-body {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
       }
       .pb-day-sym {
         display: flex;
         flex-wrap: wrap;
-        gap: 5px;
-        margin-bottom: 8px;
+        gap: 4px;
       }
-      .pb-day-note input.input {
+      .pb-day-sym .chip {
+        padding: 3px 7px;
+        font-size: 11px;
+      }
+      .pb-day-note {
         width: 100%;
-        padding: 8px 10px;
-        border-radius: 10px;
+        padding: 6px 9px;
+        border-radius: 8px;
         border: 1px solid var(--line);
         background: var(--bg);
+        font-size: 12px;
+        min-height: 32px;
+      }
+
+      /* 经期记录单日/区间切换 */
+      .pd-mode-seg {
+        display: flex;
+        background: #ececee;
+        border-radius: 8px;
+        padding: 2px;
+      }
+      .pd-mode-seg button {
+        padding: 5px 11px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--sub);
+      }
+      .pd-mode-seg button.on {
+        background: var(--card);
+        color: var(--text);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
       }
 
       /* ============ 记录页面时间筛选器 ============ */
@@ -2048,6 +2474,56 @@
         border-radius: var(--r);
         overflow: hidden;
         box-shadow: var(--shadow);
+      }
+
+      /* ============ 「我的」页信息分区 ============ */
+      .mz {
+        margin-top: 26px;
+      }
+      .mz-hd {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 0 4px 10px;
+      }
+      .mz-t {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--sub);
+        letter-spacing: 0.3px;
+      }
+      .mz .glist {
+        border-radius: var(--r);
+        overflow: hidden;
+        box-shadow: var(--shadow);
+      }
+      .mz .glist + .capsule-card {
+        margin-top: 12px;
+      }
+      .mz .capsule-card + .capsule-card {
+        margin-top: 12px;
+      }
+      .empty-link {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        text-align: left;
+        background: var(--card);
+        border: 1px dashed var(--line);
+        border-radius: var(--r);
+        padding: 16px;
+        margin-top: 12px;
+        cursor: pointer;
+        color: var(--text);
+        font-size: 14px;
+        box-sizing: border-box;
+      }
+      .empty-link .arr {
+        margin-left: auto;
+      }
+      .mz .glist:first-child {
+        margin-top: 0;
       }
 
       /* ============ 温馨提醒 ============ */
@@ -2187,15 +2663,16 @@
         font-size: 12px;
         color: var(--sub);
         margin-top: 4px;
+        white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
       }
       .couple-profile .cp-heart {
         flex: none;
-        width: 86px;
+        width: 66px;
         margin: 0 4px;
-        padding: 10px 10px;
-        border-radius: 10px;
+        padding: 10px 0;
+        border-radius: 16px;
         background: var(--primary-weak);
         display: flex;
         flex-direction: column;
@@ -2261,7 +2738,7 @@
         display: block;
         font-size: 17px;
         font-weight: 700;
-        color: var(--primary);
+        color: var(--text);
         line-height: 1.2;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -2382,7 +2859,83 @@
         text-align: left;
       }
 
+      /* 数据叙事卡片 */
+      .story-card {
+        padding: 14px 16px 16px;
+      }
+      .story-card .sec-hd {
+        margin: 0 0 12px;
+      }
+      .story-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .story-li {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        font-size: 13.5px;
+        line-height: 1.55;
+        color: var(--text);
+      }
+      .story-ic {
+        flex: none;
+        font-size: 16px;
+        line-height: 1.4;
+      }
+      .story-tx b {
+        color: var(--primary);
+        font-weight: 600;
+      }
+      .ms-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      .ms-it {
+        background: var(--bg, #f7f8fa);
+        border-radius: var(--r-s, 10px);
+        padding: 10px 4px;
+        text-align: center;
+      }
+      .ms-it b {
+        display: block;
+        font-size: 18px;
+        color: var(--primary);
+        margin-bottom: 2px;
+      }
+      .ms-it span {
+        font-size: 11px;
+        color: var(--sub);
+      }
+      .story-summary {
+        font-size: 13px;
+        line-height: 1.6;
+        color: var(--text);
+      }
+      .story-summary b {
+        color: var(--primary);
+        font-weight: 600;
+      }
+      .story-tag {
+        display: inline-block;
+        background: var(--primary-weak);
+        color: var(--primary);
+        border-radius: 10px;
+        padding: 1px 8px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
       /* ============ 恋爱计时卡片（新布局） ============ */
+      .love-unset-card {
+        background: var(--card);
+        border-radius: var(--card-radius, var(--r));
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        padding: 12px 14px;
+      }
       .love-timer-card {
         background: var(--card);
         border-radius: var(--card-radius, var(--r));
@@ -2462,6 +3015,46 @@
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
+      }
+      /* 首次使用引导 */
+      .ob-step {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 0;
+        border-bottom: 0.5px solid var(--line);
+      }
+      .ob-step:last-child {
+        border-bottom: 0;
+      }
+      .ob-n {
+        flex: none;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: var(--primary-weak);
+        color: var(--primary);
+        font-size: 12px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .ob-step.done .ob-n {
+        background: var(--ok);
+        color: #fff;
+      }
+      .ob-t {
+        flex: 1;
+        min-width: 0;
+      }
+      .ob-t b {
+        display: block;
+        font-size: 14px;
+      }
+      .ob-t span {
+        font-size: 11.5px;
+        color: var(--sub);
       }
       .morning-card .mc-greeting {
         font-size: 18px;
@@ -15048,6 +15641,7 @@
             density: "loose",
             quote: true,
             viewMode: "moments",
+            recHintSeen: false,
             darkMode: false,
             splash: {
               on: false,
@@ -15457,6 +16051,7 @@
       function toast(msg) {
         const t = $("#toast");
         t.textContent = msg;
+        t.classList.remove("undo");
         t.classList.add("on");
         clearTimeout(toastT);
         toastT = setTimeout(() => t.classList.remove("on"), 2000);
@@ -16192,7 +16787,11 @@
       }
 
       function periodAnalysis() {
-        const eps = periodEpisodes();
+        // 仅统计「已开始（<=今天）」的经期，忽略误录入的未来日期，
+        // 避免未来一条记录把平均周期与下次预测拖到几十/几十年后。
+        const todayS = today();
+        const epsAll = periodEpisodes();
+        const eps = epsAll.filter((e) => e.start <= todayS);
         const starts = eps.map((e) => e.start);
         const lens = [];
         for (let i = 1; i < starts.length; i++)
@@ -16202,7 +16801,6 @@
           ? Math.round(recent.reduce((a, b) => a + b, 0) / recent.length)
           : 28;
         const last = eps[eps.length - 1] || null;
-        const todayS = today();
         const ongoing =
           last &&
           dayDiff(todayS, last.start) <= 14 &&
@@ -16213,7 +16811,7 @@
         if (last) {
           next = addDays(last.start, avg);
           if (ongoing) {
-            status = "进行中 · 第" + (dayDiff(todayS, last.start) + 1) + "天";
+            status = "进行中 · 第" + (dayDiff(last.start, todayS) + 1) + "天";
             statusCls = "blue";
           } else {
             const dd = dayDiff(todayS, next);
@@ -16881,6 +17479,30 @@
           ? `${lunarToday.lunarMonth}月${lunarToday.lunarDay}日`
           : "";
 
+        // 首次使用引导（尚未设定恋爱日且还没有任何记录时）
+        const isFresh =
+          !C.loveStart &&
+          !DB.happy.length &&
+          !DB.travel.length &&
+          !(C.relEvents || []).length;
+        // 未设定恋爱日时的空态：若已是首启引导状态则由 onboard 承接；
+        // 若已有记录但未设恋爱日，用一行轻量入口承接（避免大块占位卡和「有这么大」挤在一起）
+        const loveUnsetCta = isFresh
+          ? ""
+          : `
+          <div class="sec love-unset-row">
+            <div class="sec-hd"><span class="sec-t">💕 恋爱计时</span></div>
+            <div class="love-unset-card">
+              <div style="display:flex;align-items:center;gap:10px">
+                <div style="font-size:24px">💑</div>
+                <div style="flex:1">
+                  <div style="font-weight:600;font-size:14px">设定你们的恋爱起始日</div>
+                  <div style="font-size:12px;color:var(--sub);margin-top:2px">纪念日、计时器与恋爱天数都会自动点亮</div>
+                </div>
+                <button class="btn sm" onclick="profileEdit()">去设置</button>
+              </div>
+            </div>
+          </div>`;
         p.innerHTML = `
         <!-- 早上好·今天 卡片 -->
         <div class="morning-card">
@@ -16899,6 +17521,18 @@
             <span class="mc-progress-label">${year}已经过去 ${progress}%</span>
           </div>
         </div>
+
+        ${
+          isFresh
+            ? `<div class="sec card onboard-card">
+                <div style="font-size:16px;font-weight:700">👋 欢迎，从这里开始你们的记录</div>
+                <div style="font-size:12.5px;color:var(--sub);margin:4px 0 12px;line-height:1.6">三分钟，让这份记忆专属你们俩</div>
+                <div class="ob-step ${C.loveStart ? "done" : ""}"><span class="ob-n">${C.loveStart ? "✓" : "1"}</span><div class="ob-t"><b>设定恋爱起始日</b><span>生日/星座/纪念日都会同步亮起</span></div><button class="btn sm" onclick="profileEdit()">去设置</button></div>
+                <div class="ob-step ${DB.happy.length || DB.travel.length ? "done" : ""}"><span class="ob-n">${DB.happy.length || DB.travel.length ? "✓" : "2"}</span><div class="ob-t"><b>记第一条小美好</b><span>快乐小事或旅行足迹都行</span></div><button class="btn sm" onclick="openRecNew()">去记录</button></div>
+                <div class="ob-step"><span class="ob-n">3</span><div class="ob-t"><b>从我的页逛逛</b><span>相册、时间胶囊、打卡都在这里</span></div><button class="btn sm ghost" onclick="switchTab('mine')">去看看</button></div>
+              </div>`
+            : ""
+        }
 
         ${
           C.loveStart
@@ -16921,14 +17555,7 @@
             <div class="lt-start" style="color:var(--sub)">分手 / 和好记录请前往「我的」页查看与管理</div>
           </div>
         `
-            : `
-          <div class="sec card" style="text-align:center">
-            <div style="font-size:30px">💑</div>
-            <div style="font-weight:600;margin-top:6px">设定你们的恋爱起始日</div>
-            <div style="font-size:12px;color:var(--sub);margin:4px 0 12px">开始记录属于两个人的每一天</div>
-            <button class="btn" onclick="profileEdit()">去设置</button>
-          </div>
-        `
+            : loveUnsetCta
         }
 
         <!-- 年龄计算器 -->
@@ -16984,8 +17611,14 @@
           ${
             latest.length
               ? latest.map((r) => momCard(r, r._t, true)).join("")
-              : `<div class="card hairline" style="text-align:center;padding:18px;font-size:13px;color:var(--sub)">
-              🌱 还没有记录，点击右上角开始第一条吧</div>`
+              : `<div style="text-align:center;padding:24px 16px" class="empty">
+                  <div class="e-ic">🌱</div>
+                  <div class="e-t">还没有属于你们的记录</div>
+                  <div class="e-d">从第一条快乐或旅行开始，<br>往后这里会常驻你们最近的小美好</div>
+                  <div style="display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap">
+                    <button class="btn" onclick="switchTab('records');openRecNew()">＋ 记录第一条</button>
+                  </div>
+                </div>`
           }
         </div>`;
 
@@ -17665,6 +18298,19 @@
           html += "</div>";
           box.innerHTML = html;
         }
+        // 一次性手势提示：左滑编辑/删除 · 长按更多
+        if (!DB.ui.recHintSeen && (DB.happy.length || DB.travel.length)) {
+          const hint = document.createElement("div");
+          hint.className = "rec-hint";
+          hint.innerHTML = `<span>👆 左右滑动卡片可<b>编辑 / 删除</b> · 长按卡片可<b>更多操作</b></span>
+            <button class="rec-hint-x" aria-label="知道了">✕</button>`;
+          hint.querySelector(".rec-hint-x").onclick = () => {
+            DB.ui.recHintSeen = true;
+            save();
+            hint.remove();
+          };
+          box.parentNode.insertBefore(hint, box);
+        }
         bindCards(box);
       }
 
@@ -17725,15 +18371,7 @@
             wrap,
             content,
             () => recEditor(type, id),
-            () =>
-              confirmBox("删除这条记录？图片将一并移除", () => {
-                const r = get();
-                (r.imgs || []).forEach((im) => removeImgFromAlbums(im));
-                DB[type] = DB[type].filter((x) => x.id !== id);
-                save();
-                drawRecList();
-                toast("已删除");
-              }),
+            () => deleteRecordWithUndo(type, id, { source: "list" }),
           );
           mom.addEventListener("click", (e) => {
             if (e.target.classList.contains("im")) {
@@ -17768,14 +18406,7 @@
                   icon: "🗑️",
                   t: "删除记录",
                   red: true,
-                  fn: () =>
-                    confirmBox("删除这条记录？", () => {
-                      (r.imgs || []).forEach((im) => removeImgFromAlbums(im));
-                      DB[type] = DB[type].filter((x) => x.id !== id);
-                      save();
-                      drawRecList();
-                      toast("已删除");
-                    }),
+                  fn: () => deleteRecordWithUndo(type, id, { source: "list" }),
                 },
               ],
             });
@@ -17839,7 +18470,8 @@
         });
       }
 
-      $("#fab").onclick = () =>
+      $("#fab").onclick = () => recNewSheet();
+      function recNewSheet() {
         sheet({
           title: "新建记录",
           items: [
@@ -17857,6 +18489,14 @@
             },
           ],
         });
+      }
+      // 从任意页面开始第一条记录
+      function openRecNew() {
+        if (curTab !== "records") {
+          switchTab("records");
+        }
+        setTimeout(recNewSheet, 60);
+      }
 
       /* ================================================================
        * 页面：总览
@@ -17920,6 +18560,8 @@
           </div>`
         }
         </div>
+        ${storyCardsHtml()}
+        ${monthSummaryHtml()}
         ${
           D.hidden.includes("trend")
             ? ""
@@ -17955,6 +18597,159 @@
 
       function cityCount() {
         return new Set(DB.travel.map((t) => t.to).filter(Boolean)).size;
+      }
+
+      /* ---------- 数据叙事：里程碑 / 月度小结 ---------- */
+      function firstRecordStory() {
+        const all = [
+          ...DB.happy.map((r) => ({
+            ...r,
+            type: "happy",
+            label: r.title || "快乐记录",
+          })),
+          ...DB.travel.map((r) => ({
+            ...r,
+            type: "travel",
+            label: r.to || "旅行",
+          })),
+          ...DB.checkin.map((r) => ({ ...r, type: "checkin", label: "打卡" })),
+        ].filter((r) => r.date);
+        if (!all.length) return null;
+        all.sort((a, b) => a.date.localeCompare(b.date));
+        const f = all[0];
+        return {
+          date: f.date,
+          label:
+            f.type === "happy" ? "快乐" : f.type === "travel" ? "旅行" : "打卡",
+          title: f.label,
+        };
+      }
+
+      function activeMonthStory() {
+        const map = {};
+        const add = (r) => {
+          const m = r.date ? r.date.slice(0, 7) : null;
+          if (m) map[m] = (map[m] || 0) + 1;
+        };
+        DB.happy.forEach(add);
+        DB.travel.forEach(add);
+        DB.checkin.forEach(add);
+        const entries = Object.entries(map).sort(
+          (a, b) => b[1] - a[1] || a[0].localeCompare(b[0]),
+        );
+        return entries[0] || null;
+      }
+
+      function nextLoveMilestone() {
+        if (!DB.couple.loveStart) return null;
+        const d = loveDays();
+        if (d < 100) return { days: 100 - d, label: "100 天" };
+        const next = Math.ceil((d + 1) / 100) * 100;
+        return { days: next - d, label: `${next} 天` };
+      }
+
+      function monthlySummary(month) {
+        const happy = DB.happy.filter(
+          (r) => r.date && r.date.startsWith(month),
+        );
+        const travel = DB.travel.filter(
+          (r) => r.date && r.date.startsWith(month),
+        );
+        const checkin = DB.checkin.filter(
+          (r) => r.date && r.date.startsWith(month),
+        );
+        const scores = happy
+          .map((r) => +r.score)
+          .filter((s) => !Number.isNaN(s));
+        const avg = scores.length
+          ? (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1)
+          : null;
+        const tagCount = {};
+        happy.forEach((r) =>
+          (r.tags || []).forEach((t) => (tagCount[t] = (tagCount[t] || 0) + 1)),
+        );
+        const topTag = Object.entries(tagCount).sort((a, b) => b[1] - a[1])[0];
+        const [y, m] = month.split("-");
+        return {
+          y,
+          m,
+          happy: happy.length,
+          travel: travel.length,
+          checkin: checkin.length,
+          avg,
+          topTag,
+        };
+      }
+
+      function latestMonth() {
+        const months = new Set();
+        [...DB.happy, ...DB.travel, ...DB.checkin].forEach((r) => {
+          if (r.date) months.add(r.date.slice(0, 7));
+        });
+        if (!months.size) return null;
+        return [...months].sort().pop();
+      }
+
+      function storyCardsHtml() {
+        const lines = [];
+        if (DB.couple.loveStart) {
+          const ms = nextLoveMilestone();
+          lines.push(
+            `<div class="story-li"><span class="story-ic">💞</span><span class="story-tx">已经在一起 <b>${loveDays()}</b> 天 · ${loveStartYMD()} 开始这段旅程</span></div>`,
+          );
+          if (ms) {
+            lines.push(
+              `<div class="story-li"><span class="story-ic">🎉</span><span class="story-tx">距离下一个 <b>${ms.label}</b> 纪念日还有 <b>${ms.days}</b> 天</span></div>`,
+            );
+          }
+        }
+        const first = firstRecordStory();
+        if (first) {
+          lines.push(
+            `<div class="story-li"><span class="story-ic">📝</span><span class="story-tx">第一条回忆诞生于 ${fmtCN(first.date)} · ${first.label}「${esc(first.title)}」</span></div>`,
+          );
+        }
+        const active = activeMonthStory();
+        if (active) {
+          const ym = active[0];
+          lines.push(
+            `<div class="story-li"><span class="story-ic">🔥</span><span class="story-tx">最活跃的月份是 ${+ym.slice(0, 4)} 年 ${+ym.slice(5, 7)} 月 · 共 <b>${active[1]}</b> 条记录</span></div>`,
+          );
+        }
+        const cities = cityCount();
+        if (cities) {
+          lines.push(
+            `<div class="story-li"><span class="story-ic">🌆</span><span class="story-tx">一起去过 <b>${cities}</b> 座城市</span></div>`,
+          );
+        }
+        if (!lines.length) return "";
+        return `<div class="sec card story-card">
+          <div class="sec-hd"><span class="sec-t">🏷️ 恋爱里程碑</span></div>
+          <div class="story-list">${lines.join("")}</div>
+        </div>`;
+      }
+
+      function monthSummaryHtml() {
+        const month = latestMonth();
+        if (!month) return "";
+        const s = monthlySummary(month);
+        const tag = s.topTag
+          ? `<span class="story-tag">#${esc(s.topTag[0])}</span>`
+          : "";
+        const summary =
+          s.happy || s.travel || s.checkin
+            ? `这个月你们记录了 ${s.happy} 件快乐事、${s.travel} 次旅行、${s.checkin} 天打卡。${s.avg ? `平均快乐分 <b>${s.avg}</b>。` : ""}${tag ? `最常出现的标签是 ${tag}。` : ""}`
+            : "这个月还没有记录，去写一条吧。";
+        return `<div class="sec card story-card">
+          <div class="sec-hd"><span class="sec-t">📅 ${+s.y} 年 ${+s.m} 月 · 恋爱月报</span></div>
+          <div class="ms-grid">
+            <div class="ms-it"><b>${s.happy}</b><span>快乐</span></div>
+            <div class="ms-it"><b>${s.travel}</b><span>旅行</span></div>
+            <div class="ms-it"><b>${s.checkin}</b><span>打卡</span></div>
+            <div class="ms-it"><b>${s.avg || "—"}</b><span>平均快乐分</span></div>
+          </div>
+          <div class="story-summary">${summary}</div>
+        </div>`;
       }
 
       function checkScore() {
@@ -18109,7 +18904,15 @@
        * 页面：经期
        * ================================================================ */
       let pdDate = today(),
-        pdSel = { f: "", s: [], m: "", n: "" };
+        pdSel = { f: "", s: [], m: "", n: "" },
+        pdMode = "single";
+
+      function pdSetMode(mode) {
+        pdMode = mode;
+        if (mode === "range" && !pbState) pbInit();
+        rPeriod();
+        $("#pg-period").scrollTop = 0;
+      }
 
       function rPeriod() {
         const p = $("#pg-period");
@@ -18135,12 +18938,119 @@
               );
         const dates = Object.keys(DB.period.rec).sort().reverse();
 
+        // ---- 历史记录：按“每次经期”分组，一段经期一张卡片 ----
+        const HISTORY_LIMIT = 40;
+        const episodeCardsHtml = (() => {
+          const rec = DB.period.rec;
+          // 该经期内的“出血日”（有流量记录），用于统计天数
+          const bleedDays = (ep) => {
+            const out = [];
+            let d = ep.start;
+            while (d <= ep.end) {
+              if (rec[d] && rec[d].f) out.push(d);
+              d = addDays(d, 1);
+            }
+            return out;
+          };
+          const moodEmoji = {
+            开心: "😄",
+            平静: "😌",
+            低落: "😢",
+            烦躁: "😣",
+            焦虑: "😰",
+          };
+          let used = 0;
+          const out = [];
+          // 从最近一次经期开始倒序，过滤掉误录入的未来日期，避免历史顶部出现 2076 年之类的异常记录
+          const todayS = today();
+          const episodes = periodEpisodes().filter((e) => e.start <= todayS);
+          for (let i = episodes.length - 1; i >= 0; i--) {
+            const ep = episodes[i];
+            if (used >= HISTORY_LIMIT) break;
+            const bd = bleedDays(ep);
+            if (!bd.length) continue;
+            used++;
+            const days = bd
+              .map((d) => {
+                const r = rec[d];
+                const chips = [];
+                if (r.f) chips.push(`<span class="tag">💧 ${esc(r.f)}</span>`);
+                if (r.m) {
+                  const mm = esc(r.m);
+                  chips.push(
+                    `<span class="tag grey">${moodEmoji[r.m] || "💗"} ${mm}</span>`,
+                  );
+                }
+                const syms = (r.s || []).slice(0, 4);
+                const more =
+                  (r.s || []).length > 4 ? "+" + ((r.s || []).length - 4) : "";
+                const dd = new Date(d + "T00:00:00");
+                return `<div class="pep-day" onclick="pdEditDay('${d}')">
+                  <div class="dd">${dd.getDate()}日<small>${fmtShort(d)}</small></div>
+                  <div class="chips">
+                    ${chips.join("")}
+                    ${syms.length ? `<span style="font-size:11px;color:var(--sub)">${syms.map(esc).join("、")}${more}</span>` : ""}
+                  </div>
+                  ${r.n ? `<span class="n">${esc(r.n)}</span>` : ""}
+                </div>`;
+              })
+              .join("");
+            // 汇总流量/症状：取最常见流量
+            const counts = {};
+            bd.forEach((d) => {
+              const f = rec[d].f;
+              counts[f] = (counts[f] || 0) + 1;
+            });
+            const topFlow =
+              Object.keys(counts).sort((a, b) => counts[b] - counts[a])[0] ||
+              "";
+            const isOngoing = ep.end >= today();
+            const lastY = new Date(ep.start + "T00:00:00").getFullYear();
+            const curY = new Date(today() + "T00:00:00").getFullYear();
+            out.push(`<div class="pep-card">
+              <div class="pep-top">
+                <div class="dt"><span class="dot"></span>${fmtCN(ep.start)} ～ ${fmtCN(ep.end)}</div>
+                <div class="meta">
+                  ${curY === lastY ? "" : `<span class="yr">${lastY}</span>`}
+                  <span class="tag">${bd.length} 天</span>
+                  ${isOngoing ? `<span class="tag blue">进行中</span>` : ""}
+                </div>
+              </div>
+              ${topFlow ? `<div style="font-size:12px;color:var(--sub);margin-top:6px">主要流量 · ${esc(topFlow)}</div>` : ""}
+              <div class="pep-days">${days}</div>
+            </div>`);
+          }
+          return out.join("");
+        })();
+
         const heroHtml = `
         <div class="period-hero">
           <div class="ring-wrap">${ringSVG(prog, 80)}</div>
           <div class="info">
-            <div class="title">${A.ongoing ? "🩸 经期第 " + (dayDiff(A.last.start, today()) + 1) + " 天" : A.next ? "⏳ 距下次 " + Math.max(0, remain) + " 天" : "🩸 开始记录经期"}</div>
-            <div class="sub">${A.ongoing ? "预计 " + fmtShort(A.last.end) + " 结束" : A.next ? "预计 " + fmtShort(A.next) + " " + weekday(A.next) + " 到来" : "记录后智能预测周期并双向提醒"}</div>
+            ${(() => {
+              let t, s;
+              if (A.ongoing) {
+                t = "🩸 经期第 " + (dayDiff(A.last.start, today()) + 1) + " 天";
+                s = "预计 " + fmtShort(A.last.end) + " 结束";
+              } else if (!A.next) {
+                t = "🩸 开始记录经期";
+                s = "记录后智能预测周期并双向提醒";
+              } else if (remain === null) {
+                t = "🩸 开始记录经期";
+                s = "记录后智能预测周期并双向提醒";
+              } else if (remain > 0) {
+                t = "⏳ 距下次 " + remain + " 天";
+                s =
+                  "预计 " + fmtShort(A.next) + " " + weekday(A.next) + " 到来";
+              } else if (remain === 0) {
+                t = "⏳ 预计今日到来";
+                s = "建议记录今日状态，开始呵护";
+              } else {
+                t = "⚠️ 已推迟 " + -remain + " 天";
+                s = "建议记录今日月经或标记为推迟";
+              }
+              return `<div class="title">${t}</div><div class="sub">${s}</div>`;
+            })()}
             <div class="tags">
               <span class="tag ${A.statusCls === "blue" ? "blue" : A.ongoing ? "" : "grey"}">${A.status || "—"}</span>
               <span class="tag grey">周期 ${A.avg}天</span>
@@ -18154,60 +19064,185 @@
 
         const analysisCard = (() => {
           if (!A.last) return "";
-          const rows = [];
-          rows.push({
-            k: "🩸 上次经期",
-            v: `${fmtCN(A.last.start)} ～ ${fmtCN(A.last.end)} · 共 ${dayDiff(A.last.start, A.last.end) + 1} 天`,
-          });
-          if (A.next)
-            rows.push({
-              k: "⏳ 预计下次",
-              v: `${fmtCN(A.next)} ${weekday(A.next)}`,
+          const T = today();
+          // 平均经期时长
+          const durArr = A.eps
+            .map((e) => dayDiff(e.start, e.end) + 1)
+            .slice(-6);
+          const avgDur = durArr.length
+            ? Math.round(durArr.reduce((a, b) => a + b, 0) / durArr.length)
+            : dayDiff(A.last.start, A.last.end) + 1;
+          // 周期规律色带
+          const trendTotal = Math.max(1, A.trend.total);
+          const seg = (v, color) =>
+            v
+              ? `<i style="width:${Math.round((v / trendTotal) * 100)}%;background:${color}"></i>`
+              : "";
+          const primary = "var(--primary)";
+          const accent = "var(--accent)";
+          const green = "#34c759";
+          // 下次预测卡
+          let nextHtml = "";
+          if (A.next) {
+            const dd = dayDiff(T, A.next);
+            const live = A.ongoing;
+            const badge = live
+              ? `<span class="badge live">🩸 进行中</span>`
+              : dd > 0
+                ? `<span class="badge">${dd} 天后</span>`
+                : dd === 0
+                  ? `<span class="badge live">今日</span>`
+                  : `<span class="badge" style="background:var(--danger);color:#fff">已过 ${-dd} 天</span>`;
+            let dTitle, dSub;
+            if (live) {
+              dTitle =
+                "本次经期 · 第 " + (dayDiff(A.last.start, T) + 1) + " 天";
+              dSub = "预计 " + fmtShort(A.last.end) + " 结束";
+            } else if (dd >= 0) {
+              dTitle = "预计下次月经来潮";
+              dSub = fmtCN(A.next) + " " + weekday(A.next);
+            } else {
+              dTitle = "本次应来却未到";
+              dSub =
+                "上次 " + fmtShort(A.last.start) + " 后，已推迟 " + -dd + " 天";
+            }
+            nextHtml = `<div class="pa-next"><div class="ico">${live ? "🩸" : "⏳"}</div>
+              <div class="mx">
+                <div class="d">${dTitle}</div>
+                <div class="s">${dSub}</div>
+              </div>${badge}</div>`;
+          }
+          const durStr = (s, e) => Math.max(1, dayDiff(s, e) + 1) + "天";
+          // 预测窗口行：用彩色日期胶囊代替难以看懂的条形图
+          const windowRows = [];
+          if (A.last) {
+            const lastLabel = A.ongoing ? "本次经期" : "上次经期";
+            windowRows.push({
+              emo: "🩸",
+              k: lastLabel,
+              v: `${fmtCN(A.last.start)} ～ ${fmtCN(A.last.end)} · 共 ${durStr(A.last.start, A.last.end)}`,
+              pill: `${fmtShort(A.last.start)} – ${fmtShort(A.last.end)} · ${durStr(A.last.start, A.last.end)}`,
+              color: "var(--primary-weak)",
+              text: "var(--primary)",
             });
-          if (A.ovulation)
-            rows.push({
-              k: "🥚 预测排卵日",
+          }
+          if (A.ovulation) {
+            windowRows.push({
+              emo: "🥚",
+              k: "预测排卵日",
               v: `${fmtCN(A.ovulation)} ${weekday(A.ovulation)}`,
+              pill: `${fmtShort(A.ovulation)} ${weekday(A.ovulation)}`,
+              color: "var(--accent-weak)",
+              text: "var(--accent)",
             });
-          if (A.fertile)
-            rows.push({
-              k: "🔥 排卵期",
+          }
+          if (A.fertile) {
+            windowRows.push({
+              emo: "🔥",
+              k: "排卵期",
               v: `${fmtCN(A.fertile.start)} ～ ${fmtCN(A.fertile.end)}`,
+              pill: `${fmtShort(A.fertile.start)} – ${fmtShort(A.fertile.end)} · ${durStr(A.fertile.start, A.fertile.end)}`,
+              color: "#ffe5ec",
+              text: "#e0203f",
             });
-          if (A.safe)
-            rows.push({
-              k: "🛡️ 安全期",
-              v: A.safe
-                .map((w) => `${fmtShort(w.start)}-${fmtShort(w.end)}`)
-                .join(" / "),
+          }
+          if (A.safe && A.safe[1]) {
+            windowRows.push({
+              emo: "🛡️",
+              k: "安全期",
+              v: `${fmtCN(A.safe[1].start)} ～ ${fmtCN(A.safe[1].end)}`,
+              pill: `${fmtShort(A.safe[1].start)} – ${fmtShort(A.safe[1].end)} · ${durStr(A.safe[1].start, A.safe[1].end)}`,
+              color: "#e6f9ec",
+              text: "#34c759",
             });
-          if (A.trend.total)
-            rows.push({
-              k: "📈 周期规律",
-              v: `${A.trend.early} 提前 / ${A.trend.ontime} 准时 / ${A.trend.late} 推迟 · 共${A.trend.total}次`,
-            });
-          const li = rows
-            .map(
-              (r) =>
-                `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)"><span style="font-size:13px;color:var(--sub)">${r.k}</span><span style="font-size:13px;font-weight:600;text-align:right">${r.v}</span></div>`,
-            )
-            .join("");
-          return `<div class="card" style="margin-top:12px"><div style="font-size:14px;font-weight:700;margin-bottom:6px">📊 经期分析</div>${li}<div style="font-size:10px;color:var(--sub);margin-top:8px;line-height:1.5">· 排卵/安全期为基于平均周期的估算，仅供参考，不做医学诊断。</div></div>`;
+          }
+          const windowsHtml = windowRows.length
+            ? `<div class="pa-blk">
+                <div class="pa-blk-t">🗓️ 预测窗口（基于平均周期 ${A.avg} 天）</div>
+                ${windowRows
+                  .map(
+                    (r) => `<div class="pa-pillrow">
+                  <div class="pa-l"><span>${r.emo}</span>${r.k}</div>
+                  <div class="pa-v">${r.v}<span class="pa-pill" style="background:${r.color};color:${r.text}">${r.pill}</span></div>
+                </div>`,
+                  )
+                  .join("")}
+              </div>`
+            : "";
+          const regHtml = A.trend.total
+            ? `<div class="pa-reg"><div class="pa-blk-t" style="margin-bottom:0">📈 周期规律 · 近 ${A.trend.total} 个周期</div>
+              <div class="segrow"><span>准时</span><div class="track">${seg(A.trend.ontime, green)}</div><span class="cnt">${A.trend.ontime}</span></div>
+              <div class="segrow"><span>提前</span><div class="track">${seg(A.trend.early, "#ff9500")}</div><span class="cnt">${A.trend.early}</span></div>
+              <div class="segrow"><span>推迟</span><div class="track">${seg(A.trend.late, "#ff3b30")}</div><span class="cnt">${A.trend.late}</span></div>
+            </div>`
+            : "";
+          const hasDetail = windowsHtml || regHtml;
+          return `<div class="pa-card">
+            <div class="pa-hd"><span class="t">📊 经期分析</span>${A.ongoing ? '<span class="badge live">🩸 进行中</span>' : ""}</div>
+            <div class="pa-stats">
+              <div class="pa-stat"><div class="n">${A.avg}<small>天</small></div><div class="k">平均周期</div></div>
+              <div class="pa-stat"><div class="n">${avgDur}<small>天</small></div><div class="k">平均经期</div></div>
+              <div class="pa-stat"><div class="n">${A.eps.length}</div><div class="k">累计次数</div></div>
+              <div class="pa-stat"><div class="n">${A.trend.total ? Math.round((A.trend.ontime / A.trend.total) * 100) + "<small>%</small>" : "--"}</div><div class="k">周期准时</div></div>
+            </div>
+            ${nextHtml}
+            ${
+              hasDetail
+                ? `
+            <div class="pa-detail">
+              <div class="pa-detail-hd" id="pdToggle" data-open="0" role="button" tabindex="0">
+                <span>🗓️ 本周期详解</span>
+                <span class="pa-caret">▾</span>
+              </div>
+              <div class="pa-detail-body" id="pdBody" style="display:none">
+                ${windowsHtml}
+                ${regHtml}
+                <div class="pa-note">· 基于最近 ${Math.min(6, Math.max(1, A.trend.total || 1))} 次周期推算，仅作日常参考，不作医学诊断 · 周期若有推迟/提前，安全期可能不准。</div>
+              </div>
+            </div>`
+                : `<div class="pa-note" style="margin-top:12px">· 基于平均周期推算，仅作日常参考，不作医学诊断。</div>`
+            }
+          </div>`;
         })();
 
         p.innerHTML = `
         ${heroHtml}
         ${analysisCard}
         <div class="sec card" style="margin-top:12px">
-          <div class="sec-hd"><span class="sec-t">📝 记录日期</span>
-            <div style="display:flex;align-items:center;gap:10px;">
+          <div class="sec-hd"><span class="sec-t">📝 记录</span>
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
+              <div class="pd-mode-seg">
+                <button class="${pdMode === "single" ? "on" : ""}" onclick="pdSetMode('single')">单日</button>
+                <button class="${pdMode === "range" ? "on" : ""}" onclick="pdSetMode('range')">区间</button>
+              </div>
+              ${
+                pdMode === "single"
+                  ? `
               <button class="pd-date-btn" onclick="pickPeriodDate('${pdDate}')">
                 <span>${fmtShort(pdDate)} ${weekday(pdDate)}</span>
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><path d="M1 3h8L5 8 1 3z"/></svg>
               </button>
+              `
+                  : `
+              <div style="display:flex;align-items:center;gap:6px;">
+                <button class="pd-date-btn" id="pbS" onclick="pbPick('start')">
+                  <span>${pbState && pbState.start ? fmtShort(pbState.start) : "开始"}</span>
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><path d="M1 3h8L5 8 1 3z"/></svg>
+                </button>
+                <span style="color:var(--sub);font-size:13px">—</span>
+                <button class="pd-date-btn" id="pbE" onclick="pbPick('end')">
+                  <span>${pbState && pbState.end ? fmtShort(pbState.end) : "结束"}</span>
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><path d="M1 3h8L5 8 1 3z"/></svg>
+                </button>
+              </div>
+              `
+              }
               <button class="sec-more" onclick="openSub('标签管理',rPeriodTags)">🏷️ 管理</button>
             </div>
           </div>
+          ${
+            pdMode === "single"
+              ? `
           <div class="prow">
             <div class="pl">🩸 流量</div>
             <div class="flow-opt" id="flowOpt">
@@ -18237,28 +19272,19 @@
             <textarea class="input" id="pdNote" rows="2" placeholder="今天想记录点什么…">${esc(pdSel.n)}</textarea>
           </div>
           <button class="btn blk" id="pdSave">💾 保存今日记录</button>
-          <button class="btn ghost" style="width:100%;margin-top:10px" onclick="periodBatchPage()">⏱️ 批量补录一段日期（如整个 5 月）›</button>
+          `
+              : pbInlineHtml()
+          }
         </div>
         <div class="sec" style="margin-top:12px">
           <div class="sec-hd"><span class="sec-t">📚 历史记录</span>
             <button class="sec-more" onclick="pdEditDay(today())">记一笔</button></div>
           ${
-            dates.length
-              ? dates
-                  .slice(0, 30)
-                  .map((d) => {
-                    const r = DB.period.rec[d];
-                    return `<div class="card hairline" style="padding:12px 14px;margin-bottom:8px;cursor:pointer" onclick="pdEditDay('${d}')">
-              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-                <b style="font-size:14px">${fmtShort(d)}</b>
-                ${r.f ? `<span class="tag">🩸 ${esc(r.f)}</span>` : ""}
-                ${r.m ? `<span class="tag grey">${esc(r.m)}</span>` : ""}
-                ${(r.s || []).length ? `<span style="font-size:12px;color:var(--sub)">🤒 ${r.s.map(esc).join("、")}</span>` : ""}
-              </div>
-              ${r.n ? `<div style="font-size:12px;color:var(--sub);margin-top:4px">💬 ${esc(r.n)}</div>` : ""}
-            </div>`;
-                  })
-                  .join("")
+            episodeCardsHtml
+              ? episodeCardsHtml +
+                (dates.length > 30
+                  ? `<div style="font-size:12px;color:var(--sub);text-align:center;padding:4px 0 2px">仅显示最近 ${HISTORY_LIMIT} 段经期</div>`
+                  : "")
               : empty(
                   "🩸",
                   "开始你的第一次经期记录",
@@ -18268,47 +19294,155 @@
                 )
           }
         </div>`;
-        p.querySelector("#flowOpt").addEventListener("click", (e) => {
-          const b = e.target.closest("[data-f]");
-          if (!b) return;
-          pdSel.f = b.dataset.f;
-          p.querySelectorAll("#flowOpt button").forEach((x) =>
-            x.classList.toggle("on", x === b),
-          );
-        });
-        p.querySelector("#symGrid").addEventListener("click", (e) => {
-          const b = e.target.closest("[data-s]");
-          if (!b) return;
-          const s = b.dataset.s;
-          pdSel.s.includes(s)
-            ? (pdSel.s = pdSel.s.filter((x) => x !== s))
-            : pdSel.s.push(s);
-          b.classList.toggle("on");
-        });
-        p.querySelector("#moodGrid").addEventListener("click", (e) => {
-          const b = e.target.closest("[data-m]");
-          if (!b) return;
-          pdSel.m = b.dataset.m;
-          p.querySelectorAll("#moodGrid button").forEach((x) =>
-            x.classList.toggle("on", x === b),
-          );
-        });
-        $("#pdSave").onclick = () => {
-          const rec = {
-            f: pdSel.f,
-            s: pdSel.s,
-            m: pdSel.m,
-            n: $("#pdNote").value.trim(),
-            updatedAt: new Date().toISOString(),
+        // 经期分析 → 本周期详解折叠
+        const pdT = p.querySelector("#pdToggle");
+        if (pdT) {
+          const toggle = () => {
+            const open = pdT.dataset.open === "1";
+            pdT.dataset.open = open ? "0" : "1";
+            const body = p.querySelector("#pdBody");
+            if (body) body.style.display = open ? "none" : "block";
+            const caret = pdT.querySelector(".pa-caret");
+            if (caret) caret.textContent = open ? "▾" : "▴";
           };
-          if (!rec.f && !rec.s.length && !rec.m && !rec.n) {
-            delete DB.period.rec[pdDate];
-          } else DB.period.rec[pdDate] = rec;
-          save();
-          checkAchAll();
-          toast("已保存");
-          rPeriod();
-        };
+          pdT.addEventListener("click", toggle);
+          pdT.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              toggle();
+            }
+          });
+        }
+        if (pdMode === "single") {
+          p.querySelector("#flowOpt").addEventListener("click", (e) => {
+            const b = e.target.closest("[data-f]");
+            if (!b) return;
+            pdSel.f = b.dataset.f;
+            p.querySelectorAll("#flowOpt button").forEach((x) =>
+              x.classList.toggle("on", x === b),
+            );
+          });
+          p.querySelector("#symGrid").addEventListener("click", (e) => {
+            const b = e.target.closest("[data-s]");
+            if (!b) return;
+            const s = b.dataset.s;
+            pdSel.s.includes(s)
+              ? (pdSel.s = pdSel.s.filter((x) => x !== s))
+              : pdSel.s.push(s);
+            b.classList.toggle("on");
+          });
+          p.querySelector("#moodGrid").addEventListener("click", (e) => {
+            const b = e.target.closest("[data-m]");
+            if (!b) return;
+            pdSel.m = b.dataset.m;
+            p.querySelectorAll("#moodGrid button").forEach((x) =>
+              x.classList.toggle("on", x === b),
+            );
+          });
+          $("#pdSave").onclick = () => {
+            const rec = {
+              f: pdSel.f,
+              s: pdSel.s,
+              m: pdSel.m,
+              n: $("#pdNote").value.trim(),
+              updatedAt: new Date().toISOString(),
+            };
+            if (!rec.f && !rec.s.length && !rec.m && !rec.n) {
+              delete DB.period.rec[pdDate];
+            } else DB.period.rec[pdDate] = rec;
+            save();
+            checkAchAll();
+            toast("已保存");
+            rPeriod();
+          };
+        } else {
+          // 区间模式：默认值控制
+          const pbFlow = p.querySelector("#pbFlow");
+          if (pbFlow)
+            pbFlow.addEventListener("click", (e) => {
+              const b = e.target.closest("[data-f]");
+              if (!b) return;
+              pbState.defaults.flow = b.dataset.f;
+              pbFlow
+                .querySelectorAll("[data-f]")
+                .forEach((x) => x.classList.toggle("on", x === b));
+            });
+          const pbSym = p.querySelector("#pbSym");
+          if (pbSym)
+            pbSym.addEventListener("click", (e) => {
+              const b = e.target.closest("[data-s]");
+              if (!b) return;
+              const s = b.dataset.s;
+              pbState.defaults.syms.includes(s)
+                ? (pbState.defaults.syms = pbState.defaults.syms.filter(
+                    (x) => x !== s,
+                  ))
+                : pbState.defaults.syms.push(s);
+              b.classList.toggle("on");
+            });
+          const pbMood = p.querySelector("#pbMood");
+          if (pbMood)
+            pbMood.addEventListener("click", (e) => {
+              const b = e.target.closest("[data-m]");
+              if (!b) return;
+              const v = b.dataset.m;
+              pbState.defaults.mood = pbState.defaults.mood === v ? "" : v;
+              pbMood
+                .querySelectorAll("[data-m]")
+                .forEach((x) =>
+                  x.classList.toggle(
+                    "on",
+                    x.dataset.m === pbState.defaults.mood &&
+                      pbState.defaults.mood,
+                  ),
+                );
+            });
+          const pbNote = p.querySelector("#pbNote");
+          if (pbNote)
+            pbNote.addEventListener("input", () => {
+              pbState.defaults.note = pbNote.value;
+            });
+          // 逐日列表事件委托
+          const list = p.querySelector("#pbDaysList");
+          if (list) {
+            list.addEventListener("click", (e) => {
+              const b = e.target.closest("[data-pbd]");
+              if (!b) return;
+              const ds = b.dataset.pbd;
+              const cfg = pbDayCfg(ds);
+              if (b.dataset.f !== undefined) {
+                cfg.flow = b.dataset.f;
+                list
+                  .querySelectorAll(`[data-pbd="${ds}"][data-f]`)
+                  .forEach((x) => x.classList.toggle("on", x === b));
+              } else if (b.dataset.s !== undefined) {
+                const s = b.dataset.s;
+                cfg.syms.includes(s)
+                  ? (cfg.syms = cfg.syms.filter((x) => x !== s))
+                  : cfg.syms.push(s);
+                b.classList.toggle("on");
+              } else if (b.dataset.m !== undefined) {
+                const v = b.dataset.m;
+                cfg.mood = cfg.mood === v ? "" : v;
+                list
+                  .querySelectorAll(`[data-pbd="${ds}"][data-m]`)
+                  .forEach((x) =>
+                    x.classList.toggle(
+                      "on",
+                      x.dataset.m === cfg.mood && cfg.mood,
+                    ),
+                  );
+              }
+            });
+            list.addEventListener("input", (e) => {
+              const inp = e.target.closest("[data-pbd][data-note]");
+              if (!inp) return;
+              pbDayCfg(inp.dataset.pbd).note = inp.value;
+            });
+          }
+          const saveBtn = $("#pbSave");
+          if (saveBtn) saveBtn.onclick = pbCommit;
+        }
         window.pickPeriodDate = (d) => {
           const [y, m, day] = (d || today()).split("-").map(Number);
           showDatePicker({
@@ -18323,10 +19457,70 @@
 
       function pdEditDay(d) {
         pdDate = d;
+        pdMode = "single";
         rPeriod();
         window.scrollTo(0, 0);
         $("#pg-period").scrollTop = 0;
       }
+
+      function pbInlineHtml() {
+        if (!pbState) pbInit();
+        const days = pbRangeDays();
+        if (!days.length) {
+          return `<div id="pbInlineBox" style="text-align:center;padding:18px 0 8px">
+            <div style="font-size:13px;color:var(--sub)">请选择起止日期</div>
+            <div style="font-size:11px;color:var(--sub);margin-top:4px">可快速补录近一周、近一个月或整个月</div>
+            <div style="display:flex;gap:6px;justify-content:center;margin-top:12px;flex-wrap:wrap">
+              <button class="chip" onclick="pbQuick(-6,-1)">近一周</button>
+              <button class="chip" onclick="pbQuick(-27,-1)">近一个月</button>
+              <button class="chip" onclick="pbQuickMonth()">📅 整个月</button>
+            </div>
+          </div>`;
+        }
+        return `<div id="pbInlineBox">
+          <div style="display:flex;gap:6px;margin:4px 0 10px;flex-wrap:wrap">
+            <button class="chip" onclick="pbQuick(-6,-1)">近一周</button>
+            <button class="chip" onclick="pbQuick(-27,-1)">近一个月</button>
+            <button class="chip" onclick="pbQuickMonth()">📅 整个月</button>
+          </div>
+          <div style="font-size:12px;color:var(--sub);margin-bottom:10px">已选 ${days.length} 天：${fmtCN(days[0])} ～ ${fmtCN(days[days.length - 1])}</div>
+          <div style="background:#f6f7f9;border-radius:12px;padding:10px 12px;margin-bottom:12px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+              <span style="font-size:12px;font-weight:600">快速统一设置（可选）</span>
+              <button class="btn sm" onclick="pbApplyDefaultsToAll()">应用到全部</button>
+            </div>
+            <div class="prow" style="padding:8px 0;border-bottom:0.5px solid var(--line)">
+              <div class="pl" style="margin-bottom:6px">🩸 流量</div>
+              <div class="flow-opt" id="pbFlow">
+                ${["少量", "适中", "大量", ""].map((f) => `<button data-f="${esc(f)}" class="${pbState.defaults.flow === f ? "on" : ""}">${f ? "💧 " + f : "🚫 无"}</button>`).join("")}
+              </div>
+            </div>
+            <div class="prow" style="padding:8px 0;border-bottom:0.5px solid var(--line)">
+              <div class="pl" style="margin-bottom:6px">🤒 症状</div>
+              <div class="sym-grid" id="pbSym">
+                ${DB.period.symptoms.map((s) => `<button class="chip ${pbState.defaults.syms.includes(s) ? "on" : ""}" data-s="${esc(s)}">${esc(s)}</button>`).join("")}
+              </div>
+            </div>
+            <div class="prow" style="padding:8px 0;border-bottom:0.5px solid var(--line)">
+              <div class="pl" style="margin-bottom:6px">💗 心情</div>
+              <div class="sym-grid" id="pbMood">
+                ${PB_MOODS.map((mm) => {
+                  const v = mm.slice(2);
+                  return `<button class="chip ${pbState.defaults.mood === v ? "on" : ""}" data-m="${esc(v)}">${mm}</button>`;
+                }).join("")}
+              </div>
+            </div>
+            <div class="prow" style="padding:8px 0;border-bottom:none">
+              <div class="pl" style="margin-bottom:6px">💬 备注</div>
+              <textarea class="input" id="pbNote" rows="1" placeholder="例如：这几天量比较大">${esc(pbState.defaults.note)}</textarea>
+            </div>
+          </div>
+          <div id="pbDaysList">${pbDaysListHtml()}</div>
+          <div id="pbPreview" style="font-size:12px;color:var(--sub);text-align:center;margin:8px 0 14px">共 ${days.length} 天，可单独调整每一天后保存</div>
+          <button class="btn blk" id="pbSave" style="width:100%">💾 保存这段记录</button>
+        </div>`;
+      }
+
       /* ================================================================
        * 经期 · 批量补录（选区间 → 下方逐日可编辑 → 统一保存）
        * ================================================================ */
@@ -18363,239 +19557,7 @@
       }
 
       function periodBatchPage() {
-        if (!pbState) pbInit();
-        openSub("经期 · 批量补录", (el) => {
-          pbRefresh();
-          // 全局默认值交互
-          const flowEl = document.getElementById("pbFlow");
-          if (flowEl)
-            flowEl.addEventListener("click", (e) => {
-              const b = e.target.closest("[data-f]");
-              if (!b) return;
-              pbState.defaults.flow = b.dataset.f;
-              flowEl
-                .querySelectorAll("[data-f]")
-                .forEach((x) => x.classList.toggle("on", x === b));
-            });
-          const sym = document.getElementById("pbSym");
-          if (sym)
-            sym.addEventListener("click", (e) => {
-              const b = e.target.closest("[data-s]");
-              if (!b) return;
-              const s = b.dataset.s;
-              pbState.defaults.syms.includes(s)
-                ? (pbState.defaults.syms = pbState.defaults.syms.filter(
-                    (x) => x !== s,
-                  ))
-                : pbState.defaults.syms.push(s);
-              b.classList.toggle("on");
-            });
-          const mood = document.getElementById("pbMood");
-          if (mood)
-            mood.addEventListener("click", (e) => {
-              const b = e.target.closest("[data-m]");
-              if (!b) return;
-              const v = b.dataset.m;
-              pbState.defaults.mood = pbState.defaults.mood === v ? "" : v;
-              mood
-                .querySelectorAll("[data-m]")
-                .forEach((x) =>
-                  x.classList.toggle(
-                    "on",
-                    x.dataset.m === pbState.defaults.mood &&
-                      pbState.defaults.mood,
-                  ),
-                );
-            });
-          const noteEl = document.getElementById("pbNote");
-          if (noteEl)
-            noteEl.addEventListener("input", () => {
-              pbState.defaults.note = noteEl.value;
-            });
-
-          // 逐日列表：用事件委托
-          const list = document.getElementById("pbDaysList");
-          if (list) {
-            list.addEventListener("click", (e) => {
-              const b = e.target.closest("[data-pbd]");
-              if (!b) return;
-              const ds = b.dataset.pbd;
-              const cfg = pbDayCfg(ds);
-              if (b.dataset.f !== undefined) {
-                cfg.flow = b.dataset.f;
-                // 视觉切换
-                list
-                  .querySelectorAll(`[data-pbd="${ds}"][data-f]`)
-                  .forEach((x) => x.classList.toggle("on", x === b));
-              } else if (b.dataset.s !== undefined) {
-                const s = b.dataset.s;
-                cfg.syms.includes(s)
-                  ? (cfg.syms = cfg.syms.filter((x) => x !== s))
-                  : cfg.syms.push(s);
-                b.classList.toggle("on");
-              } else if (b.dataset.m !== undefined) {
-                const v = b.dataset.m;
-                cfg.mood = cfg.mood === v ? "" : v;
-                list
-                  .querySelectorAll(`[data-pbd="${ds}"][data-m]`)
-                  .forEach((x) =>
-                    x.classList.toggle(
-                      "on",
-                      x.dataset.m === cfg.mood && cfg.mood,
-                    ),
-                  );
-              }
-            });
-            list.addEventListener("input", (e) => {
-              const inp = e.target.closest("[data-pbd][data-note]");
-              if (!inp) return;
-              pbDayCfg(inp.dataset.pbd).note = inp.value;
-            });
-          }
-
-          const saveBtn = document.getElementById("pbSave");
-          if (saveBtn) saveBtn.onclick = pbCommit;
-        });
-      }
-
-      function pbRender() {
-        const sB = document.getElementById("pbS");
-        const eB = document.getElementById("pbE");
-        if (sB)
-          sB.querySelector("span").textContent = pbState.start
-            ? fmtShort(pbState.start)
-            : "开始日期";
-        if (eB)
-          eB.querySelector("span").textContent = pbState.end
-            ? fmtShort(pbState.end)
-            : "结束日期";
-
-        const info = document.getElementById("pbSelInfo");
-        const days = pbRangeDays();
-        if (info)
-          info.innerHTML = days.length
-            ? `已选择 ${days.length} 天：${fmtCN(days[0])} ～ ${fmtCN(days[days.length - 1])}`
-            : "请先选择日期区间";
-
-        const flowWrap = document.getElementById("pbFlow");
-        if (flowWrap) {
-          const cur = pbState.defaults.flow;
-          flowWrap
-            .querySelectorAll("[data-f]")
-            .forEach((x) => x.classList.toggle("on", x.dataset.f === cur));
-        }
-        const symWrap = document.getElementById("pbSym");
-        if (symWrap) {
-          symWrap
-            .querySelectorAll("[data-s]")
-            .forEach((x) =>
-              x.classList.toggle(
-                "on",
-                pbState.defaults.syms.includes(x.dataset.s),
-              ),
-            );
-        }
-        const moodWrap = document.getElementById("pbMood");
-        if (moodWrap) {
-          const cur = pbState.defaults.mood;
-          moodWrap
-            .querySelectorAll("[data-m]")
-            .forEach((x) =>
-              x.classList.toggle("on", x.dataset.m === cur && cur),
-            );
-        }
-        const noteEl = document.getElementById("pbNote");
-        if (noteEl) noteEl.value = pbState.defaults.note;
-
-        const list = document.getElementById("pbDaysList");
-        if (list) list.innerHTML = pbDaysListHtml();
-
-        const pv = document.getElementById("pbPreview");
-        if (pv)
-          pv.innerHTML = days.length
-            ? `共 <b>${days.length}</b> 天。上面是每天的记录，改好后点保存即可。`
-            : "请先选择日期区间";
-      }
-
-      function pbRefresh() {
-        const el = document.getElementById("sub");
-        if (!el || !el.querySelector("#pbDaysList")) {
-          // 首次完整渲染
-          periodBatchPageDraw(el);
-        }
-        pbCleanDays();
-        pbRender();
-      }
-
-      function periodBatchPageDraw(el) {
-        el.innerHTML = `
-          <!-- ① 选区间 -->
-          <div class="card" style="margin-top:4px">
-            <div style="font-size:13px;font-weight:600">① 选择要补录的日期区间</div>
-            <div style="display:flex;gap:10px;align-items:center;margin-top:12px">
-              <button class="pd-date-btn" style="flex:1;justify-content:center" id="pbS" onclick="pbPick('start')">
-                <span>开始日期</span><svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><path d="M1 3h8L5 8 1 3z"/></svg>
-              </button>
-              <span style="color:var(--sub)">—</span>
-              <button class="pd-date-btn" style="flex:1;justify-content:center" id="pbE" onclick="pbPick('end')">
-                <span>结束日期</span><svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><path d="M1 3h8L5 8 1 3z"/></svg>
-              </button>
-            </div>
-            <div id="pbSelInfo" style="margin-top:10px;font-size:13px;font-weight:700;color:var(--primary)"></div>
-            <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
-              <button class="chip" onclick="pbQuick(-6,-1)">近一周</button>
-              <button class="chip" onclick="pbQuick(-27,-1)">近一个月</button>
-              <button class="chip" onclick="pbQuickMonth()">📅 补录整个月</button>
-            </div>
-            <div style="font-size:11px;color:var(--sub);margin-top:8px;line-height:1.6">想补 5、6 月这种整月？点上面的“补录整个月”，选年份再点月份即可整月选中。</div>
-          </div>
-
-          <!-- ② 快速统一设置（可选） -->
-          <div class="card" style="margin-top:12px">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-              <span style="font-size:13px;font-weight:600">② 快速统一设置（可选）</span>
-              <button class="btn sm" onclick="pbApplyDefaultsToAll()">应用到全部</button>
-            </div>
-            <div style="font-size:11px;color:var(--sub);line-height:1.6;margin-bottom:10px">先在这里统一设一套默认值，下面每一天会自动沿用；之后你还能单独调整每一天。</div>
-            <div class="prow" style="margin-top:8px">
-              <div class="pl">🩸 流量</div>
-              <div class="flow-opt" id="pbFlow">
-                ${["少量", "适中", "大量", ""].map((f) => `<button data-f="${esc(f)}" class="${pbState.defaults.flow === f ? "on" : ""}">${f ? "💧 " + f : "🚫 无"}</button>`).join("")}
-              </div>
-            </div>
-            <div class="prow" style="margin-top:10px">
-              <div class="pl">🤒 症状（可多选）</div>
-              <div class="sym-grid" id="pbSym">
-                ${DB.period.symptoms.map((s) => `<button class="chip ${pbState.defaults.syms.includes(s) ? "on" : ""}" data-s="${esc(s)}">${esc(s)}</button>`).join("")}
-              </div>
-            </div>
-            <div class="prow" style="margin-top:10px">
-              <div class="pl">💗 心情</div>
-              <div class="sym-grid" id="pbMood">
-                ${PB_MOODS.map((mm) => {
-                  const v = mm.slice(2);
-                  return `<button class="chip ${pbState.defaults.mood === v ? "on" : ""}" data-m="${esc(v)}">${mm}</button>`;
-                }).join("")}
-              </div>
-            </div>
-            <div class="prow" style="margin-top:10px">
-              <div class="pl">💬 备注</div>
-              <textarea class="input" id="pbNote" rows="1" placeholder="例如：这几天量比较大">${esc(pbState.defaults.note)}</textarea>
-            </div>
-          </div>
-
-          <!-- ③ 已选日期逐日编辑 -->
-          <div class="card" style="margin-top:12px">
-            <div style="font-size:13px;font-weight:600">③ 已选日期 · 每天单独调整</div>
-            <div id="pbDaysList" style="margin-top:12px"></div>
-            <div id="pbPreview" style="font-size:12px;color:var(--sub);line-height:1.7;margin-top:12px;text-align:center"></div>
-          </div>
-
-          <!-- ④ 保存 -->
-          <div class="card" style="margin-top:12px">
-            <button class="btn blk" id="pbSave" style="width:100%">💾 保存这批记录</button>
-          </div>
-          <div style="height:10px"></div>`;
+        pdSetMode("range");
       }
 
       function pbDaysListHtml() {
@@ -18605,27 +19567,29 @@
         return days
           .map((ds) => {
             const cfg = pbDayCfg(ds);
-            const symTags = cfg.syms.length ? cfg.syms.join("、") : "未选症状";
+            const moodEmoji = {
+              开心: "😄",
+              平静: "😌",
+              低落: "😢",
+              烦躁: "😣",
+              焦虑: "😰",
+            };
             return `
             <div class="pb-day-row">
               <div class="pb-day-hd">
-                <span class="pb-day-date">${fmtShort(ds)}</span>
-                <span class="pb-day-week">${weekday(ds)}</span>
-                <span class="pb-day-flow">
-                  ${["少量", "适中", "大量", ""].map((f) => `<button class="${cfg.flow === f ? "on" : ""}" data-pbd="${ds}" data-f="${esc(f)}">${f ? "💧 " + f : "🚫 无"}</button>`).join("")}
-                </span>
-                <span class="pb-day-mood">
-                  ${PB_MOODS.map((mm) => {
-                    const v = mm.slice(2);
-                    return `<button class="chip ${cfg.mood === v ? "on" : ""}" data-pbd="${ds}" data-m="${esc(v)}">${mm}</button>`;
-                  }).join("")}
-                </span>
+                <div class="pb-day-t"><span class="pb-day-date">${fmtShort(ds)}</span><span class="pb-day-week">${weekday(ds)}</span></div>
+                <div class="pb-day-flow">
+                  ${["少量", "适中", "大量", ""].map((f) => `<button class="${cfg.flow === f ? "on" : ""}" data-pbd="${ds}" data-f="${esc(f)}">${f || "无"}</button>`).join("")}
+                </div>
+                <div class="pb-day-mood">
+                  ${["开心", "平静", "低落", "烦躁", "焦虑"].map((v) => `<button class="${cfg.mood === v ? "on" : ""}" title="${v}" data-pbd="${ds}" data-m="${esc(v)}">${moodEmoji[v] || "💗"}</button>`).join("")}
+                </div>
               </div>
-              <div class="pb-day-sym">
-                ${DB.period.symptoms.map((s) => `<button class="chip ${cfg.syms.includes(s) ? "on" : ""}" data-pbd="${ds}" data-s="${esc(s)}">${esc(s)}</button>`).join("")}
-              </div>
-              <div class="pb-day-note">
-                <input type="text" class="input" data-pbd="${ds}" data-note placeholder="备注（可选，仅这一天）" value="${esc(cfg.note)}" style="font-size:13px">
+              <div class="pb-day-body">
+                <div class="pb-day-sym">
+                  ${DB.period.symptoms.map((s) => `<button class="chip ${cfg.syms.includes(s) ? "on" : ""}" data-pbd="${ds}" data-s="${esc(s)}">${esc(s)}</button>`).join("")}
+                </div>
+                <input type="text" class="input pb-day-note" data-pbd="${ds}" data-note placeholder="备注（可选）" value="${esc(cfg.note)}">
               </div>
             </div>`;
           })
@@ -18662,7 +19626,8 @@
               if (kind === "start") pbState.end = val;
               else pbState.start = val;
             }
-            pbRefresh();
+            pbCleanDays();
+            rPeriod();
           },
         });
       }
@@ -18670,7 +19635,8 @@
       function pbQuick(from, to) {
         pbState.start = addDays(today(), from);
         pbState.end = addDays(today(), to);
-        pbRefresh();
+        pbCleanDays();
+        rPeriod();
       }
 
       function pbQuickMonth() {
@@ -18683,7 +19649,8 @@
             const dim = new Date(+ym.slice(0, 4), +ym.slice(5, 7), 0).getDate();
             pbState.start = ym + "-01";
             pbState.end = ym + "-" + pad(dim);
-            pbRefresh();
+            pbCleanDays();
+            rPeriod();
           },
         });
       }
@@ -18697,7 +19664,8 @@
             note: pbState.defaults.note,
           };
         });
-        pbRefresh();
+        pbCleanDays();
+        rPeriod();
         toast("已把默认值应用到全部已选日期");
       }
 
@@ -18724,7 +19692,7 @@
         checkAchAll();
         pbState = null;
         toast(`✅ 已批量保存 ${changed} 天`);
-        closeSub();
+        pdMode = "single";
         rPeriod();
       }
 
@@ -18743,6 +19711,10 @@
           ["✅", "情侣打卡", "积累恋爱分", "checkinPage()"],
           ["💕", "情感状态", "热恋 · 甜蜜 · 平淡", "emotionPage()"],
           ["🏞️", "相册管理", "全部图文照片", "albumsPage()"],
+        ];
+        // 「回忆」分区功能入口（成就墙等）
+        const memCells = [
+          ["🏆", "成就墙", `已解锁 ${unlockedN} 枚`, "achWall()"],
         ];
         const bdShort = (s) =>
           s ? +s.slice(5, 7) + "月" + +s.slice(8, 10) + "日" : "未设置";
@@ -18847,11 +19819,11 @@
           </div>
         </div>
 
-        <!-- 分手与和好记录 -->
+        <!-- ============ 分区 ①：关系 ============ -->
         ${
           C.loveStart || relEventsArr.length
-            ? `<div class="sec" style="margin-top:24px">
-          <div class="sec-hd"><span class="sec-t">分手与和好</span>
+            ? `<div class="mz">
+          <div class="mz-hd"><span class="mz-t">💘 感情动态</span>
             <button class="sec-more" onclick="relEditor()">管理</button></div>
           ${
             relEventsArr.length
@@ -18877,10 +19849,19 @@
             : ""
         }
 
-        <!-- 时间胶囊 -->
-        <div class="sec" style="margin-top:24px">
-          <div class="sec-hd"><span class="sec-t">⏳ 时间胶囊</span>
-            <button class="sec-more" onclick="capsuleAdd()">＋ 新建</button></div>
+        <!-- ============ 分区 ②：回忆 ============ -->
+        <div class="mz">
+          <div class="mz-hd"><span class="mz-t">🕰️ 回忆珍藏</span>
+            <button class="sec-more" onclick="capsuleAdd()">＋ 时间胶囊</button></div>
+          <div class="glist">
+            ${memCells
+              .map(
+                ([i, t, d, fn]) =>
+                  `<button class="cell" style="width:100%;text-align:left" onclick="${fn}">
+              <span class="ic">${i}</span><span class="tt">${t}<div class="desc">${d}</div></span><span class="arr">›</span></button>`,
+              )
+              .join("")}
+          </div>
           ${
             capsules.length
               ? capsules
@@ -18895,21 +19876,21 @@
                 <span style="font-size:15px;font-weight:600;color:var(--text);">已经 <b style="color:var(--primary);font-size:22px;">${Math.max(0, days)}</b> 天</span>
     <span style="font-size:13px;color:var(--sub);">距下次该纪念日还有 <b style="color:var(--primary);">${Math.max(0, 365 - (days % 365))}</b> 天</span>
               </div>
-            
             </div>`;
                   })
                   .join("")
-              : empty(
-                  "⏳",
-                  "还没有时间胶囊",
-                  "记录重要的纪念日、里程碑事件",
-                  "新建时间胶囊",
-                  "capsuleAdd()",
-                )
+              : `<button class="empty-link" onclick="capsuleAdd()">
+                  <span style="font-size:16px">⏳</span>
+                  <span>封存一段时光，纪念日与里程碑都值得被记得</span>
+                  <span class="arr" style="color:var(--sub)">›</span>
+                </button>`
           }
         </div>
 
-        <div class="sec glist" style="margin-top:24px">
+        <!-- ============ 分区 ③：常用工具 ============ -->
+        <div class="mz">
+          <div class="mz-hd"><span class="mz-t">🧰 常用工具</span></div>
+          <div class="glist">
           ${featCells
             .map(
               ([i, t, d, fn]) =>
@@ -18917,10 +19898,16 @@
               <span class="ic">${i}</span><span class="tt">${t}<div class="desc">${d}</div></span><span class="arr">›</span></button>`,
             )
             .join("")}
+          </div>
         </div>
-        <div class="sec glist" style="margin-top:24px">
+
+        <!-- ============ 分区 ④：系统 ============ -->
+        <div class="mz">
+          <div class="mz-hd"><span class="mz-t">⚙️ 系统</span></div>
+          <div class="glist">
           <button class="cell" style="width:100%;text-align:left" onclick="settingsPage()">
             <span class="ic">⚙️</span><span class="tt">设置<div class="desc">外观 · 提醒 · 数据 · 关于</div></span><span class="arr">›</span></button>
+          </div>
         </div>
         <div style="text-align:center;font-size:11px;color:var(--sub);margin-top:20px">💕 情侣全记录 V2.0 · 纯离线 · 数据仅存本机</div>`;
         p.querySelectorAll("[data-mi]").forEach(
@@ -19960,7 +20947,7 @@
           <div class="card" style="margin-top:12px;padding:6px 16px">${rowsHtml}</div>
           <div style="display:flex;gap:10px;margin-top:14px">
             <button class="btn ghost" style="flex:1" onclick="recEditor('${type}','${id}')">✏️ 编辑</button>
-            <button class="btn danger" style="flex:1" onclick="confirmBox('删除这条记录？',()=>{(r.imgs||[]).forEach(removeImgFromAlbums);DB[type]=DB[type].filter(x=>x.id!=='${id}');save();closeSub();toast('已删除')})">🗑 删除</button>
+            <button class="btn danger" style="flex:1" onclick="recDetailDelete('${type}','${id}')">🗑 删除</button>
           </div>`;
           el.querySelectorAll(".dt-img").forEach(
             (im) =>
@@ -19978,10 +20965,81 @@
         });
       }
 
+      // 记录详情删除：轻确认，删除后提供 toast 撤销
+      function recDetailDelete(type, id) {
+        deleteRecordWithUndo(type, id, {
+          closeSubAfter: true,
+          source: "detail",
+        });
+      }
+
       function removeImgFromAlbums(img) {
         DB.albums.forEach(
           (a) => (a.items = a.items.filter((it) => it.img !== img)),
         );
+      }
+
+      /* ---------- 普通记录：轻确认 + 撤销 ---------- */
+      let undoRec = null;
+
+      function commitDelete() {
+        if (!undoRec) return;
+        const { record } = undoRec;
+        (record.imgs || []).forEach(removeImgFromAlbums);
+        checkAchAll();
+        undoRec = null;
+      }
+
+      function restoreRecord() {
+        if (!undoRec) return;
+        clearTimeout(undoRec.timer);
+        const { type, record, source } = undoRec;
+        const arr = DB[type] || (DB[type] = []);
+        if (!arr.some((x) => x.id === record.id)) arr.push(record);
+        save();
+        undoRec = null;
+        toast("已撤销");
+        if (source === "detail") closeSub();
+        drawRecList();
+      }
+
+      function toastUndo(msg, onUndo, duration = 5000) {
+        const t = $("#toast");
+        if (undoRec && undoRec.timer) clearTimeout(undoRec.timer);
+        t.classList.add("undo");
+        t.innerHTML = `<span>${esc(msg)}</span><button class="toast-act">撤销</button>`;
+        const btn = t.querySelector(".toast-act");
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          t.classList.remove("on", "undo");
+          onUndo();
+        };
+        t.classList.add("on");
+        undoRec.timer = setTimeout(() => {
+          t.classList.remove("on", "undo");
+          commitDelete();
+        }, duration);
+      }
+
+      function deleteRecordWithUndo(
+        type,
+        id,
+        { closeSubAfter = false, source = "list" } = {},
+      ) {
+        if (undoRec) {
+          clearTimeout(undoRec.timer);
+          commitDelete();
+        }
+        const arr = DB[type] || [];
+        const rec = arr.find((x) => x.id === id);
+        if (!rec) return;
+        const clone = JSON.parse(JSON.stringify(rec));
+        DB[type] = arr.filter((x) => x.id !== id);
+        save();
+        undoRec = { type, id, record: clone, source, closeSubAfter };
+        if (closeSubAfter) closeSub();
+        if (source === "list") drawRecList();
+        toastUndo("已删除", restoreRecord, 5000);
       }
 
       function addToAlbum(r) {
