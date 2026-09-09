@@ -254,7 +254,7 @@
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
         padding: calc(env(safe-area-inset-top, 0px) + var(--page-pt)) 16px
-          calc(var(--gap) + 20px);
+          calc(var(--tab-h) + var(--safe-b));
         display: none;
         background: var(--bg);
       }
@@ -282,10 +282,10 @@
         background: var(--card);
         border-top: 1px solid var(--line);
         display: flex;
-        align-items: flex-end; /* 内容贴近底部，减少图标下方留白 */
+        align-items: center; /* 图标在 Tab 栏中垂直居中，避免 iPhone 底部安全区留白过大 */
         height: auto;
         min-height: calc(var(--tab-h) - 2px);
-        padding: 3px 0 calc(4px + var(--safe-b));
+        padding: 6px 0 var(--safe-b);
         box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.04);
       }
       .tab {
@@ -795,7 +795,7 @@
         width: 100%;
         background: var(--bg);
         border-radius: 18px 18px 0 0;
-        padding: 0 0 calc(10px + var(--safe-b));
+        padding: 0 0 var(--safe-b);
         animation: up 0.28s cubic-bezier(0.32, 0.72, 0, 1);
         overflow: hidden;
       }
@@ -1231,13 +1231,14 @@
       .pa-stat .n {
         font-size: 17px;
         font-weight: 700;
-        color: var(--text);
+        color: var(--primary);
         line-height: 1.1;
       }
       .pa-stat .n small {
         font-size: 11px;
         font-weight: 500;
-        color: var(--sub);
+        color: var(--primary);
+        opacity: 0.72;
       }
       .pa-stat .k {
         font-size: 11px;
@@ -1251,8 +1252,8 @@
         margin: 12px 0 0;
         padding: 12px 14px;
         border-radius: 14px;
-        background: linear-gradient(135deg, var(--accent-weak), #f0f7ff);
-        border: 1px solid rgba(0, 122, 255, 0.15);
+        background: linear-gradient(135deg, var(--primary-weak), rgba(255, 255, 255, 0.45));
+        border: 1px solid rgba(255, 45, 85, 0.12);
       }
       .pa-next .ico {
         font-size: 22px;
@@ -1274,7 +1275,7 @@
       .pa-next .go {
         font-size: 12px;
         font-weight: 600;
-        color: var(--accent);
+        color: var(--primary);
         background: #fff;
         border-radius: 20px;
         padding: 6px 12px;
@@ -1511,7 +1512,30 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        max-width: 80px;
+        max-width: 70px;
+      }
+      .pep-actions {
+        flex: none;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-left: 2px;
+      }
+      .pep-act {
+        background: none;
+        border: 0;
+        font-size: 14px;
+        padding: 4px;
+        cursor: pointer;
+        opacity: 0.55;
+        line-height: 1;
+      }
+      .pep-act:active {
+        opacity: 1;
+        transform: scale(0.88);
+      }
+      .pep-act.del {
+        color: var(--danger);
       }
 
       /* ============ 相册、日历、地图等 ============ */
@@ -2767,12 +2791,8 @@
         color: #fff;
         font-weight: 600;
       }
-      .re-dot.bk {
-        background: var(--danger);
-      }
-      .re-dot.rc {
-        background: var(--primary);
-      }
+      .re-dot.bk { background: var(--danger); }
+      .re-dot.rc { background: var(--primary); }
 
       /* 分手与和好记录（我的页） */
       .rel-mini {
@@ -2794,12 +2814,8 @@
         font-size: 11px;
         color: var(--sub);
       }
-      .rel-mini.bk {
-        border-left: 3px solid var(--danger);
-      }
-      .rel-mini.rc {
-        border-left: 3px solid var(--primary);
-      }
+      .rel-mini.bk { border-left: 3px solid var(--danger); }
+      .rel-mini.rc { border-left: 3px solid var(--primary); }
 
       /* ============ 布局密度 ============ */
       [data-density="compact"] .reminder-card {
@@ -15766,7 +15782,9 @@
               if (Array.isArray(d.dash.order))
                 d.dash.order = d.dash.order.filter((k) => k !== "loveTimer");
               if (Array.isArray(d.dash.hidden))
-                d.dash.hidden = d.dash.hidden.filter((k) => k !== "loveTimer");
+                d.dash.hidden = d.dash.hidden.filter(
+                  (k) => k !== "loveTimer",
+                );
             }
             // 迁移：把旧版单一“分手时间”归入关系里程碑列表
             if (d.couple) {
@@ -16843,10 +16861,7 @@
           safe = null;
         if (next) {
           ovulation = addDays(next, -14);
-          fertile = {
-            start: addDays(ovulation, -5),
-            end: addDays(ovulation, 2),
-          };
+          fertile = { start: addDays(ovulation, -5), end: addDays(ovulation, 2) };
           if (last) {
             safe = [
               { start: last.start, end: addDays(last.start, 6) },
@@ -17267,8 +17282,11 @@
           extra = null, // {label, onPick} 额外操作（如“只看整年”）
         } = opts;
 
+        const nowYear = new Date().getFullYear();
+        const startYear = Math.min(year - 50, nowYear - 100);
+        const endYear = Math.max(year + 10, nowYear + 10);
         const years = [];
-        for (let y = year - 50; y <= year + 10; y++) years.push(y);
+        for (let y = startYear; y <= endYear; y++) years.push(y);
         const months = Array.from({ length: 12 }, (_, i) => i + 1);
         const daysInMonth = new Date(year, month, 0).getDate();
         const daysArr = Array.from({ length: daysInMonth }, (_, i) => i + 1);
@@ -17480,11 +17498,7 @@
           : "";
 
         // 首次使用引导（尚未设定恋爱日且还没有任何记录时）
-        const isFresh =
-          !C.loveStart &&
-          !DB.happy.length &&
-          !DB.travel.length &&
-          !(C.relEvents || []).length;
+        const isFresh = !C.loveStart && !DB.happy.length && !DB.travel.length && !(C.relEvents||[]).length;
         // 未设定恋爱日时的空态：若已是首启引导状态则由 onboard 承接；
         // 若已有记录但未设恋爱日，用一行轻量入口承接（避免大块占位卡和「有这么大」挤在一起）
         const loveUnsetCta = isFresh
@@ -18602,16 +18616,8 @@
       /* ---------- 数据叙事：里程碑 / 月度小结 ---------- */
       function firstRecordStory() {
         const all = [
-          ...DB.happy.map((r) => ({
-            ...r,
-            type: "happy",
-            label: r.title || "快乐记录",
-          })),
-          ...DB.travel.map((r) => ({
-            ...r,
-            type: "travel",
-            label: r.to || "旅行",
-          })),
+          ...DB.happy.map((r) => ({ ...r, type: "happy", label: r.title || "快乐记录" })),
+          ...DB.travel.map((r) => ({ ...r, type: "travel", label: r.to || "旅行" })),
           ...DB.checkin.map((r) => ({ ...r, type: "checkin", label: "打卡" })),
         ].filter((r) => r.date);
         if (!all.length) return null;
@@ -18620,7 +18626,11 @@
         return {
           date: f.date,
           label:
-            f.type === "happy" ? "快乐" : f.type === "travel" ? "旅行" : "打卡",
+            f.type === "happy"
+              ? "快乐"
+              : f.type === "travel"
+                ? "旅行"
+                : "打卡",
           title: f.label,
         };
       }
@@ -18649,15 +18659,9 @@
       }
 
       function monthlySummary(month) {
-        const happy = DB.happy.filter(
-          (r) => r.date && r.date.startsWith(month),
-        );
-        const travel = DB.travel.filter(
-          (r) => r.date && r.date.startsWith(month),
-        );
-        const checkin = DB.checkin.filter(
-          (r) => r.date && r.date.startsWith(month),
-        );
+        const happy = DB.happy.filter((r) => r.date && r.date.startsWith(month));
+        const travel = DB.travel.filter((r) => r.date && r.date.startsWith(month));
+        const checkin = DB.checkin.filter((r) => r.date && r.date.startsWith(month));
         const scores = happy
           .map((r) => +r.score)
           .filter((s) => !Number.isNaN(s));
@@ -18670,15 +18674,7 @@
         );
         const topTag = Object.entries(tagCount).sort((a, b) => b[1] - a[1])[0];
         const [y, m] = month.split("-");
-        return {
-          y,
-          m,
-          happy: happy.length,
-          travel: travel.length,
-          checkin: checkin.length,
-          avg,
-          topTag,
-        };
+        return { y, m, happy: happy.length, travel: travel.length, checkin: checkin.length, avg, topTag };
       }
 
       function latestMonth() {
@@ -18952,13 +18948,7 @@
             }
             return out;
           };
-          const moodEmoji = {
-            开心: "😄",
-            平静: "😌",
-            低落: "😢",
-            烦躁: "😣",
-            焦虑: "😰",
-          };
+          const moodEmoji = { 开心: "😄", 平静: "😌", 低落: "😢", 烦躁: "😣", 焦虑: "😰" };
           let used = 0;
           const out = [];
           // 从最近一次经期开始倒序，过滤掉误录入的未来日期，避免历史顶部出现 2076 年之类的异常记录
@@ -18977,13 +18967,10 @@
                 if (r.f) chips.push(`<span class="tag">💧 ${esc(r.f)}</span>`);
                 if (r.m) {
                   const mm = esc(r.m);
-                  chips.push(
-                    `<span class="tag grey">${moodEmoji[r.m] || "💗"} ${mm}</span>`,
-                  );
+                  chips.push(`<span class="tag grey">${moodEmoji[r.m] || "💗"} ${mm}</span>`);
                 }
                 const syms = (r.s || []).slice(0, 4);
-                const more =
-                  (r.s || []).length > 4 ? "+" + ((r.s || []).length - 4) : "";
+                const more = (r.s || []).length > 4 ? "+" + ((r.s || []).length - 4) : "";
                 const dd = new Date(d + "T00:00:00");
                 return `<div class="pep-day" onclick="pdEditDay('${d}')">
                   <div class="dd">${dd.getDate()}日<small>${fmtShort(d)}</small></div>
@@ -18992,6 +18979,10 @@
                     ${syms.length ? `<span style="font-size:11px;color:var(--sub)">${syms.map(esc).join("、")}${more}</span>` : ""}
                   </div>
                   ${r.n ? `<span class="n">${esc(r.n)}</span>` : ""}
+                  <div class="pep-actions">
+                    <button class="pep-act" onclick="event.stopPropagation();pdEditDay('${d}')" title="编辑">✏️</button>
+                    <button class="pep-act del" onclick="event.stopPropagation();pdDeleteDay('${d}')" title="删除">🗑️</button>
+                  </div>
                 </div>`;
               })
               .join("");
@@ -19001,9 +18992,7 @@
               const f = rec[d].f;
               counts[f] = (counts[f] || 0) + 1;
             });
-            const topFlow =
-              Object.keys(counts).sort((a, b) => counts[b] - counts[a])[0] ||
-              "";
+            const topFlow = Object.keys(counts).sort((a, b) => counts[b] - counts[a])[0] || "";
             const isOngoing = ep.end >= today();
             const lastY = new Date(ep.start + "T00:00:00").getFullYear();
             const curY = new Date(today() + "T00:00:00").getFullYear();
@@ -19040,8 +19029,7 @@
                 s = "记录后智能预测周期并双向提醒";
               } else if (remain > 0) {
                 t = "⏳ 距下次 " + remain + " 天";
-                s =
-                  "预计 " + fmtShort(A.next) + " " + weekday(A.next) + " 到来";
+                s = "预计 " + fmtShort(A.next) + " " + weekday(A.next) + " 到来";
               } else if (remain === 0) {
                 t = "⏳ 预计今日到来";
                 s = "建议记录今日状态，开始呵护";
@@ -19095,16 +19083,14 @@
                   : `<span class="badge" style="background:var(--danger);color:#fff">已过 ${-dd} 天</span>`;
             let dTitle, dSub;
             if (live) {
-              dTitle =
-                "本次经期 · 第 " + (dayDiff(A.last.start, T) + 1) + " 天";
+              dTitle = "本次经期 · 第 " + (dayDiff(A.last.start, T) + 1) + " 天";
               dSub = "预计 " + fmtShort(A.last.end) + " 结束";
             } else if (dd >= 0) {
               dTitle = "预计下次月经来潮";
               dSub = fmtCN(A.next) + " " + weekday(A.next);
             } else {
               dTitle = "本次应来却未到";
-              dSub =
-                "上次 " + fmtShort(A.last.start) + " 后，已推迟 " + -dd + " 天";
+              dSub = "上次 " + fmtShort(A.last.start) + " 后，已推迟 " + -dd + " 天";
             }
             nextHtml = `<div class="pa-next"><div class="ico">${live ? "🩸" : "⏳"}</div>
               <div class="mx">
@@ -19122,8 +19108,7 @@
               k: lastLabel,
               v: `${fmtCN(A.last.start)} ～ ${fmtCN(A.last.end)} · 共 ${durStr(A.last.start, A.last.end)}`,
               pill: `${fmtShort(A.last.start)} – ${fmtShort(A.last.end)} · ${durStr(A.last.start, A.last.end)}`,
-              color: "var(--primary-weak)",
-              text: "var(--primary)",
+              color: "var(--primary-weak)", text: "var(--primary)",
             });
           }
           if (A.ovulation) {
@@ -19132,8 +19117,7 @@
               k: "预测排卵日",
               v: `${fmtCN(A.ovulation)} ${weekday(A.ovulation)}`,
               pill: `${fmtShort(A.ovulation)} ${weekday(A.ovulation)}`,
-              color: "var(--accent-weak)",
-              text: "var(--accent)",
+              color: "var(--accent-weak)", text: "var(--accent)",
             });
           }
           if (A.fertile) {
@@ -19142,8 +19126,7 @@
               k: "排卵期",
               v: `${fmtCN(A.fertile.start)} ～ ${fmtCN(A.fertile.end)}`,
               pill: `${fmtShort(A.fertile.start)} – ${fmtShort(A.fertile.end)} · ${durStr(A.fertile.start, A.fertile.end)}`,
-              color: "#ffe5ec",
-              text: "#e0203f",
+              color: "#ffe5ec", text: "#e0203f",
             });
           }
           if (A.safe && A.safe[1]) {
@@ -19152,21 +19135,16 @@
               k: "安全期",
               v: `${fmtCN(A.safe[1].start)} ～ ${fmtCN(A.safe[1].end)}`,
               pill: `${fmtShort(A.safe[1].start)} – ${fmtShort(A.safe[1].end)} · ${durStr(A.safe[1].start, A.safe[1].end)}`,
-              color: "#e6f9ec",
-              text: "#34c759",
+              color: "#e6f9ec", text: "#34c759",
             });
           }
           const windowsHtml = windowRows.length
             ? `<div class="pa-blk">
                 <div class="pa-blk-t">🗓️ 预测窗口（基于平均周期 ${A.avg} 天）</div>
-                ${windowRows
-                  .map(
-                    (r) => `<div class="pa-pillrow">
+                ${windowRows.map((r) => `<div class="pa-pillrow">
                   <div class="pa-l"><span>${r.emo}</span>${r.k}</div>
                   <div class="pa-v">${r.v}<span class="pa-pill" style="background:${r.color};color:${r.text}">${r.pill}</span></div>
-                </div>`,
-                  )
-                  .join("")}
+                </div>`).join("")}
               </div>`
             : "";
           const regHtml = A.trend.total
@@ -19186,9 +19164,7 @@
               <div class="pa-stat"><div class="n">${A.trend.total ? Math.round((A.trend.ontime / A.trend.total) * 100) + "<small>%</small>" : "--"}</div><div class="k">周期准时</div></div>
             </div>
             ${nextHtml}
-            ${
-              hasDetail
-                ? `
+            ${hasDetail ? `
             <div class="pa-detail">
               <div class="pa-detail-hd" id="pdToggle" data-open="0" role="button" tabindex="0">
                 <span>🗓️ 本周期详解</span>
@@ -19199,9 +19175,7 @@
                 ${regHtml}
                 <div class="pa-note">· 基于最近 ${Math.min(6, Math.max(1, A.trend.total || 1))} 次周期推算，仅作日常参考，不作医学诊断 · 周期若有推迟/提前，安全期可能不准。</div>
               </div>
-            </div>`
-                : `<div class="pa-note" style="margin-top:12px">· 基于平均周期推算，仅作日常参考，不作医学诊断。</div>`
-            }
+            </div>` : `<div class="pa-note" style="margin-top:12px">· 基于平均周期推算，仅作日常参考，不作医学诊断。</div>`}
           </div>`;
         })();
 
@@ -19215,15 +19189,12 @@
                 <button class="${pdMode === "single" ? "on" : ""}" onclick="pdSetMode('single')">单日</button>
                 <button class="${pdMode === "range" ? "on" : ""}" onclick="pdSetMode('range')">区间</button>
               </div>
-              ${
-                pdMode === "single"
-                  ? `
+              ${pdMode === "single" ? `
               <button class="pd-date-btn" onclick="pickPeriodDate('${pdDate}')">
                 <span>${fmtShort(pdDate)} ${weekday(pdDate)}</span>
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><path d="M1 3h8L5 8 1 3z"/></svg>
               </button>
-              `
-                  : `
+              ` : `
               <div style="display:flex;align-items:center;gap:6px;">
                 <button class="pd-date-btn" id="pbS" onclick="pbPick('start')">
                   <span>${pbState && pbState.start ? fmtShort(pbState.start) : "开始"}</span>
@@ -19235,14 +19206,11 @@
                   <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><path d="M1 3h8L5 8 1 3z"/></svg>
                 </button>
               </div>
-              `
-              }
+              `}
               <button class="sec-more" onclick="openSub('标签管理',rPeriodTags)">🏷️ 管理</button>
             </div>
           </div>
-          ${
-            pdMode === "single"
-              ? `
+          ${pdMode === "single" ? `
           <div class="prow">
             <div class="pl">🩸 流量</div>
             <div class="flow-opt" id="flowOpt">
@@ -19272,9 +19240,7 @@
             <textarea class="input" id="pdNote" rows="2" placeholder="今天想记录点什么…">${esc(pdSel.n)}</textarea>
           </div>
           <button class="btn blk" id="pdSave">💾 保存今日记录</button>
-          `
-              : pbInlineHtml()
-          }
+          ` : pbInlineHtml()}
         </div>
         <div class="sec" style="margin-top:12px">
           <div class="sec-hd"><span class="sec-t">📚 历史记录</span>
@@ -19363,9 +19329,7 @@
               const b = e.target.closest("[data-f]");
               if (!b) return;
               pbState.defaults.flow = b.dataset.f;
-              pbFlow
-                .querySelectorAll("[data-f]")
-                .forEach((x) => x.classList.toggle("on", x === b));
+              pbFlow.querySelectorAll("[data-f]").forEach((x) => x.classList.toggle("on", x === b));
             });
           const pbSym = p.querySelector("#pbSym");
           if (pbSym)
@@ -19374,9 +19338,7 @@
               if (!b) return;
               const s = b.dataset.s;
               pbState.defaults.syms.includes(s)
-                ? (pbState.defaults.syms = pbState.defaults.syms.filter(
-                    (x) => x !== s,
-                  ))
+                ? (pbState.defaults.syms = pbState.defaults.syms.filter((x) => x !== s))
                 : pbState.defaults.syms.push(s);
               b.classList.toggle("on");
             });
@@ -19387,15 +19349,9 @@
               if (!b) return;
               const v = b.dataset.m;
               pbState.defaults.mood = pbState.defaults.mood === v ? "" : v;
-              pbMood
-                .querySelectorAll("[data-m]")
-                .forEach((x) =>
-                  x.classList.toggle(
-                    "on",
-                    x.dataset.m === pbState.defaults.mood &&
-                      pbState.defaults.mood,
-                  ),
-                );
+              pbMood.querySelectorAll("[data-m]").forEach((x) =>
+                x.classList.toggle("on", x.dataset.m === pbState.defaults.mood && pbState.defaults.mood),
+              );
             });
           const pbNote = p.querySelector("#pbNote");
           if (pbNote)
@@ -19412,26 +19368,17 @@
               const cfg = pbDayCfg(ds);
               if (b.dataset.f !== undefined) {
                 cfg.flow = b.dataset.f;
-                list
-                  .querySelectorAll(`[data-pbd="${ds}"][data-f]`)
-                  .forEach((x) => x.classList.toggle("on", x === b));
+                list.querySelectorAll(`[data-pbd="${ds}"][data-f]`).forEach((x) => x.classList.toggle("on", x === b));
               } else if (b.dataset.s !== undefined) {
                 const s = b.dataset.s;
-                cfg.syms.includes(s)
-                  ? (cfg.syms = cfg.syms.filter((x) => x !== s))
-                  : cfg.syms.push(s);
+                cfg.syms.includes(s) ? (cfg.syms = cfg.syms.filter((x) => x !== s)) : cfg.syms.push(s);
                 b.classList.toggle("on");
               } else if (b.dataset.m !== undefined) {
                 const v = b.dataset.m;
                 cfg.mood = cfg.mood === v ? "" : v;
-                list
-                  .querySelectorAll(`[data-pbd="${ds}"][data-m]`)
-                  .forEach((x) =>
-                    x.classList.toggle(
-                      "on",
-                      x.dataset.m === cfg.mood && cfg.mood,
-                    ),
-                  );
+                list.querySelectorAll(`[data-pbd="${ds}"][data-m]`).forEach((x) =>
+                  x.classList.toggle("on", x.dataset.m === cfg.mood && cfg.mood),
+                );
               }
             });
             list.addEventListener("input", (e) => {
@@ -19461,6 +19408,17 @@
         rPeriod();
         window.scrollTo(0, 0);
         $("#pg-period").scrollTop = 0;
+      }
+
+      function pdDeleteDay(d) {
+        confirmBox(`删除 ${fmtCN(d)} 的经期记录？`, () => {
+          if (DB.period.rec[d]) {
+            delete DB.period.rec[d];
+            save();
+            rPeriod();
+            toast("已删除");
+          }
+        });
       }
 
       function pbInlineHtml() {
@@ -19504,10 +19462,7 @@
             <div class="prow" style="padding:8px 0;border-bottom:0.5px solid var(--line)">
               <div class="pl" style="margin-bottom:6px">💗 心情</div>
               <div class="sym-grid" id="pbMood">
-                ${PB_MOODS.map((mm) => {
-                  const v = mm.slice(2);
-                  return `<button class="chip ${pbState.defaults.mood === v ? "on" : ""}" data-m="${esc(v)}">${mm}</button>`;
-                }).join("")}
+                ${PB_MOODS.map((mm) => { const v = mm.slice(2); return `<button class="chip ${pbState.defaults.mood === v ? "on" : ""}" data-m="${esc(v)}">${mm}</button>`; }).join("")}
               </div>
             </div>
             <div class="prow" style="padding:8px 0;border-bottom:none">
@@ -19552,8 +19507,7 @@
       // 同步清理不在区间内的 day 配置
       function pbCleanDays() {
         const keep = new Set(pbRangeDays());
-        for (const ds in pbState.days)
-          if (!keep.has(ds)) delete pbState.days[ds];
+        for (const ds in pbState.days) if (!keep.has(ds)) delete pbState.days[ds];
       }
 
       function periodBatchPage() {
@@ -19567,13 +19521,7 @@
         return days
           .map((ds) => {
             const cfg = pbDayCfg(ds);
-            const moodEmoji = {
-              开心: "😄",
-              平静: "😌",
-              低落: "😢",
-              烦躁: "😣",
-              焦虑: "😰",
-            };
+            const moodEmoji = { 开心: "😄", 平静: "😌", 低落: "😢", 烦躁: "😣", 焦虑: "😰" };
             return `
             <div class="pb-day-row">
               <div class="pb-day-hd">
@@ -19597,8 +19545,7 @@
       }
 
       function pbRangeDays() {
-        const s = pbState.start,
-          e = pbState.end;
+        const s = pbState.start, e = pbState.end;
         if (!s || !e || s > e) return [];
         const out = [];
         let d = s;
@@ -19615,16 +19562,13 @@
         const [y, m, d] = cur.split("-").map(Number);
         showDatePicker({
           title: kind === "start" ? "选择开始日期" : "选择结束日期",
-          year: y,
-          month: m,
-          day: d,
+          year: y, month: m, day: d,
           onConfirm: (val) => {
             pbState[kind] = val;
             if (kind === "start" && !pbState.end) pbState.end = val;
             if (kind === "end" && !pbState.start) pbState.start = val;
             if (pbState.start && pbState.end && pbState.start > pbState.end) {
-              if (kind === "start") pbState.end = val;
-              else pbState.start = val;
+              if (kind === "start") pbState.end = val; else pbState.start = val;
             }
             pbCleanDays();
             rPeriod();
@@ -19677,13 +19621,10 @@
           const cfg = pbDayCfg(ds);
           const cur = DB.period.rec[ds] || {};
           const next = { ...cur };
-          if (cfg.flow) next.f = cfg.flow;
-          else next.f = "";
-          if (cfg.syms.length) next.s = [...cfg.syms];
-          else if (cur.s) next.s = [];
+          if (cfg.flow) next.f = cfg.flow; else next.f = "";
+          if (cfg.syms.length) next.s = [...cfg.syms]; else if (cur.s) next.s = [];
           if (cfg.mood) next.m = cfg.mood;
-          if (cfg.note) next.n = cfg.note;
-          else if (cur.n) delete next.n;
+          if (cfg.note) next.n = cfg.note; else if (cur.n) delete next.n;
           next.updatedAt = new Date().toISOString();
           DB.period.rec[ds] = next;
           changed++;
@@ -19713,9 +19654,7 @@
           ["🏞️", "相册管理", "全部图文照片", "albumsPage()"],
         ];
         // 「回忆」分区功能入口（成就墙等）
-        const memCells = [
-          ["🏆", "成就墙", `已解锁 ${unlockedN} 枚`, "achWall()"],
-        ];
+        const memCells = [["🏆", "成就墙", `已解锁 ${unlockedN} 枚`, "achWall()"]];
         const bdShort = (s) =>
           s ? +s.slice(5, 7) + "月" + +s.slice(8, 10) + "日" : "未设置";
         const loveDayTxt = C.loveStart ? `${loveDays()}天` : "未设置";
@@ -19729,9 +19668,7 @@
         // 每人：返回 {avatar, name, hbd(阳历农历), ymd(年龄/星座/生肖串)}
         const profileBrief = (p, isPartner) => {
           const name = esc(p.name || (isPartner ? "TA" : "我"));
-          const avatarColor = isPartner
-            ? "var(--accent-weak)"
-            : "var(--primary-weak)";
+          const avatarColor = isPartner ? "var(--accent-weak)" : "var(--primary-weak)";
           const avatarE = isPartner ? "👧" : "🧑";
           if (!p.birthday)
             return {
@@ -19754,11 +19691,7 @@
         const meB = profileBrief(C.me, false);
         const taB = profileBrief(C.partner, true);
         const md = [C.me, C.partner]
-          .map((p) =>
-            p.birthday
-              ? { p, n: getAgeDetail(p.birthday).daysToBirthday }
-              : null,
-          )
+          .map((p) => (p.birthday ? { p, n: getAgeDetail(p.birthday).daysToBirthday } : null))
           .filter(Boolean)
           .sort((a, b) => a.n - b.n)[0];
         const nextBdLine = md
@@ -19829,9 +19762,7 @@
             relEventsArr.length
               ? relEventsArr
                   .map(
-                    (
-                      e,
-                    ) => `<div class="rel-mini ${e.type === "bk" ? "bk" : "rc"}">
+                    (e) => `<div class="rel-mini ${e.type === "bk" ? "bk" : "rc"}">
             <span class="re-dot ${e.type === "bk" ? "bk" : "rc"}">${e.type === "bk" ? "分" : "和"}</span>
             <span class="re-t">${e.type === "bk" ? "分手" : "和好"} · ${fmtCN(e.date)}</span>
             <span class="re-days">${
@@ -20455,9 +20386,9 @@
             });
           };
           const draw = () => {
-            const evs = (C.relEvents || [])
-              .slice()
-              .sort((a, b) => (a.date < b.date ? -1 : 1));
+            const evs = (C.relEvents || []).slice().sort((a, b) =>
+              a.date < b.date ? -1 : 1,
+            );
             const st = relNow();
             el.innerHTML = `<div class="card" style="margin-top:8px;padding:14px">
               <div style="display:flex;align-items:center;justify-content:space-between">
@@ -20501,7 +20432,9 @@
               b.onclick = () => {
                 const id = b.dataset.del;
                 confirmBox("确定删除这条记录？", () => {
-                  C.relEvents = (C.relEvents || []).filter((x) => x.id !== id);
+                  C.relEvents = (C.relEvents || []).filter(
+                    (x) => x.id !== id,
+                  );
                   save();
                   toast("已删除");
                   draw();
@@ -20967,10 +20900,7 @@
 
       // 记录详情删除：轻确认，删除后提供 toast 撤销
       function recDetailDelete(type, id) {
-        deleteRecordWithUndo(type, id, {
-          closeSubAfter: true,
-          source: "detail",
-        });
+        deleteRecordWithUndo(type, id, { closeSubAfter: true, source: "detail" });
       }
 
       function removeImgFromAlbums(img) {
@@ -21021,11 +20951,7 @@
         }, duration);
       }
 
-      function deleteRecordWithUndo(
-        type,
-        id,
-        { closeSubAfter = false, source = "list" } = {},
-      ) {
+      function deleteRecordWithUndo(type, id, { closeSubAfter = false, source = "list" } = {}) {
         if (undoRec) {
           clearTimeout(undoRec.timer);
           commitDelete();
