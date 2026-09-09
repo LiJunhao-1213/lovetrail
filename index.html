@@ -1956,6 +1956,64 @@
         color: var(--primary);
         font-weight: 600;
       }
+      /* 标签管理：单枚可编辑表情的标签胶囊 */
+      .sym-grid .chip-tag {
+        min-width: 0;
+        width: auto;
+        height: auto;
+        padding: 4px 6px 4px 8px;
+        font-size: 13px;
+        color: var(--text);
+        justify-content: flex-start;
+      }
+      .sym-grid .chip-tag .chip-emo {
+        flex: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        min-width: 0;
+        height: 34px;
+        font-size: 22px;
+        line-height: 1;
+        border: none;
+        background: var(--bg);
+        border-radius: 999px;
+        cursor: pointer;
+        padding: 0;
+        margin-right: 4px;
+        color: var(--text);
+        font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Noto Sans SC", emoji;
+        transition: transform 0.1s;
+        -webkit-tap-highlight-color: transparent;
+        overflow: visible;
+      }
+      .sym-grid .chip-tag .chip-emo:active {
+        transform: scale(0.9);
+      }
+      .sym-grid .chip-tag .chip-btn {
+        flex: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        min-width: 0;
+        height: 30px;
+        margin-left: 2px;
+        padding: 0;
+        border: none;
+        background: transparent;
+        font-size: 14px;
+        color: var(--sub);
+        border-radius: 8px;
+        cursor: pointer;
+      }
+      .sym-grid .chip-tag .chip-btn:active {
+        background: var(--bg);
+      }
+      .sym-grid .chip-tag .chip-btn.x {
+        color: var(--danger, #ff3b30);
+      }
       .ring {
         position: relative;
         width: 104px;
@@ -2424,6 +2482,51 @@
         background: var(--card);
         color: var(--text);
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      }
+      /* 经期页「记录」区块头：标题与工具栏分两行，避免挤压换行 */
+      .pd-sec-head {
+        margin: 0 0 12px;
+      }
+      .pd-sec-title {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text);
+        letter-spacing: 0.3px;
+      }
+      .pd-sec-title .pd-sec-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--primary);
+        flex: none;
+      }
+      .pd-sec-tools {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+      }
+      .pd-sec-tools .pd-date-btn {
+        height: 34px;
+      }
+      .pd-manage {
+        font-size: 13px;
+        color: var(--primary);
+        font-weight: 600;
+        padding: 9px 12px;
+        margin: -7px -8px;
+        line-height: 1.2;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        border-radius: 8px;
+      }
+      .pd-manage:active {
+        opacity: 0.7;
       }
 
       /* ============ 记录页面时间筛选器 ============ */
@@ -3717,23 +3820,31 @@
       }
       .mom-header {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         justify-content: space-between;
+        gap: 8px;
         margin-bottom: 10px;
       }
       .mom-date {
         display: flex;
         align-items: center;
         gap: 6px;
+        min-width: 0;
         font-size: 15px;
         font-weight: 700;
         color: var(--text);
         padding-left: 0;
       }
+      .mom-date-txt {
+        line-height: 1.35;
+        word-break: break-word;
+      }
       .mom-type-tag {
         position: static;
+        flex: none;
         font-size: 12px;
         padding: 4px 10px;
+        white-space: nowrap;
       }
       .mom-place,
       .mom-t,
@@ -3753,6 +3864,11 @@
         padding: 4px 10px;
         border-radius: 10px;
         font-weight: 500;
+      }
+      .mom-tags .tag.mom-happy-tag {
+        background: var(--primary-weak, #ffe3e8);
+        color: var(--primary, #ff2d55);
+        font-weight: 600;
       }
       .imggrid {
         gap: 6px;
@@ -15374,6 +15490,54 @@
       };
 
       // ================================================================
+      // 快乐标签辅助（兼容 字符串数组 → {name, emoji} 对象数组 两种形态）
+      // ================================================================
+      const HAPPY_EMOJI_FALLBACK = {
+        约会: "💑",
+        干饭: "🍽️",
+        看电影: "🎬",
+        逛街: "🛍️",
+        游玩: "🎡",
+        做饭: "🍳",
+        旅行: "🧳",
+        拍照: "📷",
+        运动: "🏃",
+        散步: "🚶",
+        逛街购物: "🛒",
+        纪念日: "🎁",
+        其他: "💖",
+      };
+      const DEFAULT_HAPPY_EMOJI = "💖";
+      // 统一返回 {name, emoji} 数组
+      const happyTagList = () => {
+        const list = (DB.tags && DB.tags.happy) || [];
+        if (!list || !Array.isArray(list)) return [];
+        return list.map((x) =>
+          typeof x === "string"
+            ? { name: x, emoji: HAPPY_EMOJI_FALLBACK[x] || DEFAULT_HAPPY_EMOJI }
+            : { name: x.name, emoji: x.emoji || DEFAULT_HAPPY_EMOJI },
+        );
+      };
+      // 取某标签的 emoji（未命中给默认表情）
+      const happyTagEmoji = (name) => {
+        if (!name) return DEFAULT_HAPPY_EMOJI;
+        const it = happyTagList().find((x) => x.name === name);
+        return (it && it.emoji) || HAPPY_EMOJI_FALLBACK[name] || DEFAULT_HAPPY_EMOJI;
+      };
+      // 把名称写回 DB.tags.happy（确保为对象数组；存在则仅更新；不存在则追加）
+      const happyTagEnsure = (name, emoji) => {
+        if (!Array.isArray(DB.tags.happy)) DB.tags.happy = [];
+        const arr = DB.tags.happy;
+        const i = arr.findIndex(
+          (x) => (typeof x === "string" ? x : x.name) === name,
+        );
+        if (i < 0) arr.push({ name, emoji: emoji || DEFAULT_HAPPY_EMOJI });
+        else if (typeof arr[i] === "string")
+          arr[i] = { name, emoji: emoji || DEFAULT_HAPPY_EMOJI };
+        else arr[i].emoji = emoji || arr[i].emoji || DEFAULT_HAPPY_EMOJI;
+      };
+
+      // ================================================================
       // 农历 / 星座 / 生肖（基于 lunar-javascript）
       // ================================================================
       const ZODIAC_EMOJI = {
@@ -15695,7 +15859,16 @@
             relEvents: [], // 分手/和好里程碑：[{id,date,type:'bk'|'rc'}] 按日期升序
             fields: [],
           },
-          tags: { happy: ["约会", "干饭", "看电影", "逛街", "游玩", "做饭"] },
+          tags: {
+            happy: [
+              { name: "约会", emoji: "💑" },
+              { name: "干饭", emoji: "🍽️" },
+              { name: "看电影", emoji: "🎬" },
+              { name: "逛街", emoji: "🛍️" },
+              { name: "游玩", emoji: "🎡" },
+              { name: "做饭", emoji: "🍳" },
+            ],
+          },
           templates: [],
           happy: [],
           travel: [],
@@ -15741,7 +15914,8 @@
             recordSort: "desc",
             showAchNotify: true,
             groupOrder: [],
-            // 记录最近一次新增的日期范围，供下次新增时默认定位：{"happy":"2025-09-04","travel":"2025-08-30"}
+            // 记录最近一次新增的日期范围，供下次新增时默认定位开始与结束：
+            // {"happy":{start:"2025-09-04",end:"2025-09-06"},"travel":{...}}
             lastRecordStart: {},
           },
           timeCapsules: [],
@@ -15833,6 +16007,35 @@
                   d.ui.themeMode = "light";
                 // darkMode 键不存在（极老数据）→ 保持 auto 跟随系统
               }
+            }
+            // 迁移：快乐标签字符串数组 ["约会"] → 对象数组 [{name,emoji}]，为旧名补默认表情
+            if (d.tags && Array.isArray(d.tags.happy)) {
+              const DEFAULT_HMAP = {
+                约会: "💑",
+                干饭: "🍽️",
+                看电影: "🎬",
+                逛街: "🛍️",
+                游玩: "🎡",
+                做饭: "🍳",
+              };
+              d.tags.happy = d.tags.happy.map((x) =>
+                typeof x === "string"
+                  ? { name: x, emoji: DEFAULT_HMAP[x] || "💖" }
+                  : { name: x.name || "", emoji: x.emoji || "💖" },
+              );
+            }
+            // 迁移：记录“最近一次新增日期”从 {type:"开始日"} 扩展为 {type:{start,end}}，
+            // 以支持结束日期也默认定位到上一次的结束日期。
+            if (d.settings && d.settings.lastRecordStart) {
+              const lrs = d.settings.lastRecordStart;
+              const nd = {};
+              for (const k in lrs) {
+                if (lrs[k] && typeof lrs[k] === "object" && lrs[k].start)
+                  nd[k] = { start: lrs[k].start, end: lrs[k].end || lrs[k].start };
+                else if (typeof lrs[k] === "string" && lrs[k])
+                  nd[k] = { start: lrs[k], end: lrs[k] };
+              }
+              d.settings.lastRecordStart = nd;
             }
             return deepDef(DEF(), d);
           }
@@ -17307,11 +17510,29 @@
       }
 
       function closeSub(render = true) {
-        $("#sub").classList.remove("on");
-        $("#sub").innerHTML = "";
-        subStack = [];
-        if (render) renderTab();
-        $("#fab").classList.toggle("on", curTab === "records");
+        const sub = $("#sub");
+        const doClean = () => {
+          sub.classList.remove("on");
+          sub.style.transition = "";
+          sub.style.transform = "";
+          sub.style.opacity = "";
+          sub.innerHTML = "";
+          subStack = [];
+          if (render) renderTab();
+          $("#fab").classList.toggle("on", curTab === "records");
+        };
+        if (!sub || !sub.classList.contains("on")) {
+          subStack = [];
+          if (render) renderTab();
+          $("#fab").classList.toggle("on", curTab === "records");
+          return;
+        }
+        // iOS 风格返回：整层右滑淡出后再清理
+        sub.style.transition =
+          "transform .22s cubic-bezier(.32,.72,0,1), opacity .22s ease";
+        sub.style.transform = "translateX(42%)";
+        sub.style.opacity = "0";
+        setTimeout(doClean, 225);
       }
 
       /* ================================================================
@@ -18294,10 +18515,11 @@
           return;
         }
         box.innerHTML = tags
-          .map(
-            (t) =>
-              `<button class="chip ${recTag === t ? "on" : ""}" data-tg="${esc(t)}">${recTab === "happy" ? "#" : "📍"} ${esc(t)} <span style="opacity:.6">${freq[t]}</span></button>`,
-          )
+          .map((t) => {
+            const mark =
+              recTab === "happy" ? `${happyTagEmoji(t)} ` : "📍 ";
+            return `<button class="chip ${recTag === t ? "on" : ""}" data-tg="${esc(t)}">${mark}${esc(t)} <span style="opacity:.6">${freq[t]}</span></button>`;
+          })
           .join("");
       }
 
@@ -18396,8 +18618,16 @@
               : imgs.length === 4
                 ? "n2"
                 : "n3";
+        // 快乐标签：带 emoji 与柔和底色；若标签名不在已配置列表里则退化为普通 # 标签
+        const known = happyTagList();
         const tags = (r.tags || [])
-          .map((t) => `<span class="tag"># ${esc(t)}</span>`)
+          .filter(Boolean)
+          .map((t) => {
+            const isHappy = known.some((x) => x.name === t);
+            if (isHappy)
+              return `<span class="tag mom-happy-tag">${happyTagEmoji(t)} ${esc(t)}</span>`;
+            return `<span class="tag"># ${esc(t)}</span>`;
+          })
           .join("");
         let placeStr = "";
         if (type === "happy" && r.place) placeStr = r.place;
@@ -18406,12 +18636,18 @@
           travelInfo = `${esc(r.from || "—")} → ${esc(r.to || "—")} · ${r.days || 1}天`;
         }
         const color = r.color ? `style="background:${r.color}"` : "";
-        const dateDisplay = fmtCN(r.date) + " " + weekday(r.date);
+        // 起止时间显示：多天显示「开始 ～ 结束 · N天」，单日显示「年月日 周X」
+        const sd = r.startDate || r.date || "";
+        const ed = r.endDate || sd;
+        const dateDisplay =
+          sd && ed && ed !== sd
+            ? `${fmtShort(sd)} ～ ${fmtShort(ed)} · ${r.days || dayDiff(sd, ed) + 1}天`
+            : fmtCN(sd) + " " + weekday(sd || today());
         const typeLabel = type === "happy" ? "💖 快乐" : "🧳 旅行";
         const typeClass = type === "travel" ? "travel" : "";
         return `<div class="mom" ${color} data-id="${r.id}" data-type="${type}">
           <div class="mom-header">
-            <div class="mom-date"><span class="icon">📅</span>${dateDisplay}</div>
+            <div class="mom-date"><span class="icon">📅</span><span class="mom-date-txt">${dateDisplay}</span></div>
             <div class="mom-type-tag ${typeClass}">${typeLabel}</div>
           </div>
           <div class="mom-body">
@@ -19241,8 +19477,9 @@
         ${heroHtml}
         ${analysisCard}
         <div class="sec card" style="margin-top:12px">
-          <div class="sec-hd"><span class="sec-t">📝 记录</span>
-            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
+          <div class="pd-sec-head">
+            <div class="pd-sec-title"><span class="pd-sec-dot"></span><span class="pd-sec-t">记录</span></div>
+            <div class="pd-sec-tools">
               <div class="pd-mode-seg">
                 <button class="${pdMode === "single" ? "on" : ""}" onclick="pdSetMode('single')">单日</button>
                 <button class="${pdMode === "range" ? "on" : ""}" onclick="pdSetMode('range')">区间</button>
@@ -19253,7 +19490,7 @@
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><path d="M1 3h8L5 8 1 3z"/></svg>
               </button>
               ` : `
-              <div style="display:flex;align-items:center;gap:6px;">
+              <div style="display:inline-flex;align-items:center;gap:6px;">
                 <button class="pd-date-btn" id="pbS" onclick="pbPick('start')">
                   <span>${pbState && pbState.start ? fmtShort(pbState.start) : "开始"}</span>
                   <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><path d="M1 3h8L5 8 1 3z"/></svg>
@@ -19265,7 +19502,7 @@
                 </button>
               </div>
               `}
-              <button class="sec-more" onclick="openSub('标签管理',rPeriodTags)">🏷️ 管理</button>
+              <button class="pd-manage" onclick="openSub('标签管理',rPeriodTags)">🏷️ 管理</button>
             </div>
           </div>
           ${pdMode === "single" ? `
@@ -20586,10 +20823,34 @@
       function recEditor(type, id) {
         if (!type) type = DB.settings.defaultRecordType || "happy";
         const r = id ? DB[type].find((x) => x.id === id) : null;
-        // 新增时默认起始日期：优先用最近一次新增的开始日期，其次用该类型最近一条记录，最后今天
-        const lastStart =
-          (DB.settings.lastRecordStart && DB.settings.lastRecordStart[type]) ||
+        // 新增时默认日期：优先用最近一次新增的开始/结束日期，其次用该类型最近一条记录，最后今天
+        const lastRec =
+          (DB.settings.lastRecordStart &&
+            DB.settings.lastRecordStart[type]) ||
           "";
+        const lastStart =
+          typeof lastRec === "object" && lastRec
+            ? lastRec.start || ""
+            : typeof lastRec === "string"
+              ? lastRec
+              : "";
+        const lastEnd =
+          typeof lastRec === "object" && lastRec && lastRec.end
+            ? lastRec.end
+            : "";
+        const lastRecStart =
+          lastStart ||
+          (DB[type] && DB[type].length
+            ? DB[type][DB[type].length - 1].startDate ||
+              DB[type][DB[type].length - 1].date
+            : "") ||
+          today();
+        const lastRecEnd =
+          lastEnd ||
+          (DB[type] && DB[type].length
+            ? DB[type][DB[type].length - 1].endDate ||
+              DB[type][DB[type].length - 1].date
+            : "");
         const d = r
           ? { ...r }
           : {
@@ -20602,13 +20863,7 @@
               imgs: [],
               tags: [],
               color: DB.settings.defaultCardColor || "",
-              startDate:
-                lastStart ||
-                (DB[type] && DB[type].length
-                  ? DB[type][DB[type].length - 1].startDate ||
-                    DB[type][DB[type].length - 1].date
-                  : "") ||
-                today(),
+              startDate: lastRecStart,
               endDate: "",
             };
         if (r) {
@@ -20617,8 +20872,8 @@
           if (!d.endDate)
             d.endDate = addDays(d.startDate, Math.max(1, d.days || 1) - 1);
         } else {
-          // 新增：结束日期默认等于开始日期（1 天），可由用户改大
-          d.endDate = d.startDate;
+          // 新增：结束日期默认定位到“上次新增/最近记录”的结束日期（无则等于开始日期）
+          d.endDate = lastRecEnd || d.startDate;
         }
         d.imgs = d.imgs || [];
         d.tags = d.tags || [];
@@ -20684,7 +20939,9 @@
               ? `
             <div class="field"><div class="field-l">地点</div><input class="input" id="rePlace" value="${esc(d.place || "")}" placeholder="在哪里？"></div>
             <div class="field"><div class="field-l">事件标签</div><div class="sym-grid" id="reTags">
-              ${DB.tags.happy.map((t) => `<button class="chip ${d.tags && d.tags.includes(t) ? "on" : ""}" data-tg="${esc(t)}">${esc(t)}</button>`).join("")}
+              ${happyTagList()
+                .map((t) => `<button class="chip ${d.tags && d.tags.includes(t.name) ? "on" : ""}" data-tg="${esc(t.name)}">${t.emoji} ${esc(t.name)}</button>`)
+                .join("")}
               <button class="chip" id="reAddTag">＋ 新标签</button></div></div>`
               : `
             <div class="field"><div class="field-l">出发地</div><input class="input" id="reFrom" value="${esc(d.from || "")}" placeholder="如：上海"></div>
@@ -20764,12 +21021,15 @@
               "新增标签",
               [{ k: "t", label: "标签名", req: 1 }],
               (v) => {
-                if (!DB.tags.happy.includes(v.t)) DB.tags.happy.push(v.t);
-                tags.add(v.t);
+                const nm = (v.t || "").trim();
+                if (!nm) return;
+                if (!happyTagList().some((x) => x.name === nm))
+                  happyTagEnsure(nm, DEFAULT_HAPPY_EMOJI);
+                tags.add(nm);
                 save();
                 paintSub();
                 setTimeout(() => {
-                  const c = $(`#reTags [data-tg="${v.t}"]`);
+                  const c = $(`#reTags [data-tg="${nm}"]`);
                   c && c.click();
                 }, 0);
               },
@@ -20861,9 +21121,9 @@
                 updatedAt: new Date().toISOString(),
                 ...obj,
               });
-              // 记忆本次新增的开始日期，供下次新增默认定位
+              // 记忆本次新增的开始/结束日期，供下次新增默认定位（含开始与结束）
               DB.settings.lastRecordStart = DB.settings.lastRecordStart || {};
-              DB.settings.lastRecordStart[type] = startDate;
+              DB.settings.lastRecordStart[type] = { start: startDate, end: endDate };
             }
             save();
             checkAchAll();
@@ -20923,7 +21183,12 @@
             {
               icon: "🏷️",
               label: "标签",
-              value: (r.tags || []).length ? r.tags.map(esc).join("、") : "—",
+              value: (r.tags || []).length
+                ? r.tags
+                    .filter(Boolean)
+                    .map((t) => `${happyTagEmoji(t)} ${esc(t)}`)
+                    .join("　")
+                : "—",
             },
             {
               icon: "📷",
@@ -21742,7 +22007,7 @@
                 <span style="flex:1"></span>
                 <button class="btn sm ghost" data-et="${t.id}">编辑</button>
                 <button class="btn sm danger" data-dt="${t.id}">删除</button></div>
-              <div class="mom-tags" style="margin-top:6px">${(t.tags || []).map((x) => `<span class="tag"># ${esc(x)}</span>`).join("")}</div>
+              <div class="mom-tags" style="margin-top:6px">${(t.tags || []).map((x) => `<span class="tag mom-happy-tag">${happyTagEmoji(x)} ${esc(x)}</span>`).join("")}</div>
               ${t.text ? `<div style="font-size:12px;color:var(--sub);margin-top:4px">${esc(t.text)}</div>` : ""}
             </div>`,
                   )
@@ -21823,73 +22088,145 @@
 
       function tagsPage() {
         openSub("标签管理", (el) => {
+          // 可选 emoji 调色板
+          const EMOJI_PRESET = [
+            "💑",
+            "🍽️",
+            "🎬",
+            "🛍️",
+            "🎡",
+            "🍳",
+            "🎁",
+            "🎂",
+            "🎉",
+            "🍺",
+            "☕",
+            "🍰",
+            "🎮",
+            "🎤",
+            "🎵",
+            "🎨",
+            "📚",
+            "🏀",
+            "🚗",
+            "✈️",
+            "🏕️",
+            "🏖️",
+            "🌹",
+            "💍",
+            "💕",
+            "😄",
+            "🐱",
+            "🌙",
+          ];
+          const openEmojiPicker = (name, cb) => {
+            const body = `<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px">${EMOJI_PRESET.map(
+              (e) =>
+                `<button data-emo="${e}" style="font-size:22px;line-height:1;height:44px;background:var(--bg);border:none;border-radius:10px;cursor:pointer">${e}</button>`,
+            ).join("")}</div>`;
+            const m = modal({
+              title: `给「${name}」选个表情`,
+              body,
+              cancel: "",
+              ok: "取消",
+              onOk: () => true,
+            });
+            m.querySelectorAll("[data-emo]").forEach((b) => {
+              b.onclick = () => {
+                cb(b.dataset.emo);
+                m.remove();
+              };
+            });
+          };
+          const list = () => happyTagList();
           const draw = () => {
+            const tg = list();
             el.innerHTML = `<div class="card" style="margin-top:8px;padding:12px 14px">
             <div style="font-size:13px;color:var(--sub);line-height:1.6">
-              🏷️ 管理快乐事件标签。删除或重命名标签时，已保存记录中的对应标签也会同步更新。
+              🏷️ 管理快乐事件标签。<b style="color:var(--primary)">点表情可换 emoji</b>；✎ 重命名、✕ 删除。
+              改名/删除会同步到已保存的记录。
             </div>
           </div>
           <div class="card" style="margin-top:12px">
-            <div class="field-l">当前标签（点击 ✎ 重命名，✕ 删除）</div>
-            <div class="sym-grid" style="margin-top:10px">${DB.tags.happy
+            <div class="field-l">当前标签</div>
+            <div class="sym-grid" style="margin-top:10px">${tg
               .map(
-                (t) => `<span class="chip">${esc(t)}
-              <span style="cursor:pointer" data-e="${esc(t)}">✎</span>
-              <span class="x" data-x="${esc(t)}">✕</span></span>`,
+                (t) => `<span class="chip chip-tag" style="padding-right:6px">
+              <button data-emo="${esc(t.name)}" aria-label="更换表情" class="chip-emo">${t.emoji}</button>
+              <span>${esc(t.name)}</span>
+              <button class="chip-btn" data-e="${esc(t.name)}" aria-label="重命名">✎</button>
+              <button class="chip-btn x" data-x="${esc(t.name)}" aria-label="删除">✕</button></span>`,
               )
               .join("")}</div>
             <div style="display:flex;gap:8px;margin-top:14px">
               <input class="input" id="tagIn" placeholder="输入新标签，如：露营">
               <button class="btn" id="tagAdd" style="flex:none">添加</button></div>
           </div>
-          <div style="font-size:12px;color:var(--sub);margin:10px 4px">默认标签：约会、干饭、看电影、逛街、游玩、做饭</div>`;
+          <div style="font-size:12px;color:var(--sub);margin:10px 4px">没有找到想要的表情？可先用任意一个，之后随时更换。</div>`;
             $("#tagAdd").onclick = () => {
               const v = $("#tagIn").value.trim();
               if (!v) return;
-              if (DB.tags.happy.includes(v)) return toast("标签已存在");
-              DB.tags.happy.push(v);
+              if (happyTagList().some((x) => x.name === v))
+                return toast("标签已存在");
+              happyTagEnsure(v, DEFAULT_HAPPY_EMOJI);
               save();
               draw();
             };
-            el.querySelectorAll("[data-x]").forEach(
-              (x) =>
-                (x.onclick = () => {
-                  const tag = x.dataset.x;
-                  DB.tags.happy = DB.tags.happy.filter((t) => t !== tag);
-                  DB.happy.forEach((r) => {
-                    if (r.tags) r.tags = r.tags.filter((t) => t !== tag);
-                  });
+            el.querySelectorAll("[data-emo]").forEach((b) => {
+              b.onclick = () => {
+                const name = b.dataset.emo;
+                openEmojiPicker(name, (emo) => {
+                  happyTagEnsure(name, emo);
                   save();
                   draw();
-                }),
-            );
-            el.querySelectorAll("[data-e]").forEach(
-              (x) =>
-                (x.onclick = () => {
-                  const oldTag = x.dataset.e;
-                  inputModal(
-                    "重命名标签",
-                    [{ k: "name", label: "新名称", val: oldTag, req: 1 }],
-                    (v) => {
-                      const newTag = v.name.trim();
-                      if (!newTag || newTag === oldTag) return;
-                      if (DB.tags.happy.includes(newTag))
-                        return toast("标签已存在");
-                      DB.tags.happy = DB.tags.happy.map((t) =>
-                        t === oldTag ? newTag : t,
-                      );
-                      DB.happy.forEach((r) => {
-                        if (r.tags)
-                          r.tags = r.tags.map((t) =>
-                            t === oldTag ? newTag : t,
-                          );
-                      });
-                      save();
-                      draw();
-                    },
-                  );
-                }),
-            );
+                });
+              };
+            });
+            el.querySelectorAll("[data-x]").forEach((x) => {
+              x.onclick = () => {
+                const tag = x.dataset.x;
+                DB.tags.happy = DB.tags.happy.filter((t) =>
+                  typeof t === "string" ? t !== tag : t.name !== tag,
+                );
+                DB.happy.forEach((r) => {
+                  if (r.tags) r.tags = r.tags.filter((t) => t !== tag);
+                });
+                save();
+                draw();
+              };
+            });
+            el.querySelectorAll("[data-e]").forEach((x) => {
+              x.onclick = () => {
+                const oldTag = x.dataset.e;
+                inputModal(
+                  "重命名标签",
+                  [{ k: "name", label: "新名称", val: oldTag, req: 1 }],
+                  (v) => {
+                    const newTag = v.name.trim();
+                    if (!newTag || newTag === oldTag) return;
+                    if (happyTagList().some((x) => x.name === newTag))
+                      return toast("标签已存在");
+                    DB.tags.happy = DB.tags.happy.map((t) =>
+                      typeof t === "string"
+                        ? t === oldTag
+                          ? { name: newTag, emoji: DEFAULT_HAPPY_EMOJI }
+                          : t
+                        : t.name === oldTag
+                          ? { ...t, name: newTag }
+                          : t,
+                    );
+                    DB.happy.forEach((r) => {
+                      if (r.tags)
+                        r.tags = r.tags.map((t) =>
+                          t === oldTag ? newTag : t,
+                        );
+                    });
+                    save();
+                    draw();
+                  },
+                );
+              };
+            });
           };
           draw();
         });
@@ -22867,7 +23204,7 @@
       /* ================================================================
        * 初始化
        * ================================================================ */
-      // iOS 风格：屏幕左缘右滑返回上一子页面
+      // iOS 风格：屏幕左缘右滑返回上一子页面（带视差跟随 + 松手回弹/滑出）
       function initSwipeBack() {
         const subEl = $("#sub");
         if (!subEl) return;
@@ -22875,7 +23212,23 @@
           sy = 0,
           active = false,
           lockV = false,
-          dx = 0;
+          fired = false,
+          canceled = false;
+        const W = () => window.innerWidth || document.documentElement.clientWidth;
+        const apply = (x) => {
+          // x 为 0~1 进度；0 原样，1 完全右移滑出
+          const ease = Math.min(1, x);
+          subEl.style.transition = "none";
+          subEl.style.transform = `translateX(${Math.round(
+            ease * W() * 0.55,
+          )}px)`;
+          subEl.style.opacity = String(1 - ease * 0.55);
+        };
+        const clearFx = () => {
+          subEl.style.transition = "";
+          subEl.style.transform = "";
+          subEl.style.opacity = "";
+        };
         const isOverlay = (t) =>
           !!(t && t.closest && t.closest(".dt-picker-mask, .modal, .sheet, .lightbox"));
         const start = (e) => {
@@ -22887,9 +23240,10 @@
           if (isOverlay(e.target)) return;
           sx = t.clientX;
           sy = t.clientY;
-          dx = 0;
           active = true;
           lockV = false;
+          fired = false;
+          canceled = false;
         };
         const move = (e) => {
           if (!active || !subStack.length) return;
@@ -22901,28 +23255,38 @@
             // 若明显倾向纵向滚动，放弃手势，避免影响页面上下滑
             if (Math.abs(my) > 14 && Math.abs(my) > Math.abs(mx)) {
               lockV = true;
+              canceled = true;
+              clearFx();
               return;
             }
             // 轻微左右抖动不理会
-            if (mx < 0) return;
+            if (mx < 0) {
+              apply(Math.max(0, mx / 260));
+              return;
+            }
           }
-          if (lockV) return;
-          dx = mx;
-          // 达到阈值且水平占优 → 执行返回
-          if (dx > 70 && dx > Math.abs(my) * 1.2) {
-            active = false;
-            e.preventDefault();
-            navBack();
-          }
+          if (lockV || fired) return;
+          e.preventDefault();
+          apply(Math.min(1, mx / 260));
         };
-        const end = () => {
+        const release = () => {
+          if (!active) return;
+          const wasActive = active;
           active = false;
+          // 先读取当前跟随进度，再清除效果
+          let p = 0;
+          const cur = subEl.style.transform || "";
+          const m = cur.match(/translateX\(([-0-9.]+)px\)/);
+          if (m) p = Math.max(0, Math.min(1, parseFloat(m[1]) / (W() * 0.55)));
+          clearFx();
+          if (canceled || !wasActive || !subStack.length) return;
+          if (p > 0.42) navBack();
         };
         // passive:false 以允许 preventDefault，屏蔽 iOS 页面惯性回弹
         subEl.addEventListener("touchstart", start, { passive: true });
         subEl.addEventListener("touchmove", move, { passive: false });
-        subEl.addEventListener("touchend", end, { passive: true });
-        subEl.addEventListener("touchcancel", end, { passive: true });
+        subEl.addEventListener("touchend", release, { passive: true });
+        subEl.addEventListener("touchcancel", release, { passive: true });
       }
 
       function showSplash() {
