@@ -39,7 +39,7 @@
         --line-color: #e5e5ea;
         --shadow-intensity: 0.06;
         --card-radius: 18px;
-        --page-pt: 126px;
+        --page-pt: 92px;
         --tab-inactive: #55555d;
         --hd-bg: rgba(255, 255, 255, 0.72);
         --hd-bd: rgba(0, 0, 0, 0.08);
@@ -135,7 +135,7 @@
         background: var(--hd-bg);
         -webkit-backdrop-filter: saturate(200%) blur(24px);
         backdrop-filter: saturate(200%) blur(24px);
-        padding: calc(env(safe-area-inset-top, 0px) + 0px) 16px 6px;
+        padding: calc(env(safe-area-inset-top, 0px) + 0px) 16px 2px;
         border-bottom: 0.5px solid var(--hd-bd);
       }
       .hd-row {
@@ -143,7 +143,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        height: 34px;
+        height: 30px;
       }
       #hdBack {
         display: none;
@@ -199,24 +199,25 @@
         display: none;
       }
       #hdBig {
-        font-size: 24px;
+        font-size: 22px;
         font-weight: 700;
         letter-spacing: -0.3px;
-        margin-top: 2px;
+        margin-top: 1px;
         text-align: left;
         padding: 0 2px;
         color: var(--text);
         display: flex;
         align-items: center;
         gap: 6px;
+        line-height: 1.15;
       }
       #hdBig .icon {
         font-size: 22px;
       }
       #hdSub {
-        font-size: 12px;
+        font-size: 11px;
         color: var(--sub);
-        margin-top: 1px;
+        margin-top: 0px;
         text-align: left;
         padding: 0 2px;
         letter-spacing: -0.1px;
@@ -282,9 +283,10 @@
         background: var(--card);
         border-top: 1px solid var(--line);
         display: flex;
-        align-items: center; /* 图标在 Tab 栏中垂直居中，避免 iPhone 底部安全区留白过大 */
-        height: auto;
-        min-height: calc(var(--tab-h) - 2px);
+        align-items: center; /* 图标在安全区上方居中，避免 iPhone 底部留白过大 */
+        box-sizing: border-box;
+        height: calc(var(--tab-h) + var(--safe-b));
+        min-height: auto;
         padding: 6px 0 var(--safe-b);
         box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.04);
       }
