@@ -340,6 +340,9 @@
         font-size: 13px;
         color: var(--primary);
         font-weight: 500;
+        padding: 10px 6px; /* 扩大触控热区（视觉位置靠负 margin 抵消） */
+        margin: -10px -6px;
+        line-height: 1.2;
       }
       .card {
         background: var(--card);
@@ -563,6 +566,13 @@
         border-radius: 14px;
         background: #e3e4e8;
         transition: background 0.2s;
+      }
+      /* 扩大开关的触控热区（透明扩展环），视觉尺寸不变 */
+      .switch::before {
+        content: "";
+        position: absolute;
+        inset: -8px;
+        border-radius: 16px;
       }
       .switch.on {
         background: var(--primary);
@@ -1520,21 +1530,27 @@
         flex: none;
         display: flex;
         align-items: center;
-        gap: 4px;
+        gap: 6px;
         margin-left: 2px;
       }
       .pep-act {
         background: none;
         border: 0;
-        font-size: 14px;
-        padding: 4px;
+        font-size: 15px;
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
         cursor: pointer;
-        opacity: 0.55;
+        opacity: 0.6;
         line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
       .pep-act:active {
         opacity: 1;
         transform: scale(0.88);
+        background: rgba(0, 0, 0, 0.05);
       }
       .pep-act.del {
         color: var(--danger);
@@ -3555,7 +3571,8 @@
         font-weight: 500;
         font-family: inherit;
         cursor: pointer;
-        padding: 2px 0;
+        padding: 10px 8px; /* 扩大触控热区，视觉位置由行高吸收 */
+        line-height: 1;
       }
       .tree-card .tc-reset-link {
         color: var(--danger, #ff3b30);
@@ -15661,6 +15678,7 @@
             viewMode: "moments",
             recHintSeen: false,
             darkMode: false,
+            themeMode: "auto", // 外观：auto=跟随系统 light=浅色 dark=深色
             splash: {
               on: false,
               title: "情侣全记录",
@@ -15723,6 +15741,8 @@
             recordSort: "desc",
             showAchNotify: true,
             groupOrder: [],
+            // 记录最近一次新增的日期范围，供下次新增时默认定位：{"happy":"2025-09-04","travel":"2025-08-30"}
+            lastRecordStart: {},
           },
           timeCapsules: [],
           ageData: {
@@ -15802,6 +15822,17 @@
               );
               delete d.couple.breakup;
               delete d.couple.breakupVisible;
+            }
+            // 迁移：旧版“深色模式”双态开关 → 新版“跟随系统”三态
+            // 旧版默认浅色；此处仅在确实记录了 darkMode 时映射，
+            // 未设置过 themeMode 且无 darkMode 键时保留为 auto（跟随系统）。
+            if (d.ui) {
+              if (!("themeMode" in d.ui)) {
+                if (d.ui.darkMode === true) d.ui.themeMode = "dark";
+                else if ("darkMode" in d.ui && d.ui.darkMode === false)
+                  d.ui.themeMode = "light";
+                // darkMode 键不存在（极老数据）→ 保持 auto 跟随系统
+              }
             }
             return deepDef(DEF(), d);
           }
@@ -15968,10 +15999,21 @@
       }
 
       /* ---------- 主题 ---------- */
+      // 解析“是否为深色”：auto=跟随系统，light/dark=手动；向下兼容旧 darkMode 键
+      function isDarkNow(u) {
+        if (!u) return false;
+        const m = u.themeMode || "auto";
+        if (m === "dark") return true;
+        if (m === "light") return false;
+        // auto / 旧数据默认
+        if (typeof matchMedia === "function")
+          return matchMedia("(prefers-color-scheme: dark)").matches;
+        return false;
+      }
       function applyTheme() {
         const u = DB.ui,
           r = document.documentElement.style;
-        const isDark = u.darkMode;
+        const isDark = isDarkNow(u);
         if (isDark) {
           r.setProperty("--bg", "#1C1C1E");
           r.setProperty("--card", "#2C2C2E");
@@ -17199,6 +17241,19 @@
         ];
       }
 
+      // 统一返回逻辑：由顶栏返回按钮与「左缘右滑」手势共用
+      function navBack() {
+        if (!subStack.length) return;
+        if (subStack.length === 1) {
+          closeSub(true);
+        } else {
+          const cur = subStack[subStack.length - 1];
+          cur.scrollTop = $("#sub").scrollTop;
+          subStack.pop();
+          paintSub();
+        }
+      }
+
       function setHeader({
         big = "",
         sub = "",
@@ -17215,18 +17270,7 @@
         $("#hdTitle").textContent = title;
         $("#hdAct").textContent = act;
         $("#hdAct").onclick = onAct || null;
-        $("#hdBack").onclick = () => {
-          if (subStack.length) {
-            if (subStack.length === 1) {
-              closeSub(true);
-            } else {
-              const cur = subStack[subStack.length - 1];
-              cur.scrollTop = $("#sub").scrollTop;
-              subStack.pop();
-              paintSub();
-            }
-          }
-        };
+        $("#hdBack").onclick = () => navBack();
       }
 
       function openSub(title, renderFn, act = "", onAct = null) {
@@ -17520,6 +17564,24 @@
             </div>
           </div>`;
         p.innerHTML = `
+        ${
+          isFresh
+            ? `<div class="sec card onboard-card">
+                <div style="display:flex;align-items:center;justify-content:space-between">
+                  <span style="font-size:18px;font-weight:700">👋 欢迎，这是你们的专属记录</span>
+                </div>
+                <div style="font-size:13px;color:var(--sub);margin:4px 0 14px;line-height:1.6">花一分钟设定起始日，往后这里会帮你们记住：今天在一起、爱过多少天、去过哪里、说过哪些心里话。</div>
+                <div class="ob-step ${C.loveStart ? "done" : ""}"><span class="ob-n">${C.loveStart ? "✓" : "1"}</span><div class="ob-t"><b>设定恋爱起始日</b><span>生日 / 星座 / 纪念日会一起亮起</span></div><button class="btn sm" onclick="profileEdit()">去设置</button></div>
+                <div class="ob-step ${DB.happy.length || DB.travel.length ? "done" : ""}"><span class="ob-n">${DB.happy.length || DB.travel.length ? "✓" : "2"}</span><div class="ob-t"><b>记第一条小美好</b><span>快乐小事或旅行足迹都行</span></div><button class="btn sm" onclick="openRecNew()">去记录</button></div>
+                <div class="ob-step"><span class="ob-n">3</span><div class="ob-t"><b>从「我的」逛逛</b><span>相册、时间胶囊、打卡都在这里</span></div><button class="btn sm ghost" onclick="switchTab('mine')">去看看</button></div>
+                <button class="btn blk" style="width:100%;margin-top:14px" onclick="profileEdit()">💕 现在开始，设定起始日</button>
+              </div>`
+            : ""
+        }
+        ${
+          isFresh
+            ? ""
+            : `
         <!-- 早上好·今天 卡片 -->
         <div class="morning-card">
           <div class="mc-top">
@@ -17537,17 +17599,7 @@
             <span class="mc-progress-label">${year}已经过去 ${progress}%</span>
           </div>
         </div>
-
-        ${
-          isFresh
-            ? `<div class="sec card onboard-card">
-                <div style="font-size:16px;font-weight:700">👋 欢迎，从这里开始你们的记录</div>
-                <div style="font-size:12.5px;color:var(--sub);margin:4px 0 12px;line-height:1.6">三分钟，让这份记忆专属你们俩</div>
-                <div class="ob-step ${C.loveStart ? "done" : ""}"><span class="ob-n">${C.loveStart ? "✓" : "1"}</span><div class="ob-t"><b>设定恋爱起始日</b><span>生日/星座/纪念日都会同步亮起</span></div><button class="btn sm" onclick="profileEdit()">去设置</button></div>
-                <div class="ob-step ${DB.happy.length || DB.travel.length ? "done" : ""}"><span class="ob-n">${DB.happy.length || DB.travel.length ? "✓" : "2"}</span><div class="ob-t"><b>记第一条小美好</b><span>快乐小事或旅行足迹都行</span></div><button class="btn sm" onclick="openRecNew()">去记录</button></div>
-                <div class="ob-step"><span class="ob-n">3</span><div class="ob-t"><b>从我的页逛逛</b><span>相册、时间胶囊、打卡都在这里</span></div><button class="btn sm ghost" onclick="switchTab('mine')">去看看</button></div>
-              </div>`
-            : ""
+        `
         }
 
         ${
@@ -17574,7 +17626,9 @@
             : loveUnsetCta
         }
 
-        <!-- 年龄计算器 -->
+        ${
+          !isFresh
+            ? `<!-- 年龄计算器 -->
         <div class="age-card" id="ageCard">
           <div class="ac-header">
             <span class="ac-title">🎂 有这么大</span>
@@ -17619,7 +17673,9 @@
               🕊️ 暂无即将到来的提醒<br><span style="font-size:12px">去「我的」添加时间胶囊或设置生日吧</span></div>`
             }
           </div>
-        </div>
+        </div>`
+            : ""
+        }
 
         <div class="sec">
           <div class="sec-hd"><span class="sec-t">📋 最近动态</span>
@@ -20530,10 +20586,14 @@
       function recEditor(type, id) {
         if (!type) type = DB.settings.defaultRecordType || "happy";
         const r = id ? DB[type].find((x) => x.id === id) : null;
+        // 新增时默认起始日期：优先用最近一次新增的开始日期，其次用该类型最近一条记录，最后今天
+        const lastStart =
+          (DB.settings.lastRecordStart && DB.settings.lastRecordStart[type]) ||
+          "";
         const d = r
           ? { ...r }
           : {
-              date: today(),
+              date: "",
               place: "",
               from: "",
               to: "",
@@ -20542,11 +20602,24 @@
               imgs: [],
               tags: [],
               color: DB.settings.defaultCardColor || "",
-              startDate: today(),
-              endDate: today(),
+              startDate:
+                lastStart ||
+                (DB[type] && DB[type].length
+                  ? DB[type][DB[type].length - 1].startDate ||
+                    DB[type][DB[type].length - 1].date
+                  : "") ||
+                today(),
+              endDate: "",
             };
-        if (!d.startDate) d.startDate = d.date || today();
-        if (!d.endDate) d.endDate = addDays(d.startDate, (d.days || 1) - 1);
+        if (r) {
+          // 编辑：完整恢复起止日期
+          if (!d.startDate) d.startDate = d.date || today();
+          if (!d.endDate)
+            d.endDate = addDays(d.startDate, Math.max(1, d.days || 1) - 1);
+        } else {
+          // 新增：结束日期默认等于开始日期（1 天），可由用户改大
+          d.endDate = d.startDate;
+        }
         d.imgs = d.imgs || [];
         d.tags = d.tags || [];
         d.color = d.color || "";
@@ -20554,20 +20627,26 @@
           (id ? "编辑" : "新增") + (type === "happy" ? "快乐记录" : "旅行记录");
         openSub(title, (el) => {
           const imgs = d.imgs;
-          const updateEndDate = () => {
+          // 依据已选开始/结束日期自动重算并展示持续天数；若结束早于开始则校正结束=开始
+          const refreshRange = () => {
             const start = $("#reStartDate").value;
-            const days = +$("#reDays").value || 1;
-            if (start) {
-              const end = addDays(start, days - 1);
-              $("#reEndDate").value = end;
-              d.endDate = end;
-            }
+            let end = $("#reEndDate").value;
+            if (!start) return;
+            if (!end || end < start) end = start;
+            $("#reEndDate").value = end;
+            $("#reEndDateBtn").textContent = fmtCN(end) + " ▾";
+            const days = dayDiff(start, end) + 1;
+            const show = $("#reDaysShow");
+            if (show)
+              show.textContent =
+                "共 " + days + (days === 1 ? " 天" : " 天（含首尾）");
+            d.startDate = start;
+            d.endDate = end;
+            d.days = days;
           };
           const fields = [
-            ["reDate", "date", d.date],
             ["reStartDate", "date", d.startDate],
             ["reEndDate", "date", d.endDate],
-            ["reDays", "number", d.days],
             ["rePlace", "text", d.place],
             ["reFrom", "text", d.from],
             ["reTo", "text", d.to],
@@ -20576,14 +20655,13 @@
           fields.forEach(([fid, type, val]) => {
             const i = el.querySelector("#" + fid);
             if (!i) return;
-            if (type === "textarea") i.value = val;
-            else i.value = val;
+            i.value = val;
+            // 日期由滚轮按钮驱动（见下方 bindDatePicker），此处只绑定普通文本/多行字段
+            if (fid === "reStartDate" || fid === "reEndDate") return;
             i.addEventListener("input", () => {
-              if (fid === "reStartDate" || fid === "reDays") updateEndDate();
               d[fid.replace("re", "").toLowerCase()] = i.value;
             });
             i.addEventListener("change", () => {
-              if (fid === "reStartDate" || fid === "reDays") updateEndDate();
               d[fid.replace("re", "").toLowerCase()] = i.value;
             });
           });
@@ -20592,19 +20670,15 @@
               ? `<div class="field-l">使用模板</div><div class="sym-grid" id="tplChips">${DB.templates.map((t) => `<button class="chip" data-tp="${t.id}">${esc(t.name)}</button>`).join("")}</div>`
               : "";
           el.innerHTML = `<div class="card">${tplChips}
-          <div class="field"><div class="field-l">日期 *</div>
-            <button class="btn ghost" style="width:100%;" id="reDateBtn">${fmtCN(d.date)} ▾</button>
-            <input type="hidden" id="reDate" value="${d.date}">
-          </div>
-          <div class="field"><div class="field-l">开始日期</div>
+          <div class="field"><div class="field-l">开始日期 *</div>
             <button class="btn ghost" style="width:100%;" id="reStartDateBtn">${d.startDate ? fmtCN(d.startDate) : "选择"} ▾</button>
             <input type="hidden" id="reStartDate" value="${d.startDate}">
           </div>
-          <div class="field"><div class="field-l">结束日期（自动计算）</div>
-            <input class="input" id="reEndDate" value="${d.endDate ? fmtCN(d.endDate) : ""}" readonly style="background:#e8e8ea;">
+          <div class="field"><div class="field-l">结束日期</div>
+            <button class="btn ghost" style="width:100%;" id="reEndDateBtn">${d.endDate ? fmtCN(d.endDate) : "选择"} ▾</button>
+            <input type="hidden" id="reEndDate" value="${d.endDate}">
           </div>
-          <div class="field"><div class="field-l">持续天数</div>
-            <input class="input" type="number" min="1" id="reDays" value="${d.days || 1}"></div>
+          <div class="field"><div class="field-l" style="color:var(--sub);font-weight:400">⏱ 持续 <b id="reDaysShow" style="color:var(--primary);font-weight:600">共 ${d.days || 1} 天</b></div></div>
           ${
             type === "happy"
               ? `
@@ -20623,7 +20697,7 @@
               .map(
                 (im, i) =>
                   `<div style="position:relative;width:86px"><img src="${im}" style="width:86px;height:86px;object-fit:cover;border-radius:8px">
-              <button data-rm="${i}" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;font-size:11px">✕</button></div>`,
+              <button data-rm="${i}" aria-label="删除图片" style="position:absolute;top:-9px;right:-9px;width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;font-size:13px;line-height:1">✕</button></div>`,
               )
               .join("")}
             <button id="reAddImg" style="width:86px;height:86px;border-radius:8px;border:1px dashed #C9CDD4;color:var(--sub);font-size:24px">＋</button></div></div>
@@ -20631,7 +20705,7 @@
             ${CARD_COLORS.map((c, i) => `<button data-c="${i}" style="width:34px;height:34px;border-radius:8px;background:${c || "var(--card)"};border:1px solid ${(d.color || "") === c ? "var(--primary)" : "var(--line)"}"></button>`).join("")}</div></div>
           <button class="btn blk" id="reSave">保存</button></div>`;
 
-          // 日期选择器绑定
+          // 日期选择器绑定：开始/结束都用同一个滚动式滚轮（showDatePicker）
           const bindDatePicker = (btnId, inputId, title) => {
             const btn = el.querySelector(btnId);
             const inp = el.querySelector(inputId);
@@ -20647,16 +20721,16 @@
                 onConfirm: (res) => {
                   inp.value = res;
                   btn.textContent = fmtCN(res) + " ▾";
-                  d[inputId.replace("#", "").replace("re", "").toLowerCase()] =
-                    res;
-                  if (inputId === "#reStartDate") updateEndDate();
-                  if (inputId === "#reDate") d.date = res;
+                  if (inputId === "#reStartDate") d.startDate = res;
+                  if (inputId === "#reEndDate") d.endDate = res;
+                  refreshRange();
                 },
               });
             };
           };
-          bindDatePicker("#reDateBtn", "#reDate", "选择日期");
+          // 开始日期默认聚焦到本次起始（含记忆的上次日期）
           bindDatePicker("#reStartDateBtn", "#reStartDate", "选择开始日期");
+          bindDatePicker("#reEndDateBtn", "#reEndDate", "选择结束日期");
 
           let color = d.color || "";
           let tags = new Set(d.tags || []);
@@ -20729,18 +20803,17 @@
               }),
           );
           $("#reSave").onclick = () => {
-            const date = $("#reDate").value;
-            if (!date) {
-              toast("请选择日期");
-              return;
-            }
             const startDate = $("#reStartDate").value;
-            const days = +$("#reDays").value || 1;
+            let endDate = $("#reEndDate").value;
             if (!startDate) {
               toast("请选择开始日期");
               return;
             }
-            const endDate = addDays(startDate, days - 1);
+            refreshRange();
+            endDate = $("#reEndDate").value || startDate;
+            const days = dayDiff(startDate, endDate) + 1;
+            // date 字段与开始日期对齐，向下兼容旧数据/旧列表展示
+            const date = startDate;
             let obj;
             if (type === "happy") {
               const text = $("#reText").value.trim(),
@@ -20781,19 +20854,23 @@
             if (r) {
               Object.assign(r, obj);
               r.updatedAt = new Date().toISOString();
-            } else
+            } else {
               DB[type].push({
                 id: uid(),
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
                 ...obj,
               });
+              // 记忆本次新增的开始日期，供下次新增默认定位
+              DB.settings.lastRecordStart = DB.settings.lastRecordStart || {};
+              DB.settings.lastRecordStart[type] = startDate;
+            }
             save();
             checkAchAll();
             toast("已保存");
             closeSub();
           };
-          updateEndDate();
+          refreshRange();
         });
       }
 
@@ -22229,9 +22306,16 @@
                 .join("")}
             </div>
             <div style="margin-top:14px;"><button class="btn" id="uiReset" style="width:100%">恢复默认配色</button></div>
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)">
-              <span style="font-size:14px;font-weight:500">🌙 深色模式</span>
-              <button class="switch ${U.darkMode ? "on" : ""}" id="darkModeSw"></button>
+            <div style="margin-top:14px">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid var(--line)">
+                <span style="font-size:14px;font-weight:500">🌙 外观模式</span>
+              </div>
+              <div class="seg" style="margin-top:10px">
+                <button data-tm="auto" class="${(U.themeMode || "auto") === "auto" ? "on" : ""}">自动</button>
+                <button data-tm="light" class="${(U.themeMode || "auto") === "light" ? "on" : ""}">浅色</button>
+                <button data-tm="dark" class="${(U.themeMode || "auto") === "dark" ? "on" : ""}">深色</button>
+              </div>
+              <div style="font-size:11px;color:var(--sub);margin-top:6px">自动：跟随系统深浅色切换</div>
             </div>
           </div>
           <div class="card" style="margin-top:12px">
@@ -22315,12 +22399,17 @@
                   draw();
                 }),
             );
-            $("#darkModeSw").onclick = () => {
-              U.darkMode = !U.darkMode;
-              save();
-              applyTheme();
-              draw();
-            };
+            document.querySelectorAll("[data-tm]").forEach((b) => {
+              b.onclick = () => {
+                U.themeMode = b.dataset.tm;
+                U.darkMode = b.dataset.tm === "dark"; // 兼容旧逻辑
+                save();
+                document.querySelectorAll("[data-tm]").forEach((x) =>
+                  x.classList.toggle("on", x === b),
+                );
+                applyTheme();
+              };
+            });
             $("#rdR").oninput = (e) => {
               U.radius = +e.target.value;
               $("#rdV").textContent = e.target.value;
@@ -22358,6 +22447,7 @@
               U.lineColor = "#E5E5EA";
               U.shadowIntensity = 0.06;
               U.cardRadius = 14;
+              U.themeMode = "auto";
               U.darkMode = false;
               save();
               applyTheme();
@@ -22777,6 +22867,64 @@
       /* ================================================================
        * 初始化
        * ================================================================ */
+      // iOS 风格：屏幕左缘右滑返回上一子页面
+      function initSwipeBack() {
+        const subEl = $("#sub");
+        if (!subEl) return;
+        let sx = 0,
+          sy = 0,
+          active = false,
+          lockV = false,
+          dx = 0;
+        const isOverlay = (t) =>
+          !!(t && t.closest && t.closest(".dt-picker-mask, .modal, .sheet, .lightbox"));
+        const start = (e) => {
+          const t = e.touches && e.touches[0];
+          if (!t) return;
+          // 仅在子页面已打开、起始点在左缘、且起点不在弹层上时启用
+          if (!subStack.length || !subEl.classList.contains("on")) return;
+          if (t.clientX > 32) return;
+          if (isOverlay(e.target)) return;
+          sx = t.clientX;
+          sy = t.clientY;
+          dx = 0;
+          active = true;
+          lockV = false;
+        };
+        const move = (e) => {
+          if (!active || !subStack.length) return;
+          const t = e.touches && e.touches[0];
+          if (!t) return;
+          const mx = t.clientX - sx;
+          const my = t.clientY - sy;
+          if (!lockV) {
+            // 若明显倾向纵向滚动，放弃手势，避免影响页面上下滑
+            if (Math.abs(my) > 14 && Math.abs(my) > Math.abs(mx)) {
+              lockV = true;
+              return;
+            }
+            // 轻微左右抖动不理会
+            if (mx < 0) return;
+          }
+          if (lockV) return;
+          dx = mx;
+          // 达到阈值且水平占优 → 执行返回
+          if (dx > 70 && dx > Math.abs(my) * 1.2) {
+            active = false;
+            e.preventDefault();
+            navBack();
+          }
+        };
+        const end = () => {
+          active = false;
+        };
+        // passive:false 以允许 preventDefault，屏蔽 iOS 页面惯性回弹
+        subEl.addEventListener("touchstart", start, { passive: true });
+        subEl.addEventListener("touchmove", move, { passive: false });
+        subEl.addEventListener("touchend", end, { passive: true });
+        subEl.addEventListener("touchcancel", end, { passive: true });
+      }
+
       function showSplash() {
         const S = DB.ui.splash;
         if (!S.on) return;
@@ -22812,8 +22960,18 @@
         rHome();
         switchTab("home");
         showSplash();
+        initSwipeBack();
+        // 系统深浅色切换时，若为“跟随系统”则即时重绘主题
+        if (window.matchMedia) {
+          const mq = window.matchMedia("(prefers-color-scheme: dark)");
+          const onChange = () => {
+            const tm = DB.ui && DB.ui.themeMode;
+            if (!tm || tm === "auto") applyTheme();
+          };
+          if (mq.addEventListener) mq.addEventListener("change", onChange);
+          else if (mq.addListener) mq.addListener(onChange);
+        }
       })();
-      
     </script>
   </body>
 </html>
