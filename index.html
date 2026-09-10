@@ -2364,73 +2364,71 @@
         font-size: 13px;
       }
 
-      /* 逐日可编辑行（紧凑版） */
+      /* 逐日可编辑卡片（宽松版） */
       .pb-day-row {
         background: var(--card);
         border: 1px solid var(--line);
-        border-radius: 12px;
-        padding: 8px 10px;
-        margin-bottom: 8px;
+        border-radius: 14px;
+        padding: 14px 14px 15px;
+        margin-bottom: 12px;
       }
       .pb-day-row:last-child {
         margin-bottom: 0;
       }
-      .pb-day-hd {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex-wrap: nowrap;
-        margin-bottom: 8px;
-      }
       .pb-day-t {
-        flex: none;
+        display: flex;
+        align-items: baseline;
+        gap: 7px;
+        margin-bottom: 12px;
+      }
+      .pb-day-field {
         display: flex;
         flex-direction: column;
-        min-width: 44px;
+        gap: 7px;
+        margin-bottom: 12px;
+      }
+      .pb-day-label {
+        font-size: 12px;
+        color: var(--sub);
+        font-weight: 600;
       }
       .pb-day-date {
-        font-size: 13px;
+        font-size: 15px;
         font-weight: 700;
         color: var(--text);
       }
       .pb-day-week {
-        font-size: 10px;
+        font-size: 12px;
         color: var(--sub);
       }
       .pb-day-flow {
-        flex: 1;
         display: flex;
-        gap: 3px;
-        min-width: 0;
+        gap: 7px;
+        width: 100%;
       }
       .pb-day-flow button {
         flex: 1;
         min-width: 0;
-        padding: 5px 0;
-        border-radius: 7px;
+        padding: 9px 0;
+        border-radius: 9px;
         border: 1px solid var(--line);
         background: var(--card);
         color: var(--text);
-        font-size: 11px;
+        font-size: 13px;
         cursor: pointer;
       }
-      .pb-day-flow button.on {
-        background: var(--primary);
-        border-color: var(--primary);
-        color: #fff;
-      }
       .pb-day-mood {
-        flex: none;
         display: flex;
-        gap: 3px;
+        gap: 9px;
+        width: 100%;
       }
       .pb-day-mood button {
-        width: 26px;
-        height: 26px;
-        border-radius: 50%;
+        flex: 1;
+        height: 40px;
+        border-radius: 10px;
         border: 1px solid var(--line);
         background: var(--card);
-        font-size: 13px;
+        font-size: 19px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -2443,25 +2441,25 @@
       .pb-day-body {
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 11px;
       }
       .pb-day-sym {
         display: flex;
         flex-wrap: wrap;
-        gap: 4px;
+        gap: 8px;
       }
       .pb-day-sym .chip {
-        padding: 3px 7px;
-        font-size: 11px;
+        padding: 7px 13px;
+        font-size: 13px;
       }
       .pb-day-note {
         width: 100%;
-        padding: 6px 9px;
-        border-radius: 8px;
+        padding: 11px 13px;
+        border-radius: 10px;
         border: 1px solid var(--line);
         background: var(--bg);
-        font-size: 12px;
-        min-height: 32px;
+        font-size: 14px;
+        min-height: 44px;
       }
 
       /* 经期记录单日/区间切换 */
@@ -15476,6 +15474,17 @@
         const d = new Date(s + "T00:00:00");
         return `${d.getMonth() + 1}月${d.getDate()}日`;
       };
+      // 智能日期范围显示：同年省略第二个年份，跨年则两段都带年份
+      const fmtRange = (a, b) => {
+        if (!a) return "";
+        if (!b || b === a) return fmtShort(a);
+        const da = new Date(a + "T00:00:00"),
+          db = new Date(b + "T00:00:00");
+        const ya = da.getFullYear(),
+          yb = db.getFullYear();
+        if (ya === yb) return `${ya}年${fmtShort(a)} ～ ${fmtShort(b)}`;
+        return `${ya}年${fmtShort(a)} ～ ${yb}年${fmtShort(b)}`;
+      };
       const WEEK = ["日", "一", "二", "三", "四", "五", "六"];
       const weekday = (s) => {
         const d = new Date(s + "T00:00:00");
@@ -17550,7 +17559,7 @@
         } = opts;
 
         const nowYear = new Date().getFullYear();
-        const startYear = Math.min(year - 50, nowYear - 100);
+        const startYear = Math.min(year - 30, nowYear - 50);
         const endYear = Math.max(year + 10, nowYear + 10);
         const years = [];
         for (let y = startYear; y <= endYear; y++) years.push(y);
@@ -17619,7 +17628,7 @@
           const items = container.querySelectorAll(`[${attr}]`);
           for (const it of items) {
             if (it.getAttribute(attr) == val) {
-              it.scrollIntoView({ block: "center", behavior: "smooth" });
+              it.scrollIntoView({ block: "center", behavior: "auto" });
               break;
             }
           }
@@ -17629,13 +17638,29 @@
         const monthScroll = mask.querySelector("#dpMonth");
         const dayScroll = mask.querySelector("#dpDay");
 
+        // 每个滚轮独立的定时器，避免多列同时滚动时互相取消
+        const scrollTimers = [null, null, null];
+        // 防止程序性滚动触发 onScroll 导致状态被覆盖
+        let programmatic = 0;
+
+        const setSelFromVal = () => {
+          selYear = year;
+          selMonth = month;
+          selDay = day;
+        };
+
         setTimeout(() => {
+          programmatic++;
           scrollToItem(yearScroll, selYear);
           scrollToItem(monthScroll, selMonth);
           if (dayScroll) scrollToItem(dayScroll, selDay);
-        }, 50);
+          // 同步修正内部状态，避免滚动事件尚未触发时确认拿到旧值
+          setSelFromVal();
+          setTimeout(() => programmatic--, 50);
+        }, 0);
 
         const onScroll = (container, type) => {
+          if (programmatic > 0) return;
           const items = container.querySelectorAll(".dp-item");
           let closest = null,
             minDist = Infinity;
@@ -17664,37 +17689,35 @@
                 const currentVal = dayScroll
                   .querySelector(".dp-item.sel")
                   ?.getAttribute("data-v");
+                // 日月变化时同步修正状态，不要让 selDay 停留在不存在的日期
+                selDay = currentVal
+                  ? Math.min(parseInt(currentVal), dim)
+                  : curDay;
                 dayScroll.innerHTML = Array.from(
                   { length: dim },
                   (_, i) => i + 1,
                 )
                   .map(
                     (d) =>
-                      `<div class="dp-item ${d === (currentVal ? parseInt(currentVal) : selDay) ? "sel" : ""}" data-v="${d}">${d}</div>`,
+                      `<div class="dp-item ${d === selDay ? "sel" : ""}" data-v="${d}">${d}</div>`,
                   )
                   .join("");
-                if (currentVal) {
-                  scrollToItem(
-                    dayScroll,
-                    parseInt(currentVal) > dim ? dim : parseInt(currentVal),
-                  );
-                } else {
-                  scrollToItem(dayScroll, selDay > dim ? dim : selDay);
-                }
+                programmatic++;
+                scrollToItem(dayScroll, selDay);
+                setTimeout(() => programmatic--, 50);
               }
             }
           }
         };
 
-        let scrollTimer = null;
         [yearScroll, monthScroll, dayScroll].forEach((sc, idx) => {
           if (!sc) return;
           const types = ["year", "month", "day"];
           sc.addEventListener(
             "scroll",
             () => {
-              clearTimeout(scrollTimer);
-              scrollTimer = setTimeout(() => onScroll(sc, types[idx]), 80);
+              clearTimeout(scrollTimers[idx]);
+              scrollTimers[idx] = setTimeout(() => onScroll(sc, types[idx]), 80);
             },
             { passive: true },
           );
@@ -17702,7 +17725,12 @@
 
         mask.querySelectorAll(".dp-item").forEach((it) => {
           it.addEventListener("click", () => {
-            it.scrollIntoView({ block: "center", behavior: "smooth" });
+            it.scrollIntoView({ block: "center", behavior: "auto" });
+            const v = it.getAttribute("data-v");
+            const col = it.closest(".dp-col")?.getAttribute("data-type");
+            if (col === "year") selYear = parseInt(v);
+            else if (col === "month") selMonth = parseInt(v);
+            else if (col === "day") selDay = parseInt(v);
           });
         });
 
@@ -17719,6 +17747,10 @@
             if (extra && extra.onPick) extra.onPick(selYear);
           };
         mask.querySelector("[data-action='confirm']").onclick = () => {
+          // 确认前强制从当前滚动位置重读，防止状态未同步
+          if (yearScroll) onScroll(yearScroll, "year");
+          if (monthScroll) onScroll(monthScroll, "month");
+          if (dayScroll) onScroll(dayScroll, "day");
           let result = `${selYear}-${pad(selMonth)}`;
           if (mode !== "month") {
             const dim = new Date(selYear, selMonth, 0).getDate();
@@ -18641,7 +18673,7 @@
         const ed = r.endDate || sd;
         const dateDisplay =
           sd && ed && ed !== sd
-            ? `${fmtShort(sd)} ～ ${fmtShort(ed)} · ${r.days || dayDiff(sd, ed) + 1}天`
+            ? `${fmtRange(sd, ed)} · ${r.days || dayDiff(sd, ed) + 1}天`
             : fmtCN(sd) + " " + weekday(sd || today());
         const typeLabel = type === "happy" ? "💖 快乐" : "🧳 旅行";
         const typeClass = type === "travel" ? "travel" : "";
@@ -19617,42 +19649,6 @@
             rPeriod();
           };
         } else {
-          // 区间模式：默认值控制
-          const pbFlow = p.querySelector("#pbFlow");
-          if (pbFlow)
-            pbFlow.addEventListener("click", (e) => {
-              const b = e.target.closest("[data-f]");
-              if (!b) return;
-              pbState.defaults.flow = b.dataset.f;
-              pbFlow.querySelectorAll("[data-f]").forEach((x) => x.classList.toggle("on", x === b));
-            });
-          const pbSym = p.querySelector("#pbSym");
-          if (pbSym)
-            pbSym.addEventListener("click", (e) => {
-              const b = e.target.closest("[data-s]");
-              if (!b) return;
-              const s = b.dataset.s;
-              pbState.defaults.syms.includes(s)
-                ? (pbState.defaults.syms = pbState.defaults.syms.filter((x) => x !== s))
-                : pbState.defaults.syms.push(s);
-              b.classList.toggle("on");
-            });
-          const pbMood = p.querySelector("#pbMood");
-          if (pbMood)
-            pbMood.addEventListener("click", (e) => {
-              const b = e.target.closest("[data-m]");
-              if (!b) return;
-              const v = b.dataset.m;
-              pbState.defaults.mood = pbState.defaults.mood === v ? "" : v;
-              pbMood.querySelectorAll("[data-m]").forEach((x) =>
-                x.classList.toggle("on", x.dataset.m === pbState.defaults.mood && pbState.defaults.mood),
-              );
-            });
-          const pbNote = p.querySelector("#pbNote");
-          if (pbNote)
-            pbNote.addEventListener("input", () => {
-              pbState.defaults.note = pbNote.value;
-            });
           // 逐日列表事件委托
           const list = p.querySelector("#pbDaysList");
           if (list) {
@@ -19737,34 +19733,6 @@
             <button class="chip" onclick="pbQuickMonth()">📅 整个月</button>
           </div>
           <div style="font-size:12px;color:var(--sub);margin-bottom:10px">已选 ${days.length} 天：${fmtCN(days[0])} ～ ${fmtCN(days[days.length - 1])}</div>
-          <div style="background:#f6f7f9;border-radius:12px;padding:10px 12px;margin-bottom:12px">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-              <span style="font-size:12px;font-weight:600">快速统一设置（可选）</span>
-              <button class="btn sm" onclick="pbApplyDefaultsToAll()">应用到全部</button>
-            </div>
-            <div class="prow" style="padding:8px 0;border-bottom:0.5px solid var(--line)">
-              <div class="pl" style="margin-bottom:6px">🩸 流量</div>
-              <div class="flow-opt" id="pbFlow">
-                ${["少量", "适中", "大量", ""].map((f) => `<button data-f="${esc(f)}" class="${pbState.defaults.flow === f ? "on" : ""}">${f ? "💧 " + f : "🚫 无"}</button>`).join("")}
-              </div>
-            </div>
-            <div class="prow" style="padding:8px 0;border-bottom:0.5px solid var(--line)">
-              <div class="pl" style="margin-bottom:6px">🤒 症状</div>
-              <div class="sym-grid" id="pbSym">
-                ${DB.period.symptoms.map((s) => `<button class="chip ${pbState.defaults.syms.includes(s) ? "on" : ""}" data-s="${esc(s)}">${esc(s)}</button>`).join("")}
-              </div>
-            </div>
-            <div class="prow" style="padding:8px 0;border-bottom:0.5px solid var(--line)">
-              <div class="pl" style="margin-bottom:6px">💗 心情</div>
-              <div class="sym-grid" id="pbMood">
-                ${PB_MOODS.map((mm) => { const v = mm.slice(2); return `<button class="chip ${pbState.defaults.mood === v ? "on" : ""}" data-m="${esc(v)}">${mm}</button>`; }).join("")}
-              </div>
-            </div>
-            <div class="prow" style="padding:8px 0;border-bottom:none">
-              <div class="pl" style="margin-bottom:6px">💬 备注</div>
-              <textarea class="input" id="pbNote" rows="1" placeholder="例如：这几天量比较大">${esc(pbState.defaults.note)}</textarea>
-            </div>
-          </div>
           <div id="pbDaysList">${pbDaysListHtml()}</div>
           <div id="pbPreview" style="font-size:12px;color:var(--sub);text-align:center;margin:8px 0 14px">共 ${days.length} 天，可单独调整每一天后保存</div>
           <button class="btn blk" id="pbSave" style="width:100%">💾 保存这段记录</button>
@@ -19819,11 +19787,15 @@
             const moodEmoji = { 开心: "😄", 平静: "😌", 低落: "😢", 烦躁: "😣", 焦虑: "😰" };
             return `
             <div class="pb-day-row">
-              <div class="pb-day-hd">
-                <div class="pb-day-t"><span class="pb-day-date">${fmtShort(ds)}</span><span class="pb-day-week">${weekday(ds)}</span></div>
+              <div class="pb-day-t"><span class="pb-day-date">${fmtShort(ds)}</span><span class="pb-day-week">${weekday(ds)}</span></div>
+              <div class="pb-day-field">
+                <div class="pb-day-label">流量</div>
                 <div class="pb-day-flow">
                   ${["少量", "适中", "大量", ""].map((f) => `<button class="${cfg.flow === f ? "on" : ""}" data-pbd="${ds}" data-f="${esc(f)}">${f || "无"}</button>`).join("")}
                 </div>
+              </div>
+              <div class="pb-day-field">
+                <div class="pb-day-label">心情</div>
                 <div class="pb-day-mood">
                   ${["开心", "平静", "低落", "烦躁", "焦虑"].map((v) => `<button class="${cfg.mood === v ? "on" : ""}" title="${v}" data-pbd="${ds}" data-m="${esc(v)}">${moodEmoji[v] || "💗"}</button>`).join("")}
                 </div>
@@ -19892,20 +19864,6 @@
             rPeriod();
           },
         });
-      }
-
-      function pbApplyDefaultsToAll() {
-        pbRangeDays().forEach((ds) => {
-          pbState.days[ds] = {
-            flow: pbState.defaults.flow,
-            syms: [...pbState.defaults.syms],
-            mood: pbState.defaults.mood,
-            note: pbState.defaults.note,
-          };
-        });
-        pbCleanDays();
-        rPeriod();
-        toast("已把默认值应用到全部已选日期");
       }
 
       function pbCommit() {
