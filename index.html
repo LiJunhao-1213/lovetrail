@@ -1116,6 +1116,13 @@
       .swipe-act button:active {
         opacity: 0.8;
       }
+      /* 左滑展开时：把操作按钮提到内容层之上，避免被 swipe-c 遮挡导致点不到 */
+      .swipe-wrap.open .swipe-c {
+        z-index: 0;
+      }
+      .swipe-wrap.open .swipe-act {
+        z-index: 2;
+      }
       .swipe-c {
         transition: transform 0.25s cubic-bezier(0.32, 0.72, 0, 1);
         position: relative;
@@ -3829,6 +3836,7 @@
         align-items: flex-start;
         justify-content: space-between;
         gap: 8px;
+        flex-wrap: wrap;
         margin-bottom: 10px;
       }
       .mom-date {
@@ -3843,7 +3851,10 @@
       }
       .mom-date-txt {
         line-height: 1.35;
-        word-break: break-word;
+      }
+      .mom-date-start,
+      .mom-date-end {
+        white-space: nowrap;
       }
       .mom-type-tag {
         position: static;
@@ -16665,11 +16676,17 @@
           isSwiping = false,
           open = false;
         const THRESH = 76;
+        const setOpen = (val) => {
+          open = val;
+          wrap.classList.toggle("open", val);
+          if (!wrap._swipeData) wrap._swipeData = {};
+          wrap._swipeData.open = val;
+        };
         const reset = (animate = true) => {
           if (!animate) content.style.transition = "none";
           content.style.transform = "translateX(0)";
           if (!animate) setTimeout(() => (content.style.transition = ""), 50);
-          open = false;
+          setOpen(false);
         };
         const closeOthers = () => {
           $$(".swipe-c").forEach((c) => {
@@ -16677,6 +16694,7 @@
               c.style.transform = "translateX(0)";
               const wrap2 = c.closest(".swipe-wrap");
               if (wrap2) {
+                wrap2.classList.remove("open");
                 const data = wrap2._swipeData;
                 if (data) data.open = false;
               }
@@ -16693,7 +16711,6 @@
             closeOthers();
             if (open) {
               reset(true);
-              open = false;
               return;
             }
           },
@@ -16724,20 +16741,17 @@
           if (!isSwiping) return;
           isSwiping = false;
           if (currentX < -THRESH / 2) {
-            open = true;
+            setOpen(true);
             content.style.transition = "";
             content.style.transform = `translateX(-${THRESH}px)`;
           } else {
-            open = false;
-            content.style.transition = "";
-            content.style.transform = "translateX(0)";
+            reset(true);
           }
         });
         content.addEventListener("click", (e) => {
           if (open) {
             e.stopPropagation();
             reset(true);
-            open = false;
           }
         });
         const edBtn = wrap.querySelector(".swipe-act .ed");
@@ -16745,24 +16759,18 @@
         if (edBtn) {
           edBtn.addEventListener("click", (e) => {
             e.stopPropagation();
-            if (open) {
-              reset(false);
-              open = false;
-            }
+            if (open) reset(false);
             if (onEdit) onEdit();
           });
         }
         if (delBtn) {
           delBtn.addEventListener("click", (e) => {
             e.stopPropagation();
-            if (open) {
-              reset(false);
-              open = false;
-            }
+            if (open) reset(false);
             if (onDelete) onDelete();
           });
         }
-        wrap._swipeData = { open };
+        setOpen(false);
         if (window.PointerEvent) {
           let pointerDown = false,
             pStartX = 0,
@@ -16775,7 +16783,6 @@
             closeOthers();
             if (open) {
               reset(true);
-              open = false;
               pointerDown = false;
               return;
             }
@@ -16800,26 +16807,22 @@
             if (!pointerDown) return;
             pointerDown = false;
             if (pCurrentX < -THRESH / 2) {
-              open = true;
+              setOpen(true);
               content.style.transition = "";
               content.style.transform = `translateX(-${THRESH}px)`;
             } else {
-              open = false;
-              content.style.transition = "";
-              content.style.transform = "translateX(0)";
+              reset(true);
             }
           });
           content.addEventListener("pointerleave", () => {
             if (pointerDown) {
               pointerDown = false;
               if (pCurrentX < -THRESH / 2) {
-                open = true;
+                setOpen(true);
                 content.style.transition = "";
                 content.style.transform = `translateX(-${THRESH}px)`;
               } else {
-                open = false;
-                content.style.transition = "";
-                content.style.transform = "translateX(0)";
+                reset(true);
               }
             }
           });
@@ -18676,13 +18679,21 @@
           travelInfo = `${esc(r.from || "—")} → ${esc(r.to || "—")} · ${r.days || 1}天`;
         }
         const color = r.color ? `style="background:${r.color}"` : "";
-        // 起止时间显示：多天显示「开始 ～ 结束 · N天」，单日显示「年月日 周X」
+        // 起止时间显示：多天显示「开始 ～ 结束 · N天」，单日显示「年月日 周X」；多天区间拆成两个 nowrap span，避免只把「天」挤到下一行
         const sd = r.startDate || r.date || "";
         const ed = r.endDate || sd;
-        const dateDisplay =
-          sd && ed && ed !== sd
-            ? `${fmtRange(sd, ed)} · ${r.days || dayDiff(sd, ed) + 1}天`
-            : fmtCN(sd) + " " + weekday(sd || today());
+        let dateDisplay;
+        if (sd && ed && ed !== sd) {
+          const da = new Date(sd + "T00:00:00"),
+            db = new Date(ed + "T00:00:00");
+          const ya = da.getFullYear(),
+            yb = db.getFullYear();
+          const days = r.days || dayDiff(sd, ed) + 1;
+          const endTxt = ya === yb ? fmtShort(ed) : `${yb}年${fmtShort(ed)}`;
+          dateDisplay = `<span class="mom-date-start">${ya}年${fmtShort(sd)}</span><span class="mom-date-end"> ～ ${endTxt} · ${days}天</span>`;
+        } else {
+          dateDisplay = fmtCN(sd) + " " + weekday(sd || today());
+        }
         const typeLabel = type === "happy" ? "💖 快乐" : "🧳 旅行";
         const typeClass = type === "travel" ? "travel" : "";
         return `<div class="mom" ${color} data-id="${r.id}" data-type="${type}">
@@ -19640,7 +19651,7 @@
             () => pdDeleteDay(d),
           );
           content.addEventListener("click", () => {
-            if (wrap._swipeData && wrap._swipeData.open) return;
+            if (content.style.transform && content.style.transform !== "translateX(0px)") return;
             pdEditDay(d);
           });
         });
@@ -19856,7 +19867,7 @@
             },
           );
           content.addEventListener("click", () => {
-            if (wrap._swipeData && wrap._swipeData.open) return;
+            if (content.style.transform && content.style.transform !== "translateX(0px)") return;
             closeSub();
             setTimeout(() => pdEditDay(d), 240);
           });
