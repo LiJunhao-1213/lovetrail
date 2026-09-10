@@ -39,7 +39,7 @@
         --line-color: #e5e5ea;
         --shadow-intensity: 0.06;
         --card-radius: 18px;
-        --page-pt: 92px;
+        --page-pt: 126px;
         --tab-inactive: #55555d;
         --hd-bg: rgba(255, 255, 255, 0.72);
         --hd-bd: rgba(0, 0, 0, 0.08);
@@ -135,7 +135,7 @@
         background: var(--hd-bg);
         -webkit-backdrop-filter: saturate(200%) blur(24px);
         backdrop-filter: saturate(200%) blur(24px);
-        padding: calc(env(safe-area-inset-top, 0px) + 0px) 16px 2px;
+        padding: calc(env(safe-area-inset-top, 0px) + 0px) 16px 6px;
         border-bottom: 0.5px solid var(--hd-bd);
       }
       .hd-row {
@@ -143,7 +143,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        height: 30px;
+        height: 34px;
       }
       #hdBack {
         display: none;
@@ -199,25 +199,24 @@
         display: none;
       }
       #hdBig {
-        font-size: 22px;
+        font-size: 24px;
         font-weight: 700;
         letter-spacing: -0.3px;
-        margin-top: 1px;
+        margin-top: 2px;
         text-align: left;
         padding: 0 2px;
         color: var(--text);
         display: flex;
         align-items: center;
         gap: 6px;
-        line-height: 1.15;
       }
       #hdBig .icon {
         font-size: 22px;
       }
       #hdSub {
-        font-size: 11px;
+        font-size: 12px;
         color: var(--sub);
-        margin-top: 0px;
+        margin-top: 1px;
         text-align: left;
         padding: 0 2px;
         letter-spacing: -0.1px;
@@ -255,7 +254,7 @@
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
         padding: calc(env(safe-area-inset-top, 0px) + var(--page-pt)) 16px
-          calc(var(--tab-h) + var(--safe-b));
+          calc(var(--gap) + 20px);
         display: none;
         background: var(--bg);
       }
@@ -283,10 +282,9 @@
         background: var(--card);
         border-top: 1px solid var(--line);
         display: flex;
-        align-items: center; /* 图标在安全区上方居中，避免 iPhone 底部留白过大 */
-        box-sizing: border-box;
-        height: calc(var(--tab-h) + var(--safe-b));
-        min-height: auto;
+        align-items: center; /* 图标在 Tab 栏中垂直居中，避免 iPhone 底部安全区留白过大 */
+        height: auto;
+        min-height: calc(var(--tab-h) - 2px);
         padding: 6px 0 var(--safe-b);
         box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.04);
       }
@@ -340,9 +338,6 @@
         font-size: 13px;
         color: var(--primary);
         font-weight: 500;
-        padding: 10px 6px; /* 扩大触控热区（视觉位置靠负 margin 抵消） */
-        margin: -10px -6px;
-        line-height: 1.2;
       }
       .card {
         background: var(--card);
@@ -566,13 +561,6 @@
         border-radius: 14px;
         background: #e3e4e8;
         transition: background 0.2s;
-      }
-      /* 扩大开关的触控热区（透明扩展环），视觉尺寸不变 */
-      .switch::before {
-        content: "";
-        position: absolute;
-        inset: -8px;
-        border-radius: 16px;
       }
       .switch.on {
         background: var(--primary);
@@ -807,7 +795,7 @@
         width: 100%;
         background: var(--bg);
         border-radius: 18px 18px 0 0;
-        padding: 0 0 var(--safe-b);
+        padding: 0 0 calc(10px + var(--safe-b));
         animation: up 0.28s cubic-bezier(0.32, 0.72, 0, 1);
         overflow: hidden;
       }
@@ -991,16 +979,12 @@
       }
 
       .mom-type-tag {
-        position: absolute;
-        top: 10px;
-        left: 10px;
         font-size: 11px;
         font-weight: 600;
         padding: 2px 10px;
         border-radius: 12px;
         background: var(--primary-weak);
         color: var(--primary);
-        z-index: 2;
         letter-spacing: 0.3px;
       }
       .mom-type-tag.travel {
@@ -1014,7 +998,6 @@
         color: var(--text);
         display: block;
         margin-bottom: 2px;
-        padding-left: 70px;
       }
       .mom-date .icon {
         margin-right: 4px;
@@ -1024,7 +1007,6 @@
         color: var(--accent);
         display: inline-block;
         margin-right: 6px;
-        margin-left: 70px;
       }
       .mom-t {
         font-size: 15px;
@@ -1033,14 +1015,12 @@
         white-space: pre-wrap;
         word-break: break-word;
         color: var(--text);
-        padding-left: 70px;
       }
       .mom-tags {
         display: flex;
         gap: 6px;
         flex-wrap: wrap;
         margin-top: 6px;
-        padding-left: 70px;
       }
       .imggrid {
         display: grid;
@@ -1071,6 +1051,39 @@
       }
       .imggrid.n3 {
         grid-template-columns: repeat(3, 1fr);
+      }
+      .imggrid.carousel {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        padding: 14px 0;
+        scrollbar-width: none;
+      }
+      .imggrid.carousel::-webkit-scrollbar {
+        display: none;
+      }
+      .imggrid.carousel .im {
+        flex: 0 0 62%;
+        width: 62%;
+        aspect-ratio: 4 / 3;
+        border: none;
+        background: #f0f1f3;
+        padding: 0;
+        border-radius: 14px;
+        scroll-snap-align: center;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+        overflow: hidden;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .imggrid.carousel .im img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        pointer-events: none;
       }
 
       .swipe-wrap {
@@ -1107,21 +1120,31 @@
       .swipe-act .ed {
         background: var(--accent);
         border-radius: 0;
+        font-weight: 600;
       }
       .swipe-act .de {
         background: var(--danger);
         border-radius: 0 var(--card-radius, var(--r))
           var(--card-radius, var(--r)) 0;
       }
+      /* 删除二次确认态：高亮危险色，提示用户再次点击才真正删除 */
+      .swipe-act .de.confirm {
+        background: #c1140b;
+        font-weight: 800;
+        letter-spacing: 1px;
+        box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.45);
+        animation: deConfirm 0.18s ease;
+      }
+      @keyframes deConfirm {
+        from {
+          transform: scale(0.92);
+        }
+        to {
+          transform: scale(1);
+        }
+      }
       .swipe-act button:active {
-        opacity: 0.8;
-      }
-      /* 左滑展开时：把操作按钮提到内容层之上，避免被 swipe-c 遮挡导致点不到 */
-      .swipe-wrap.open .swipe-c {
-        z-index: 0;
-      }
-      .swipe-wrap.open .swipe-act {
-        z-index: 2;
+        opacity: 0.85;
       }
       .swipe-c {
         transition: transform 0.25s cubic-bezier(0.32, 0.72, 0, 1);
@@ -1131,6 +1154,47 @@
         z-index: 1;
         background: var(--card);
         touch-action: pan-y;
+      }
+      /* 经期历史逐日卡片改为滑动结构后的样式 */
+      .pep-days .swipe-wrap {
+        margin-bottom: 6px;
+      }
+      .pep-days .swipe-wrap:last-child {
+        margin-bottom: 0;
+      }
+      .pep-days .swipe-c {
+        background: #f7f8fa;
+        border-radius: 10px;
+      }
+      .pep-days .swipe-c .pep-day {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 7px 10px;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .pep-days .swipe-c .pep-day:active {
+        background: #eff1f4;
+      }
+      /* 记录区“更多选项”折叠 */
+      .pd-more {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 13px;
+        color: var(--sub);
+        padding: 12px 2px 4px;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .pd-more .pd-caret {
+        transition: transform 0.2s;
+        font-size: 12px;
+        display: inline-block;
+      }
+      .pd-more[aria-open="1"] .pd-caret {
+        transform: rotate(180deg);
       }
       .tl {
         position: relative;
@@ -1250,26 +1314,18 @@
       .pa-stat .n {
         font-size: 17px;
         font-weight: 700;
-        color: var(--primary);
+        color: var(--text);
         line-height: 1.1;
       }
       .pa-stat .n small {
         font-size: 11px;
         font-weight: 500;
-        color: var(--primary);
-        opacity: 0.72;
+        color: var(--sub);
       }
       .pa-stat .k {
         font-size: 11px;
         color: var(--sub);
         margin-top: 3px;
-      }
-      .pa-stat[role="button"] {
-        transition: background 0.15s, transform 0.1s;
-      }
-      .pa-stat[role="button"]:active {
-        background: #eef0f3;
-        transform: scale(0.96);
       }
       .pa-next {
         display: flex;
@@ -1278,8 +1334,8 @@
         margin: 12px 0 0;
         padding: 12px 14px;
         border-radius: 14px;
-        background: linear-gradient(135deg, var(--primary-weak), rgba(255, 255, 255, 0.45));
-        border: 1px solid rgba(255, 45, 85, 0.12);
+        background: linear-gradient(135deg, var(--accent-weak), #f0f7ff);
+        border: 1px solid rgba(0, 122, 255, 0.15);
       }
       .pa-next .ico {
         font-size: 22px;
@@ -1301,7 +1357,7 @@
       .pa-next .go {
         font-size: 12px;
         font-weight: 600;
-        color: var(--primary);
+        color: var(--accent);
         background: #fff;
         border-radius: 20px;
         padding: 6px 12px;
@@ -1496,32 +1552,13 @@
         flex-direction: column;
         gap: 6px;
       }
-      /* 历史记录每一天：左滑编辑/删除 */
-      .pep-day-wrap {
-        margin-bottom: 0;
-        border-radius: 10px;
-        background: #f7f8fa;
-      }
-      .pep-day-wrap .swipe-c.pep-day {
-        background: #f7f8fa;
-        border-radius: 10px;
-      }
-      .pep-day-wrap .swipe-act {
-        width: 140px;
-      }
-      .pep-day-wrap .swipe-act .ed {
-        border-radius: 0;
-      }
-      .pep-day-wrap .swipe-act .de {
-        border-radius: 0 10px 10px 0;
-      }
       .pep-day {
         display: flex;
         align-items: center;
         gap: 10px;
         background: #f7f8fa;
         border-radius: 10px;
-        padding: 9px 11px;
+        padding: 7px 10px;
         cursor: pointer;
         transition: background 0.15s;
       }
@@ -1559,6 +1596,29 @@
         white-space: nowrap;
         max-width: 70px;
       }
+      .pep-actions {
+        flex: none;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-left: 2px;
+      }
+      .pep-act {
+        background: none;
+        border: 0;
+        font-size: 14px;
+        padding: 4px;
+        cursor: pointer;
+        opacity: 0.55;
+        line-height: 1;
+      }
+      .pep-act:active {
+        opacity: 1;
+        transform: scale(0.88);
+      }
+      .pep-act.del {
+        color: var(--danger);
+      }
 
       /* ============ 相册、日历、地图等 ============ */
       .abm {
@@ -1573,22 +1633,6 @@
         aspect-ratio: 1;
         object-fit: cover;
         cursor: pointer;
-      }
-      .dt-imgs {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-      }
-      .dt-img {
-        width: auto;
-        max-width: 100%;
-        height: auto;
-        max-height: 70vh;
-        object-fit: contain;
-        display: block;
-        margin: 0 auto;
-        background: #f4f5f7;
-        cursor: zoom-in;
       }
       .lb {
         position: fixed;
@@ -1960,64 +2004,6 @@
         color: var(--primary);
         font-weight: 600;
       }
-      /* 标签管理：单枚可编辑表情的标签胶囊 */
-      .sym-grid .chip-tag {
-        min-width: 0;
-        width: auto;
-        height: auto;
-        padding: 4px 6px 4px 8px;
-        font-size: 13px;
-        color: var(--text);
-        justify-content: flex-start;
-      }
-      .sym-grid .chip-tag .chip-emo {
-        flex: none;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 34px;
-        min-width: 0;
-        height: 34px;
-        font-size: 22px;
-        line-height: 1;
-        border: none;
-        background: var(--bg);
-        border-radius: 999px;
-        cursor: pointer;
-        padding: 0;
-        margin-right: 4px;
-        color: var(--text);
-        font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Noto Sans SC", emoji;
-        transition: transform 0.1s;
-        -webkit-tap-highlight-color: transparent;
-        overflow: visible;
-      }
-      .sym-grid .chip-tag .chip-emo:active {
-        transform: scale(0.9);
-      }
-      .sym-grid .chip-tag .chip-btn {
-        flex: none;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 30px;
-        min-width: 0;
-        height: 30px;
-        margin-left: 2px;
-        padding: 0;
-        border: none;
-        background: transparent;
-        font-size: 14px;
-        color: var(--sub);
-        border-radius: 8px;
-        cursor: pointer;
-      }
-      .sym-grid .chip-tag .chip-btn:active {
-        background: var(--bg);
-      }
-      .sym-grid .chip-tag .chip-btn.x {
-        color: var(--danger, #ff3b30);
-      }
       .ring {
         position: relative;
         width: 104px;
@@ -2074,19 +2060,54 @@
         -webkit-overflow-scrolling: touch;
         padding: calc(env(safe-area-inset-top, 0px) + 72px) 16px
           calc(30px + var(--safe-b));
-        animation: slideIn 0.22s ease;
+        transform: translateX(100%);
+        opacity: 0;
+        will-change: transform;
       }
       #sub.on {
         display: block;
+        transform: translateX(0);
+        opacity: 1;
+        animation: subIn 0.34s cubic-bezier(0.32, 0.72, 0, 1);
       }
-      @keyframes slideIn {
+      #sub.closing {
+        display: block;
+        transform: translateX(100%);
+        opacity: 1;
+        animation: subOut 0.3s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+      }
+      @keyframes subIn {
         from {
-          transform: translateX(30px);
-          opacity: 0;
+          transform: translateX(100%);
+          opacity: 0.55;
         }
         to {
-          transform: none;
+          transform: translateX(0);
           opacity: 1;
+        }
+      }
+      @keyframes subOut {
+        from {
+          transform: translateX(0);
+          opacity: 1;
+        }
+        to {
+          transform: translateX(100%);
+          opacity: 0.55;
+        }
+      }
+      #main {
+        transition: transform 0.34s cubic-bezier(0.32, 0.72, 0, 1),
+          opacity 0.34s cubic-bezier(0.32, 0.72, 0, 1);
+      }
+      #main.dim {
+        opacity: 0.55;
+      }
+      @media (max-width: 600px) {
+        #main.dim {
+          transform: scale(0.96);
+          opacity: 0.5;
+          transform-origin: center bottom;
         }
       }
       @media (min-width: 600px) {
@@ -2368,82 +2389,73 @@
         font-size: 13px;
       }
 
-      /* 逐日可编辑卡片（宽松版） */
+      /* 逐日可编辑行（紧凑版） */
       .pb-day-row {
         background: var(--card);
         border: 1px solid var(--line);
-        border-radius: 14px;
-        padding: 14px 14px 15px;
-        margin-bottom: 12px;
+        border-radius: 12px;
+        padding: 8px 10px;
+        margin-bottom: 8px;
       }
       .pb-day-row:last-child {
         margin-bottom: 0;
       }
-      .pb-day-t {
+      .pb-day-hd {
         display: flex;
-        align-items: baseline;
-        gap: 7px;
-        margin-bottom: 12px;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: nowrap;
+        margin-bottom: 8px;
       }
-      .pb-day-field {
+      .pb-day-t {
+        flex: none;
         display: flex;
         flex-direction: column;
-        gap: 7px;
-        margin-bottom: 12px;
-      }
-      .pb-day-label {
-        font-size: 12px;
-        color: var(--sub);
-        font-weight: 600;
+        min-width: 44px;
       }
       .pb-day-date {
-        font-size: 15px;
+        font-size: 13px;
         font-weight: 700;
         color: var(--text);
       }
       .pb-day-week {
-        font-size: 12px;
+        font-size: 10px;
         color: var(--sub);
       }
       .pb-day-flow {
+        flex: 1;
         display: flex;
-        gap: 7px;
-        width: 100%;
+        gap: 3px;
+        min-width: 0;
       }
       .pb-day-flow button {
         flex: 1;
         min-width: 0;
-        padding: 9px 0;
-        border-radius: 9px;
+        padding: 5px 0;
+        border-radius: 7px;
         border: 1px solid var(--line);
         background: var(--card);
         color: var(--text);
-        font-size: 13px;
+        font-size: 11px;
         cursor: pointer;
-        -webkit-tap-highlight-color: transparent;
-        transition: background 0.15s, border-color 0.15s, color 0.15s;
-      }
-      .pb-day-flow button:active {
-        background: var(--bg);
       }
       .pb-day-flow button.on {
         background: var(--primary);
         border-color: var(--primary);
         color: #fff;
-        font-weight: 600;
       }
       .pb-day-mood {
+        flex: none;
         display: flex;
-        gap: 9px;
-        width: 100%;
+        gap: 3px;
       }
       .pb-day-mood button {
-        flex: 1;
-        height: 40px;
-        border-radius: 10px;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
         border: 1px solid var(--line);
         background: var(--card);
-        font-size: 19px;
+        font-size: 13px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -2456,90 +2468,103 @@
       .pb-day-body {
         display: flex;
         flex-direction: column;
-        gap: 11px;
+        gap: 6px;
       }
       .pb-day-sym {
         display: flex;
         flex-wrap: wrap;
-        gap: 8px;
+        gap: 4px;
       }
       .pb-day-sym .chip {
-        padding: 7px 13px;
-        font-size: 13px;
+        padding: 3px 7px;
+        font-size: 11px;
       }
       .pb-day-note {
         width: 100%;
-        padding: 11px 13px;
-        border-radius: 10px;
+        padding: 6px 9px;
+        border-radius: 8px;
         border: 1px solid var(--line);
         background: var(--bg);
-        font-size: 14px;
-        min-height: 44px;
+        font-size: 12px;
+        min-height: 32px;
       }
 
-      /* 经期记录单日/区间切换 */
-      .pd-mode-seg {
+
+      /* 单日：顶部快捷与表单分隔 */
+      .pd-divider {
         display: flex;
-        background: #ececee;
-        border-radius: 8px;
-        padding: 2px;
-      }
-      .pd-mode-seg button {
-        padding: 5px 11px;
-        border-radius: 6px;
-        font-size: 12px;
-        font-weight: 600;
+        align-items: center;
+        gap: 10px;
+        margin: 16px 0 6px;
         color: var(--sub);
+        font-size: 12px;
       }
-      .pd-mode-seg button.on {
-        background: var(--card);
-        color: var(--text);
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      .pd-divider::before,
+      .pd-divider::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--line);
       }
-      /* 经期页「记录」区块头：标题与工具栏分两行，避免挤压换行 */
-      .pd-sec-head {
-        margin: 0 0 12px;
-      }
-      .pd-sec-title {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 15px;
-        font-weight: 700;
-        color: var(--text);
-        letter-spacing: 0.3px;
-      }
-      .pd-sec-title .pd-sec-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: var(--primary);
-        flex: none;
-      }
-      .pd-sec-tools {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex-wrap: wrap;
-        margin-top: 10px;
-      }
-      .pd-sec-tools .pd-date-btn {
-        height: 34px;
-      }
-      .pd-manage {
+      .pd-today-done {
         font-size: 13px;
+        color: var(--sub);
+        text-align: center;
+        background: var(--primary-weak);
+        border-radius: 12px;
+        padding: 14px 12px;
+      }
+      .pd-today-done .link {
         color: var(--primary);
         font-weight: 600;
-        padding: 9px 12px;
-        margin: -7px -8px;
-        line-height: 1.2;
-        border: none;
-        background: transparent;
-        cursor: pointer;
-        border-radius: 8px;
       }
-      .pd-manage:active {
-        opacity: 0.7;
+      /* 区间逐天向导 */
+      .pb-progress {
+        height: 6px;
+        background: var(--bg);
+        border-radius: 99px;
+        overflow: hidden;
+        margin: 4px 0 14px;
+      }
+      .pb-prog-bar {
+        height: 100%;
+        background: var(--accent);
+        border-radius: 99px;
+        transition: width 0.25s ease;
+      }
+      .pb-wiz-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        margin-bottom: 8px;
+      }
+      .pb-wiz-idx {
+        font-size: 12px;
+        color: var(--sub);
+      }
+      .pb-wiz-date {
+        font-size: 18px;
+        font-weight: 700;
+      }
+      .pb-wiz-nav {
+        display: flex;
+        gap: 8px;
+        margin-top: 14px;
+      }
+      .pb-wiz-nav .btn {
+        flex: 1;
+      }
+      .pb-wiz-foot {
+        text-align: center;
+        margin-top: 8px;
+      }
+      .btn.ghost {
+        background: var(--bg);
+        color: var(--text);
+        border: 1px solid var(--line);
+      }
+      .btn.ghost:active {
+        background: #e3e5e9;
       }
 
       /* ============ 记录页面时间筛选器 ============ */
@@ -2825,17 +2850,22 @@
         overflow: hidden;
         text-overflow: ellipsis;
       }
+      .couple-profile .cp-hero {
+        margin-bottom: 14px;
+        padding: 4px 0;
+      }
       .couple-profile .cp-heart {
         flex: none;
-        width: 66px;
-        margin: 0 4px;
-        padding: 10px 0;
-        border-radius: 16px;
-        background: var(--primary-weak);
+        width: 72px;
+        margin: 0 6px;
+        padding: 12px 0;
+        border-radius: 18px;
+        background: linear-gradient(180deg, var(--primary-weak), #ffd9e3);
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        box-shadow: var(--shadow-sm);
       }
       .couple-profile .cp-heart .heart-emo {
         font-size: 20px;
@@ -2860,7 +2890,7 @@
         justify-content: center;
         gap: 6px;
         flex-wrap: wrap;
-        margin-bottom: 4px;
+        margin-bottom: 10px;
       }
       .couple-profile .cp-tag {
         font-size: 12px;
@@ -2868,24 +2898,28 @@
         color: var(--text);
         background: var(--bg);
         border: 1px solid var(--line);
-        padding: 3px 9px;
+        padding: 4px 10px;
         border-radius: 20px;
+        white-space: nowrap;
       }
       .couple-profile .cp-tag.blank {
         color: var(--sub);
+        background: transparent;
+        border-style: dashed;
       }
       .couple-profile .cp-hint {
         text-align: center;
         font-size: 12px;
         color: var(--sub);
-        padding: 2px 0;
+        padding: 4px 0 2px;
       }
       /* —— 底部：三个统计 —— */
       .couple-profile .cp-footer {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 6px;
-        padding-top: 14px;
+        gap: 8px;
+        padding-top: 16px;
+        margin-top: 6px;
         border-top: 0.5px solid var(--line);
       }
       .couple-profile .cp-f-item {
@@ -2925,8 +2959,12 @@
         color: #fff;
         font-weight: 600;
       }
-      .re-dot.bk { background: var(--danger); }
-      .re-dot.rc { background: var(--primary); }
+      .re-dot.bk {
+        background: var(--danger);
+      }
+      .re-dot.rc {
+        background: var(--primary);
+      }
 
       /* 分手与和好记录（我的页） */
       .rel-mini {
@@ -2948,8 +2986,12 @@
         font-size: 11px;
         color: var(--sub);
       }
-      .rel-mini.bk { border-left: 3px solid var(--danger); }
-      .rel-mini.rc { border-left: 3px solid var(--primary); }
+      .rel-mini.bk {
+        border-left: 3px solid var(--danger);
+      }
+      .rel-mini.rc {
+        border-left: 3px solid var(--primary);
+      }
 
       /* ============ 布局密度 ============ */
       [data-density="compact"] .reminder-card {
@@ -3687,8 +3729,7 @@
         font-weight: 500;
         font-family: inherit;
         cursor: pointer;
-        padding: 10px 8px; /* 扩大触控热区，视觉位置由行高吸收 */
-        line-height: 1;
+        padding: 2px 0;
       }
       .tree-card .tc-reset-link {
         color: var(--danger, #ff3b30);
@@ -3833,35 +3874,23 @@
       }
       .mom-header {
         display: flex;
-        align-items: flex-start;
+        align-items: center;
         justify-content: space-between;
-        gap: 8px;
-        flex-wrap: wrap;
         margin-bottom: 10px;
       }
       .mom-date {
         display: flex;
         align-items: center;
         gap: 6px;
-        min-width: 0;
         font-size: 15px;
         font-weight: 700;
         color: var(--text);
         padding-left: 0;
       }
-      .mom-date-txt {
-        line-height: 1.35;
-      }
-      .mom-date-start,
-      .mom-date-end {
-        white-space: nowrap;
-      }
       .mom-type-tag {
         position: static;
-        flex: none;
         font-size: 12px;
         padding: 4px 10px;
-        white-space: nowrap;
       }
       .mom-place,
       .mom-t,
@@ -3881,11 +3910,6 @@
         padding: 4px 10px;
         border-radius: 10px;
         font-weight: 500;
-      }
-      .mom-tags .tag.mom-happy-tag {
-        background: var(--primary-weak, #ffe3e8);
-        color: var(--primary, #ff2d55);
-        font-weight: 600;
       }
       .imggrid {
         gap: 6px;
@@ -15493,17 +15517,6 @@
         const d = new Date(s + "T00:00:00");
         return `${d.getMonth() + 1}月${d.getDate()}日`;
       };
-      // 智能日期范围显示：同年省略第二个年份，跨年则两段都带年份
-      const fmtRange = (a, b) => {
-        if (!a) return "";
-        if (!b || b === a) return fmtShort(a);
-        const da = new Date(a + "T00:00:00"),
-          db = new Date(b + "T00:00:00");
-        const ya = da.getFullYear(),
-          yb = db.getFullYear();
-        if (ya === yb) return `${ya}年${fmtShort(a)} ～ ${fmtShort(b)}`;
-        return `${ya}年${fmtShort(a)} ～ ${yb}年${fmtShort(b)}`;
-      };
       const WEEK = ["日", "一", "二", "三", "四", "五", "六"];
       const weekday = (s) => {
         const d = new Date(s + "T00:00:00");
@@ -15515,54 +15528,6 @@
         return (
           d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate())
         );
-      };
-
-      // ================================================================
-      // 快乐标签辅助（兼容 字符串数组 → {name, emoji} 对象数组 两种形态）
-      // ================================================================
-      const HAPPY_EMOJI_FALLBACK = {
-        约会: "💑",
-        干饭: "🍽️",
-        看电影: "🎬",
-        逛街: "🛍️",
-        游玩: "🎡",
-        做饭: "🍳",
-        旅行: "🧳",
-        拍照: "📷",
-        运动: "🏃",
-        散步: "🚶",
-        逛街购物: "🛒",
-        纪念日: "🎁",
-        其他: "💖",
-      };
-      const DEFAULT_HAPPY_EMOJI = "💖";
-      // 统一返回 {name, emoji} 数组
-      const happyTagList = () => {
-        const list = (DB.tags && DB.tags.happy) || [];
-        if (!list || !Array.isArray(list)) return [];
-        return list.map((x) =>
-          typeof x === "string"
-            ? { name: x, emoji: HAPPY_EMOJI_FALLBACK[x] || DEFAULT_HAPPY_EMOJI }
-            : { name: x.name, emoji: x.emoji || DEFAULT_HAPPY_EMOJI },
-        );
-      };
-      // 取某标签的 emoji（未命中给默认表情）
-      const happyTagEmoji = (name) => {
-        if (!name) return DEFAULT_HAPPY_EMOJI;
-        const it = happyTagList().find((x) => x.name === name);
-        return (it && it.emoji) || HAPPY_EMOJI_FALLBACK[name] || DEFAULT_HAPPY_EMOJI;
-      };
-      // 把名称写回 DB.tags.happy（确保为对象数组；存在则仅更新；不存在则追加）
-      const happyTagEnsure = (name, emoji) => {
-        if (!Array.isArray(DB.tags.happy)) DB.tags.happy = [];
-        const arr = DB.tags.happy;
-        const i = arr.findIndex(
-          (x) => (typeof x === "string" ? x : x.name) === name,
-        );
-        if (i < 0) arr.push({ name, emoji: emoji || DEFAULT_HAPPY_EMOJI });
-        else if (typeof arr[i] === "string")
-          arr[i] = { name, emoji: emoji || DEFAULT_HAPPY_EMOJI };
-        else arr[i].emoji = emoji || arr[i].emoji || DEFAULT_HAPPY_EMOJI;
       };
 
       // ================================================================
@@ -15870,7 +15835,6 @@
             viewMode: "moments",
             recHintSeen: false,
             darkMode: false,
-            themeMode: "auto", // 外观：auto=跟随系统 light=浅色 dark=深色
             splash: {
               on: false,
               title: "情侣全记录",
@@ -15887,16 +15851,7 @@
             relEvents: [], // 分手/和好里程碑：[{id,date,type:'bk'|'rc'}] 按日期升序
             fields: [],
           },
-          tags: {
-            happy: [
-              { name: "约会", emoji: "💑" },
-              { name: "干饭", emoji: "🍽️" },
-              { name: "看电影", emoji: "🎬" },
-              { name: "逛街", emoji: "🛍️" },
-              { name: "游玩", emoji: "🎡" },
-              { name: "做饭", emoji: "🍳" },
-            ],
-          },
+          tags: { happy: ["约会", "干饭", "看电影", "逛街", "游玩", "做饭"] },
           templates: [],
           happy: [],
           travel: [],
@@ -15942,9 +15897,6 @@
             recordSort: "desc",
             showAchNotify: true,
             groupOrder: [],
-            // 记录最近一次新增的日期范围，供下次新增时默认定位开始与结束：
-            // {"happy":{start:"2025-09-04",end:"2025-09-06"},"travel":{...}}
-            lastRecordStart: {},
           },
           timeCapsules: [],
           ageData: {
@@ -16006,9 +15958,7 @@
               if (Array.isArray(d.dash.order))
                 d.dash.order = d.dash.order.filter((k) => k !== "loveTimer");
               if (Array.isArray(d.dash.hidden))
-                d.dash.hidden = d.dash.hidden.filter(
-                  (k) => k !== "loveTimer",
-                );
+                d.dash.hidden = d.dash.hidden.filter((k) => k !== "loveTimer");
             }
             // 迁移：把旧版单一“分手时间”归入关系里程碑列表
             if (d.couple) {
@@ -16024,46 +15974,6 @@
               );
               delete d.couple.breakup;
               delete d.couple.breakupVisible;
-            }
-            // 迁移：旧版“深色模式”双态开关 → 新版“跟随系统”三态
-            // 旧版默认浅色；此处仅在确实记录了 darkMode 时映射，
-            // 未设置过 themeMode 且无 darkMode 键时保留为 auto（跟随系统）。
-            if (d.ui) {
-              if (!("themeMode" in d.ui)) {
-                if (d.ui.darkMode === true) d.ui.themeMode = "dark";
-                else if ("darkMode" in d.ui && d.ui.darkMode === false)
-                  d.ui.themeMode = "light";
-                // darkMode 键不存在（极老数据）→ 保持 auto 跟随系统
-              }
-            }
-            // 迁移：快乐标签字符串数组 ["约会"] → 对象数组 [{name,emoji}]，为旧名补默认表情
-            if (d.tags && Array.isArray(d.tags.happy)) {
-              const DEFAULT_HMAP = {
-                约会: "💑",
-                干饭: "🍽️",
-                看电影: "🎬",
-                逛街: "🛍️",
-                游玩: "🎡",
-                做饭: "🍳",
-              };
-              d.tags.happy = d.tags.happy.map((x) =>
-                typeof x === "string"
-                  ? { name: x, emoji: DEFAULT_HMAP[x] || "💖" }
-                  : { name: x.name || "", emoji: x.emoji || "💖" },
-              );
-            }
-            // 迁移：记录“最近一次新增日期”从 {type:"开始日"} 扩展为 {type:{start,end}}，
-            // 以支持结束日期也默认定位到上一次的结束日期。
-            if (d.settings && d.settings.lastRecordStart) {
-              const lrs = d.settings.lastRecordStart;
-              const nd = {};
-              for (const k in lrs) {
-                if (lrs[k] && typeof lrs[k] === "object" && lrs[k].start)
-                  nd[k] = { start: lrs[k].start, end: lrs[k].end || lrs[k].start };
-                else if (typeof lrs[k] === "string" && lrs[k])
-                  nd[k] = { start: lrs[k], end: lrs[k] };
-              }
-              d.settings.lastRecordStart = nd;
             }
             return deepDef(DEF(), d);
           }
@@ -16154,6 +16064,40 @@
         return freed > 0;
       }
 
+      // 清除 DB 中所有 base64 图片：数组里的图片项整条移除，独立字段置空
+      function clearAllImages() {
+        let n = 0;
+        const isImg = (v) =>
+          typeof v === "string" && /^data:image\//.test(v);
+        const walk = (o) => {
+          if (!o || typeof o !== "object") return;
+          if (Array.isArray(o)) {
+            for (let i = o.length - 1; i >= 0; i--) {
+              const v = o[i];
+              if (isImg(v)) {
+                o.splice(i, 1);
+                n++;
+              } else if (v && typeof v === "object") {
+                if (isImg(v.img)) {
+                  o.splice(i, 1);
+                  n++;
+                } else walk(v);
+              }
+            }
+            return;
+          }
+          for (const k in o) {
+            const v = o[k];
+            if (isImg(v)) {
+              o[k] = "";
+              n++;
+            } else walk(v);
+          }
+        };
+        walk(DB);
+        return n;
+      }
+
       // 依路径设置值（path 形如 "DB.happy[0].imgs[2]"）
       function setByPath(obj, path, val) {
         try {
@@ -16230,21 +16174,10 @@
       }
 
       /* ---------- 主题 ---------- */
-      // 解析“是否为深色”：auto=跟随系统，light/dark=手动；向下兼容旧 darkMode 键
-      function isDarkNow(u) {
-        if (!u) return false;
-        const m = u.themeMode || "auto";
-        if (m === "dark") return true;
-        if (m === "light") return false;
-        // auto / 旧数据默认
-        if (typeof matchMedia === "function")
-          return matchMedia("(prefers-color-scheme: dark)").matches;
-        return false;
-      }
       function applyTheme() {
         const u = DB.ui,
           r = document.documentElement.style;
-        const isDark = isDarkNow(u);
+        const isDark = u.darkMode;
         if (isDark) {
           r.setProperty("--bg", "#1C1C1E");
           r.setProperty("--card", "#2C2C2E");
@@ -16271,7 +16204,10 @@
         r.setProperty("--accent", u.accent);
         r.setProperty("--primary-d", shade(u.primary, -12));
         r.setProperty("--shadow-intensity", u.shadowIntensity || 0.06);
-        r.setProperty("--card-radius", (u.cardRadius || 14) + "px");
+        r.setProperty(
+          "--card-radius",
+          Math.min(u.radius != null ? u.radius : u.cardRadius || 14, 16) + "px",
+        );
         // 顶栏毛玻璃底色跟随主题卡片/背景色
         const hdBase = isDark ? "#1C1C1E" : u.card || "#FFFFFF";
         const hdBd = isDark ? "#3A3A3C" : u.lineColor || "#E5E5EA";
@@ -16675,18 +16611,23 @@
           currentX = 0,
           isSwiping = false,
           open = false;
-        const THRESH = 76;
-        const setOpen = (val) => {
-          open = val;
-          wrap.classList.toggle("open", val);
-          if (!wrap._swipeData) wrap._swipeData = {};
-          wrap._swipeData.open = val;
-        };
+        // 操作区宽度=152px，阈值与其一致，确保编辑+删除两个按钮都露出
+        const THRESH = 152;
+        // 删除二次确认状态：第一次点=进入确认态，第二次点=真正删除
+        let delConfirmed = false;
+        function clearDel() {
+          delConfirmed = false;
+          if (delBtn) {
+            delBtn.textContent = delBtn.dataset.orig || "删除";
+            delBtn.classList.remove("confirm");
+          }
+        }
         const reset = (animate = true) => {
           if (!animate) content.style.transition = "none";
           content.style.transform = "translateX(0)";
           if (!animate) setTimeout(() => (content.style.transition = ""), 50);
-          setOpen(false);
+          open = false;
+          clearDel();
         };
         const closeOthers = () => {
           $$(".swipe-c").forEach((c) => {
@@ -16694,9 +16635,11 @@
               c.style.transform = "translateX(0)";
               const wrap2 = c.closest(".swipe-wrap");
               if (wrap2) {
-                wrap2.classList.remove("open");
                 const data = wrap2._swipeData;
-                if (data) data.open = false;
+                if (data) {
+                  data.open = false;
+                  if (data.clearDel) data.clearDel();
+                }
               }
             }
           });
@@ -16711,6 +16654,7 @@
             closeOthers();
             if (open) {
               reset(true);
+              open = false;
               return;
             }
           },
@@ -16741,17 +16685,20 @@
           if (!isSwiping) return;
           isSwiping = false;
           if (currentX < -THRESH / 2) {
-            setOpen(true);
+            open = true;
             content.style.transition = "";
             content.style.transform = `translateX(-${THRESH}px)`;
           } else {
-            reset(true);
+            open = false;
+            content.style.transition = "";
+            content.style.transform = "translateX(0)";
           }
         });
         content.addEventListener("click", (e) => {
           if (open) {
             e.stopPropagation();
             reset(true);
+            open = false;
           }
         });
         const edBtn = wrap.querySelector(".swipe-act .ed");
@@ -16759,18 +16706,34 @@
         if (edBtn) {
           edBtn.addEventListener("click", (e) => {
             e.stopPropagation();
-            if (open) reset(false);
+            if (open) {
+              reset(false);
+              open = false;
+            }
             if (onEdit) onEdit();
           });
         }
         if (delBtn) {
+          delBtn.dataset.orig = delBtn.textContent;
           delBtn.addEventListener("click", (e) => {
             e.stopPropagation();
-            if (open) reset(false);
+            // 第一次点击：进入确认态，按钮变“确认删除”高亮
+            if (!delConfirmed) {
+              delConfirmed = true;
+              delBtn.textContent = "确认删除";
+              delBtn.classList.add("confirm");
+              return;
+            }
+            // 第二次点击：执行真正删除
+            delConfirmed = false;
+            if (open) {
+              reset(false);
+              open = false;
+            }
             if (onDelete) onDelete();
           });
         }
-        setOpen(false);
+        wrap._swipeData = { open, clearDel };
         if (window.PointerEvent) {
           let pointerDown = false,
             pStartX = 0,
@@ -16783,6 +16746,7 @@
             closeOthers();
             if (open) {
               reset(true);
+              open = false;
               pointerDown = false;
               return;
             }
@@ -16807,22 +16771,26 @@
             if (!pointerDown) return;
             pointerDown = false;
             if (pCurrentX < -THRESH / 2) {
-              setOpen(true);
+              open = true;
               content.style.transition = "";
               content.style.transform = `translateX(-${THRESH}px)`;
             } else {
-              reset(true);
+              open = false;
+              content.style.transition = "";
+              content.style.transform = "translateX(0)";
             }
           });
           content.addEventListener("pointerleave", () => {
             if (pointerDown) {
               pointerDown = false;
               if (pCurrentX < -THRESH / 2) {
-                setOpen(true);
+                open = true;
                 content.style.transition = "";
                 content.style.transform = `translateX(-${THRESH}px)`;
               } else {
-                reset(true);
+                open = false;
+                content.style.transition = "";
+                content.style.transform = "translateX(0)";
               }
             }
           });
@@ -17128,7 +17096,10 @@
           safe = null;
         if (next) {
           ovulation = addDays(next, -14);
-          fertile = { start: addDays(ovulation, -5), end: addDays(ovulation, 2) };
+          fertile = {
+            start: addDays(ovulation, -5),
+            end: addDays(ovulation, 2),
+          };
           if (last) {
             safe = [
               { start: last.start, end: addDays(last.start, 6) },
@@ -17464,19 +17435,6 @@
         ];
       }
 
-      // 统一返回逻辑：由顶栏返回按钮与「左缘右滑」手势共用
-      function navBack() {
-        if (!subStack.length) return;
-        if (subStack.length === 1) {
-          closeSub(true);
-        } else {
-          const cur = subStack[subStack.length - 1];
-          cur.scrollTop = $("#sub").scrollTop;
-          subStack.pop();
-          paintSub();
-        }
-      }
-
       function setHeader({
         big = "",
         sub = "",
@@ -17493,7 +17451,18 @@
         $("#hdTitle").textContent = title;
         $("#hdAct").textContent = act;
         $("#hdAct").onclick = onAct || null;
-        $("#hdBack").onclick = () => navBack();
+        $("#hdBack").onclick = () => {
+          if (subStack.length) {
+            if (subStack.length === 1) {
+              closeSub(true);
+            } else {
+              const cur = subStack[subStack.length - 1];
+              cur.scrollTop = $("#sub").scrollTop;
+              subStack.pop();
+              paintSub();
+            }
+          }
+        };
       }
 
       function openSub(title, renderFn, act = "", onAct = null) {
@@ -17512,6 +17481,7 @@
         // 重建期间冻结容器：避免用户看到“回顶→再定位”的跳动
         const wasOn = sub.classList.contains("on");
         sub.classList.add("on");
+        $("#main").classList.add("dim");
         sub.style.visibility = "hidden";
         setHeader({
           title: cur.title,
@@ -17531,29 +17501,113 @@
 
       function closeSub(render = true) {
         const sub = $("#sub");
-        const doClean = () => {
+        if (sub.classList.contains("on") && !sub.classList.contains("closing")) {
+          sub.classList.add("closing");
           sub.classList.remove("on");
-          sub.style.transition = "";
-          sub.style.transform = "";
-          sub.style.opacity = "";
+          $("#main").classList.remove("dim");
+          let finished = false;
+          const done = () => {
+            if (finished) return;
+            finished = true;
+            sub.classList.remove("closing");
+            sub.innerHTML = "";
+            subStack = [];
+            sub.removeEventListener("animationend", done);
+            if (render) renderTab();
+            $("#fab").classList.toggle("on", curTab === "records");
+          };
+          sub.addEventListener("animationend", done);
+          setTimeout(done, 380);
+        } else {
+          sub.classList.remove("closing");
           sub.innerHTML = "";
           subStack = [];
+          $("#main").classList.remove("dim");
           if (render) renderTab();
           $("#fab").classList.toggle("on", curTab === "records");
-        };
-        if (!sub || !sub.classList.contains("on")) {
-          subStack = [];
-          if (render) renderTab();
-          $("#fab").classList.toggle("on", curTab === "records");
-          return;
         }
-        // iOS 风格返回：整层右滑淡出后再清理
-        sub.style.transition =
-          "transform .22s cubic-bezier(.32,.72,0,1), opacity .22s ease";
-        sub.style.transform = "translateX(42%)";
-        sub.style.opacity = "0";
-        setTimeout(doClean, 225);
       }
+
+      // 边缘手势左滑返回（仅移动端，跟手）
+      (function bindSwipeBack() {
+        const sub = $("#sub"),
+          main = $("#main");
+        if (!sub || !main) return;
+        let sd = null;
+        const isMobile = () => window.matchMedia("(max-width: 600px)").matches;
+        sub.addEventListener(
+          "touchstart",
+          (e) => {
+            if (!subStack.length || !isMobile()) return;
+            if (e.touches[0].clientX <= 22) {
+              sd = { x0: e.touches[0].clientX, active: true };
+              sub.style.transition = "none";
+              main.style.transition = "none";
+              main.classList.remove("dim");
+            }
+          },
+          { passive: true },
+        );
+        sub.addEventListener(
+          "touchmove",
+          (e) => {
+            if (!sd || !sd.active) return;
+            const dx = e.touches[0].clientX - sd.x0;
+            if (dx < 0) {
+              sub.style.transform = "translateX(0)";
+              return;
+            }
+            sub.style.transform = `translateX(${dx}px)`;
+            const p = Math.min(dx / 320, 1);
+            if (isMobile()) main.style.transform = `scale(${1 - 0.05 * p})`;
+            main.style.opacity = String(1 - 0.4 * p);
+          },
+          { passive: true },
+        );
+        sub.addEventListener(
+          "touchend",
+          (e) => {
+            if (!sd || !sd.active) return;
+            const dx = e.changedTouches[0].clientX - sd.x0;
+            sd.active = false;
+            sub.style.transition =
+              "transform 0.3s cubic-bezier(0.32,0.72,0,1)";
+            main.style.transition =
+              "transform 0.3s cubic-bezier(0.32,0.72,0,1), opacity 0.3s";
+            if (dx > 90) {
+              sub.style.transform = "translateX(100%)";
+              if (isMobile()) main.style.transform = "scale(0.96)";
+              main.style.opacity = "0.55";
+              const fin = () => {
+                sub.style.transition = "";
+                sub.style.transform = "";
+                main.style.transition = "";
+                main.style.transform = "";
+                main.style.opacity = "";
+                sub.classList.remove("on", "closing");
+                sub.innerHTML = "";
+                subStack = [];
+                sub.removeEventListener("transitionend", fin);
+                renderTab && renderTab();
+                $("#fab").classList.toggle("on", curTab === "records");
+              };
+              sub.addEventListener("transitionend", fin, { once: true });
+            } else {
+              sub.style.transform = "translateX(0)";
+              main.style.transform = "";
+              main.style.opacity = "";
+              const back = () => {
+                sub.style.transition = "";
+                main.style.transition = "";
+                main.classList.add("dim");
+                sub.removeEventListener("transitionend", back);
+              };
+              sub.addEventListener("transitionend", back, { once: true });
+            }
+          },
+          { passive: true },
+        );
+      })();
 
       /* ================================================================
        * 自定义时间选择器（标签在滚轮上方）
@@ -17569,11 +17623,8 @@
           extra = null, // {label, onPick} 额外操作（如“只看整年”）
         } = opts;
 
-        const nowYear = new Date().getFullYear();
-        const startYear = Math.min(year - 30, nowYear - 50);
-        const endYear = Math.max(year + 10, nowYear + 10);
         const years = [];
-        for (let y = startYear; y <= endYear; y++) years.push(y);
+        for (let y = year - 50; y <= year + 10; y++) years.push(y);
         const months = Array.from({ length: 12 }, (_, i) => i + 1);
         const daysInMonth = new Date(year, month, 0).getDate();
         const daysArr = Array.from({ length: daysInMonth }, (_, i) => i + 1);
@@ -17639,7 +17690,7 @@
           const items = container.querySelectorAll(`[${attr}]`);
           for (const it of items) {
             if (it.getAttribute(attr) == val) {
-              it.scrollIntoView({ block: "center", behavior: "auto" });
+              it.scrollIntoView({ block: "center", behavior: "smooth" });
               break;
             }
           }
@@ -17649,29 +17700,13 @@
         const monthScroll = mask.querySelector("#dpMonth");
         const dayScroll = mask.querySelector("#dpDay");
 
-        // 每个滚轮独立的定时器，避免多列同时滚动时互相取消
-        const scrollTimers = [null, null, null];
-        // 防止程序性滚动触发 onScroll 导致状态被覆盖
-        let programmatic = 0;
-
-        const setSelFromVal = () => {
-          selYear = year;
-          selMonth = month;
-          selDay = day;
-        };
-
         setTimeout(() => {
-          programmatic++;
           scrollToItem(yearScroll, selYear);
           scrollToItem(monthScroll, selMonth);
           if (dayScroll) scrollToItem(dayScroll, selDay);
-          // 同步修正内部状态，避免滚动事件尚未触发时确认拿到旧值
-          setSelFromVal();
-          setTimeout(() => programmatic--, 50);
-        }, 0);
+        }, 50);
 
         const onScroll = (container, type) => {
-          if (programmatic > 0) return;
           const items = container.querySelectorAll(".dp-item");
           let closest = null,
             minDist = Infinity;
@@ -17700,35 +17735,37 @@
                 const currentVal = dayScroll
                   .querySelector(".dp-item.sel")
                   ?.getAttribute("data-v");
-                // 日月变化时同步修正状态，不要让 selDay 停留在不存在的日期
-                selDay = currentVal
-                  ? Math.min(parseInt(currentVal), dim)
-                  : curDay;
                 dayScroll.innerHTML = Array.from(
                   { length: dim },
                   (_, i) => i + 1,
                 )
                   .map(
                     (d) =>
-                      `<div class="dp-item ${d === selDay ? "sel" : ""}" data-v="${d}">${d}</div>`,
+                      `<div class="dp-item ${d === (currentVal ? parseInt(currentVal) : selDay) ? "sel" : ""}" data-v="${d}">${d}</div>`,
                   )
                   .join("");
-                programmatic++;
-                scrollToItem(dayScroll, selDay);
-                setTimeout(() => programmatic--, 50);
+                if (currentVal) {
+                  scrollToItem(
+                    dayScroll,
+                    parseInt(currentVal) > dim ? dim : parseInt(currentVal),
+                  );
+                } else {
+                  scrollToItem(dayScroll, selDay > dim ? dim : selDay);
+                }
               }
             }
           }
         };
 
+        let scrollTimer = null;
         [yearScroll, monthScroll, dayScroll].forEach((sc, idx) => {
           if (!sc) return;
           const types = ["year", "month", "day"];
           sc.addEventListener(
             "scroll",
             () => {
-              clearTimeout(scrollTimers[idx]);
-              scrollTimers[idx] = setTimeout(() => onScroll(sc, types[idx]), 80);
+              clearTimeout(scrollTimer);
+              scrollTimer = setTimeout(() => onScroll(sc, types[idx]), 80);
             },
             { passive: true },
           );
@@ -17736,12 +17773,7 @@
 
         mask.querySelectorAll(".dp-item").forEach((it) => {
           it.addEventListener("click", () => {
-            it.scrollIntoView({ block: "center", behavior: "auto" });
-            const v = it.getAttribute("data-v");
-            const col = it.closest(".dp-col")?.getAttribute("data-type");
-            if (col === "year") selYear = parseInt(v);
-            else if (col === "month") selMonth = parseInt(v);
-            else if (col === "day") selDay = parseInt(v);
+            it.scrollIntoView({ block: "center", behavior: "smooth" });
           });
         });
 
@@ -17758,10 +17790,6 @@
             if (extra && extra.onPick) extra.onPick(selYear);
           };
         mask.querySelector("[data-action='confirm']").onclick = () => {
-          // 确认前强制从当前滚动位置重读，防止状态未同步
-          if (yearScroll) onScroll(yearScroll, "year");
-          if (monthScroll) onScroll(monthScroll, "month");
-          if (dayScroll) onScroll(dayScroll, "day");
           let result = `${selYear}-${pad(selMonth)}`;
           if (mode !== "month") {
             const dim = new Date(selYear, selMonth, 0).getDate();
@@ -17808,7 +17836,11 @@
           : "";
 
         // 首次使用引导（尚未设定恋爱日且还没有任何记录时）
-        const isFresh = !C.loveStart && !DB.happy.length && !DB.travel.length && !(C.relEvents||[]).length;
+        const isFresh =
+          !C.loveStart &&
+          !DB.happy.length &&
+          !DB.travel.length &&
+          !(C.relEvents || []).length;
         // 未设定恋爱日时的空态：若已是首启引导状态则由 onboard 承接；
         // 若已有记录但未设恋爱日，用一行轻量入口承接（避免大块占位卡和「有这么大」挤在一起）
         const loveUnsetCta = isFresh
@@ -17828,24 +17860,6 @@
             </div>
           </div>`;
         p.innerHTML = `
-        ${
-          isFresh
-            ? `<div class="sec card onboard-card">
-                <div style="display:flex;align-items:center;justify-content:space-between">
-                  <span style="font-size:18px;font-weight:700">👋 欢迎，这是你们的专属记录</span>
-                </div>
-                <div style="font-size:13px;color:var(--sub);margin:4px 0 14px;line-height:1.6">花一分钟设定起始日，往后这里会帮你们记住：今天在一起、爱过多少天、去过哪里、说过哪些心里话。</div>
-                <div class="ob-step ${C.loveStart ? "done" : ""}"><span class="ob-n">${C.loveStart ? "✓" : "1"}</span><div class="ob-t"><b>设定恋爱起始日</b><span>生日 / 星座 / 纪念日会一起亮起</span></div><button class="btn sm" onclick="profileEdit()">去设置</button></div>
-                <div class="ob-step ${DB.happy.length || DB.travel.length ? "done" : ""}"><span class="ob-n">${DB.happy.length || DB.travel.length ? "✓" : "2"}</span><div class="ob-t"><b>记第一条小美好</b><span>快乐小事或旅行足迹都行</span></div><button class="btn sm" onclick="openRecNew()">去记录</button></div>
-                <div class="ob-step"><span class="ob-n">3</span><div class="ob-t"><b>从「我的」逛逛</b><span>相册、时间胶囊、打卡都在这里</span></div><button class="btn sm ghost" onclick="switchTab('mine')">去看看</button></div>
-                <button class="btn blk" style="width:100%;margin-top:14px" onclick="profileEdit()">💕 现在开始，设定起始日</button>
-              </div>`
-            : ""
-        }
-        ${
-          isFresh
-            ? ""
-            : `
         <!-- 早上好·今天 卡片 -->
         <div class="morning-card">
           <div class="mc-top">
@@ -17863,7 +17877,17 @@
             <span class="mc-progress-label">${year}已经过去 ${progress}%</span>
           </div>
         </div>
-        `
+
+        ${
+          isFresh
+            ? `<div class="sec card onboard-card">
+                <div style="font-size:16px;font-weight:700">👋 欢迎，从这里开始你们的记录</div>
+                <div style="font-size:12.5px;color:var(--sub);margin:4px 0 12px;line-height:1.6">三分钟，让这份记忆专属你们俩</div>
+                <div class="ob-step ${C.loveStart ? "done" : ""}"><span class="ob-n">${C.loveStart ? "✓" : "1"}</span><div class="ob-t"><b>设定恋爱起始日</b><span>生日/星座/纪念日都会同步亮起</span></div><button class="btn sm" onclick="profileEdit()">去设置</button></div>
+                <div class="ob-step ${DB.happy.length || DB.travel.length ? "done" : ""}"><span class="ob-n">${DB.happy.length || DB.travel.length ? "✓" : "2"}</span><div class="ob-t"><b>记第一条小美好</b><span>快乐小事或旅行足迹都行</span></div><button class="btn sm" onclick="openRecNew()">去记录</button></div>
+                <div class="ob-step"><span class="ob-n">3</span><div class="ob-t"><b>从我的页逛逛</b><span>相册、时间胶囊、打卡都在这里</span></div><button class="btn sm ghost" onclick="switchTab('mine')">去看看</button></div>
+              </div>`
+            : ""
         }
 
         ${
@@ -17890,9 +17914,7 @@
             : loveUnsetCta
         }
 
-        ${
-          !isFresh
-            ? `<!-- 年龄计算器 -->
+        <!-- 年龄计算器 -->
         <div class="age-card" id="ageCard">
           <div class="ac-header">
             <span class="ac-title">🎂 有这么大</span>
@@ -17937,9 +17959,7 @@
               🕊️ 暂无即将到来的提醒<br><span style="font-size:12px">去「我的」添加时间胶囊或设置生日吧</span></div>`
             }
           </div>
-        </div>`
-            : ""
-        }
+        </div>
 
         <div class="sec">
           <div class="sec-hd"><span class="sec-t">📋 最近动态</span>
@@ -18558,11 +18578,10 @@
           return;
         }
         box.innerHTML = tags
-          .map((t) => {
-            const mark =
-              recTab === "happy" ? `${happyTagEmoji(t)} ` : "📍 ";
-            return `<button class="chip ${recTag === t ? "on" : ""}" data-tg="${esc(t)}">${mark}${esc(t)} <span style="opacity:.6">${freq[t]}</span></button>`;
-          })
+          .map(
+            (t) =>
+              `<button class="chip ${recTag === t ? "on" : ""}" data-tg="${esc(t)}">${recTab === "happy" ? "#" : "📍"} ${esc(t)} <span style="opacity:.6">${freq[t]}</span></button>`,
+          )
           .join("");
       }
 
@@ -18661,16 +18680,8 @@
               : imgs.length === 4
                 ? "n2"
                 : "n3";
-        // 快乐标签：带 emoji 与柔和底色；若标签名不在已配置列表里则退化为普通 # 标签
-        const known = happyTagList();
         const tags = (r.tags || [])
-          .filter(Boolean)
-          .map((t) => {
-            const isHappy = known.some((x) => x.name === t);
-            if (isHappy)
-              return `<span class="tag mom-happy-tag">${happyTagEmoji(t)} ${esc(t)}</span>`;
-            return `<span class="tag"># ${esc(t)}</span>`;
-          })
+          .map((t) => `<span class="tag"># ${esc(t)}</span>`)
           .join("");
         let placeStr = "";
         if (type === "happy" && r.place) placeStr = r.place;
@@ -18679,26 +18690,12 @@
           travelInfo = `${esc(r.from || "—")} → ${esc(r.to || "—")} · ${r.days || 1}天`;
         }
         const color = r.color ? `style="background:${r.color}"` : "";
-        // 起止时间显示：多天显示「开始 ～ 结束 · N天」，单日显示「年月日 周X」；多天区间拆成两个 nowrap span，避免只把「天」挤到下一行
-        const sd = r.startDate || r.date || "";
-        const ed = r.endDate || sd;
-        let dateDisplay;
-        if (sd && ed && ed !== sd) {
-          const da = new Date(sd + "T00:00:00"),
-            db = new Date(ed + "T00:00:00");
-          const ya = da.getFullYear(),
-            yb = db.getFullYear();
-          const days = r.days || dayDiff(sd, ed) + 1;
-          const endTxt = ya === yb ? fmtShort(ed) : `${yb}年${fmtShort(ed)}`;
-          dateDisplay = `<span class="mom-date-start">${ya}年${fmtShort(sd)}</span><span class="mom-date-end"> ～ ${endTxt} · ${days}天</span>`;
-        } else {
-          dateDisplay = fmtCN(sd) + " " + weekday(sd || today());
-        }
+        const dateDisplay = fmtCN(r.date) + " " + weekday(r.date);
         const typeLabel = type === "happy" ? "💖 快乐" : "🧳 旅行";
         const typeClass = type === "travel" ? "travel" : "";
         return `<div class="mom" ${color} data-id="${r.id}" data-type="${type}">
           <div class="mom-header">
-            <div class="mom-date"><span class="icon">📅</span><span class="mom-date-txt">${dateDisplay}</span></div>
+            <div class="mom-date"><span class="icon">📅</span>${dateDisplay}</div>
             <div class="mom-type-tag ${typeClass}">${typeLabel}</div>
           </div>
           <div class="mom-body">
@@ -18706,7 +18703,13 @@
             ${travelInfo ? `<div class="mom-place">✈️ ${travelInfo}</div>` : ""}
             ${r.text ? `<div class="mom-t">${esc(r.text)}</div>` : ""}
             ${tags ? `<div class="mom-tags">${tags}</div>` : ""}
-            ${imgs.length ? `<div class="imggrid ${gn}">${imgs.map((im, i) => `<img class="im" src="${im}" data-i="${i}" loading="lazy">`).join("")}</div>` : ""}
+            ${
+              imgs.length === 1
+                ? `<div class="imggrid n1">${imgs.map((im, i) => `<img class="im" src="${im}" data-i="${i}" loading="lazy">`).join("")}</div>`
+                : imgs.length > 1
+                  ? `<div class="imggrid carousel">${imgs.map((im, i) => `<button class="im" data-i="${i}"><img src="${im}" loading="lazy" alt=""></button>`).join("")}</div>`
+                  : ""
+            }
           </div>
         </div>`;
       }
@@ -18733,7 +18736,9 @@
             () => deleteRecordWithUndo(type, id, { source: "list" }),
           );
           mom.addEventListener("click", (e) => {
-            if (e.target.classList.contains("im")) {
+            // 轮播区域内的点击交给下方 carousel 处理器，避免与详情页跳转冲突
+            if (e.target.closest(".imggrid.carousel")) return;
+            if (e.target.classList.contains("im") && !e.target.closest(".imggrid.carousel")) {
               const r = get();
               const idx = +e.target.dataset.i;
               lightbox(r.imgs, idx, {
@@ -18770,6 +18775,50 @@
               ],
             });
           });
+        });
+        // 多图轮播：主图 + 两侧 peek + 滑动切换 + 点主图进大图
+        box.querySelectorAll(".imggrid.carousel").forEach((cg) => {
+          const mom = cg.closest(".mom");
+          if (!mom) return;
+          const id = mom.dataset.id,
+            type = mom.dataset.type;
+          const get = () => DB[type].find((x) => x.id === id);
+          bindImageCarousel(cg, get, (di) => {
+            const r = get();
+            if (!r) return;
+            r.imgs.splice(di, 1);
+            save();
+            drawRecList();
+          });
+        });
+      }
+
+      // 多图轮播通用逻辑：居中 peek 定位 + 点主图进大图 + 点侧图居中
+      function bindImageCarousel(cg, getRec, onDelete) {
+        const items = () => cg.querySelectorAll(".im");
+        const applyPeek = () => {
+          const it = items()[0];
+          if (!it) return;
+          const pad = Math.max(0, (cg.clientWidth - it.offsetWidth) / 2);
+          cg.style.paddingLeft = pad + "px";
+          cg.style.paddingRight = pad + "px";
+        };
+        applyPeek();
+        setTimeout(applyPeek, 0);
+        cg.addEventListener("click", (e) => {
+          const im = e.target.closest(".im");
+          if (!im) return;
+          const its = items();
+          const gap = 10;
+          const step = its[0].offsetWidth + gap;
+          const idx = Math.round(cg.scrollLeft / (step || 1));
+          const i = +im.dataset.i;
+          if (i === idx) {
+            const r = getRec();
+            if (r) lightbox(r.imgs, i, { onDelete });
+          } else {
+            cg.scrollTo({ left: i * step, behavior: "smooth" });
+          }
         });
       }
 
@@ -18961,8 +19010,16 @@
       /* ---------- 数据叙事：里程碑 / 月度小结 ---------- */
       function firstRecordStory() {
         const all = [
-          ...DB.happy.map((r) => ({ ...r, type: "happy", label: r.title || "快乐记录" })),
-          ...DB.travel.map((r) => ({ ...r, type: "travel", label: r.to || "旅行" })),
+          ...DB.happy.map((r) => ({
+            ...r,
+            type: "happy",
+            label: r.title || "快乐记录",
+          })),
+          ...DB.travel.map((r) => ({
+            ...r,
+            type: "travel",
+            label: r.to || "旅行",
+          })),
           ...DB.checkin.map((r) => ({ ...r, type: "checkin", label: "打卡" })),
         ].filter((r) => r.date);
         if (!all.length) return null;
@@ -18971,11 +19028,7 @@
         return {
           date: f.date,
           label:
-            f.type === "happy"
-              ? "快乐"
-              : f.type === "travel"
-                ? "旅行"
-                : "打卡",
+            f.type === "happy" ? "快乐" : f.type === "travel" ? "旅行" : "打卡",
           title: f.label,
         };
       }
@@ -19004,9 +19057,15 @@
       }
 
       function monthlySummary(month) {
-        const happy = DB.happy.filter((r) => r.date && r.date.startsWith(month));
-        const travel = DB.travel.filter((r) => r.date && r.date.startsWith(month));
-        const checkin = DB.checkin.filter((r) => r.date && r.date.startsWith(month));
+        const happy = DB.happy.filter(
+          (r) => r.date && r.date.startsWith(month),
+        );
+        const travel = DB.travel.filter(
+          (r) => r.date && r.date.startsWith(month),
+        );
+        const checkin = DB.checkin.filter(
+          (r) => r.date && r.date.startsWith(month),
+        );
         const scores = happy
           .map((r) => +r.score)
           .filter((s) => !Number.isNaN(s));
@@ -19019,7 +19078,15 @@
         );
         const topTag = Object.entries(tagCount).sort((a, b) => b[1] - a[1])[0];
         const [y, m] = month.split("-");
-        return { y, m, happy: happy.length, travel: travel.length, checkin: checkin.length, avg, topTag };
+        return {
+          y,
+          m,
+          happy: happy.length,
+          travel: travel.length,
+          checkin: checkin.length,
+          avg,
+          topTag,
+        };
       }
 
       function latestMonth() {
@@ -19293,7 +19360,13 @@
             }
             return out;
           };
-          const moodEmoji = { 开心: "😄", 平静: "😌", 低落: "😢", 烦躁: "😣", 焦虑: "😰" };
+          const moodEmoji = {
+            开心: "😄",
+            平静: "😌",
+            低落: "😢",
+            烦躁: "😣",
+            焦虑: "😰",
+          };
           let used = 0;
           const out = [];
           // 从最近一次经期开始倒序，过滤掉误录入的未来日期，避免历史顶部出现 2076 年之类的异常记录
@@ -19309,22 +19382,27 @@
               .map((d) => {
                 const r = rec[d];
                 const chips = [];
-                if (r.f) chips.push(`<span class="tag">💧 ${esc(r.f)}</span>`);
+                if (r.f) chips.push(`<span class="tag">${tagEmoji(r.f, "flow")} ${esc(r.f)}</span>`);
                 if (r.m) {
                   const mm = esc(r.m);
-                  chips.push(`<span class="tag grey">${moodEmoji[r.m] || "💗"} ${mm}</span>`);
+                  chips.push(
+                    `<span class="tag grey">${moodEmoji[r.m] || "💗"} ${mm}</span>`,
+                  );
                 }
                 const syms = (r.s || []).slice(0, 4);
-                const more = (r.s || []).length > 4 ? "+" + ((r.s || []).length - 4) : "";
+                const more =
+                  (r.s || []).length > 4 ? "+" + ((r.s || []).length - 4) : "";
                 const dd = new Date(d + "T00:00:00");
-                return `<div class="swipe-wrap pep-day-wrap">
-                  <div class="swipe-c pep-day" data-pd-day="${d}">
-                    <div class="dd">${dd.getDate()}日<small>${fmtShort(d)}</small></div>
-                    <div class="chips">
-                      ${chips.join("")}
-                      ${syms.length ? `<span style="font-size:11px;color:var(--sub)">${syms.map(esc).join("、")}${more}</span>` : ""}
+                return `<div class="swipe-wrap" data-pep="${d}">
+                  <div class="swipe-c">
+                    <div class="pep-day" onclick="pdEditDay('${d}')">
+                      <div class="dd">${dd.getDate()}日<small>${fmtShort(d)}</small></div>
+                      <div class="chips">
+                        ${chips.join("")}
+                        ${syms.length ? `<span style="font-size:11px;color:var(--sub)">${syms.map((s) => tagEmoji(s, "symptoms") + esc(s)).join("、")}${more}</span>` : ""}
+                      </div>
+                      ${r.n ? `<span class="n">${esc(r.n)}</span>` : ""}
                     </div>
-                    ${r.n ? `<span class="n">${esc(r.n)}</span>` : ""}
                   </div>
                   <div class="swipe-act"><button class="ed">编辑</button><button class="de">删除</button></div>
                 </div>`;
@@ -19336,7 +19414,9 @@
               const f = rec[d].f;
               counts[f] = (counts[f] || 0) + 1;
             });
-            const topFlow = Object.keys(counts).sort((a, b) => counts[b] - counts[a])[0] || "";
+            const topFlow =
+              Object.keys(counts).sort((a, b) => counts[b] - counts[a])[0] ||
+              "";
             const isOngoing = ep.end >= today();
             const lastY = new Date(ep.start + "T00:00:00").getFullYear();
             const curY = new Date(today() + "T00:00:00").getFullYear();
@@ -19373,7 +19453,8 @@
                 s = "记录后智能预测周期并双向提醒";
               } else if (remain > 0) {
                 t = "⏳ 距下次 " + remain + " 天";
-                s = "预计 " + fmtShort(A.next) + " " + weekday(A.next) + " 到来";
+                s =
+                  "预计 " + fmtShort(A.next) + " " + weekday(A.next) + " 到来";
               } else if (remain === 0) {
                 t = "⏳ 预计今日到来";
                 s = "建议记录今日状态，开始呵护";
@@ -19385,11 +19466,7 @@
             })()}
             <div class="tags">
               <span class="tag ${A.statusCls === "blue" ? "blue" : A.ongoing ? "" : "grey"}">${A.status || "—"}</span>
-              <span class="tag grey">周期 ${A.avg}天</span>
-              <span class="tag grey">累计 ${A.eps.length}次</span>
               <span class="tag grey">下次 ${A.next ? fmtShort(A.next) : "—"}</span>
-              ${A.last ? `<span class="tag grey">上次 ${fmtShort(A.last.start)}</span>` : ""}
-              ${A.trend.total ? `<span class="tag grey">${A.trend.early ? "提前" + A.trend.early : ""}${A.trend.ontime ? "准时" + A.trend.ontime : ""}${A.trend.late ? "推迟" + A.trend.late : ""}</span>` : ""}
             </div>
           </div>
         </div>`;
@@ -19427,14 +19504,16 @@
                   : `<span class="badge" style="background:var(--danger);color:#fff">已过 ${-dd} 天</span>`;
             let dTitle, dSub;
             if (live) {
-              dTitle = "本次经期 · 第 " + (dayDiff(A.last.start, T) + 1) + " 天";
+              dTitle =
+                "本次经期 · 第 " + (dayDiff(A.last.start, T) + 1) + " 天";
               dSub = "预计 " + fmtShort(A.last.end) + " 结束";
             } else if (dd >= 0) {
               dTitle = "预计下次月经来潮";
               dSub = fmtCN(A.next) + " " + weekday(A.next);
             } else {
               dTitle = "本次应来却未到";
-              dSub = "上次 " + fmtShort(A.last.start) + " 后，已推迟 " + -dd + " 天";
+              dSub =
+                "上次 " + fmtShort(A.last.start) + " 后，已推迟 " + -dd + " 天";
             }
             nextHtml = `<div class="pa-next"><div class="ico">${live ? "🩸" : "⏳"}</div>
               <div class="mx">
@@ -19452,7 +19531,8 @@
               k: lastLabel,
               v: `${fmtCN(A.last.start)} ～ ${fmtCN(A.last.end)} · 共 ${durStr(A.last.start, A.last.end)}`,
               pill: `${fmtShort(A.last.start)} – ${fmtShort(A.last.end)} · ${durStr(A.last.start, A.last.end)}`,
-              color: "var(--primary-weak)", text: "var(--primary)",
+              color: "var(--primary-weak)",
+              text: "var(--primary)",
             });
           }
           if (A.ovulation) {
@@ -19461,7 +19541,8 @@
               k: "预测排卵日",
               v: `${fmtCN(A.ovulation)} ${weekday(A.ovulation)}`,
               pill: `${fmtShort(A.ovulation)} ${weekday(A.ovulation)}`,
-              color: "var(--accent-weak)", text: "var(--accent)",
+              color: "var(--accent-weak)",
+              text: "var(--accent)",
             });
           }
           if (A.fertile) {
@@ -19470,7 +19551,8 @@
               k: "排卵期",
               v: `${fmtCN(A.fertile.start)} ～ ${fmtCN(A.fertile.end)}`,
               pill: `${fmtShort(A.fertile.start)} – ${fmtShort(A.fertile.end)} · ${durStr(A.fertile.start, A.fertile.end)}`,
-              color: "#ffe5ec", text: "#e0203f",
+              color: "#ffe5ec",
+              text: "#e0203f",
             });
           }
           if (A.safe && A.safe[1]) {
@@ -19479,16 +19561,21 @@
               k: "安全期",
               v: `${fmtCN(A.safe[1].start)} ～ ${fmtCN(A.safe[1].end)}`,
               pill: `${fmtShort(A.safe[1].start)} – ${fmtShort(A.safe[1].end)} · ${durStr(A.safe[1].start, A.safe[1].end)}`,
-              color: "#e6f9ec", text: "#34c759",
+              color: "#e6f9ec",
+              text: "#34c759",
             });
           }
           const windowsHtml = windowRows.length
             ? `<div class="pa-blk">
                 <div class="pa-blk-t">🗓️ 预测窗口（基于平均周期 ${A.avg} 天）</div>
-                ${windowRows.map((r) => `<div class="pa-pillrow">
+                ${windowRows
+                  .map(
+                    (r) => `<div class="pa-pillrow">
                   <div class="pa-l"><span>${r.emo}</span>${r.k}</div>
                   <div class="pa-v">${r.v}<span class="pa-pill" style="background:${r.color};color:${r.text}">${r.pill}</span></div>
-                </div>`).join("")}
+                </div>`,
+                  )
+                  .join("")}
               </div>`
             : "";
           const regHtml = A.trend.total
@@ -19504,14 +19591,13 @@
             <div class="pa-stats">
               <div class="pa-stat"><div class="n">${A.avg}<small>天</small></div><div class="k">平均周期</div></div>
               <div class="pa-stat"><div class="n">${avgDur}<small>天</small></div><div class="k">平均经期</div></div>
-              <div class="pa-stat" id="pdAllRec" role="button" tabindex="0" style="cursor:pointer">
-                <div class="n">${A.eps.length}<small style="font-size:11px">›</small></div>
-                <div class="k">累计次数</div>
-              </div>
+              <div class="pa-stat"><div class="n">${A.eps.length}</div><div class="k">累计次数</div></div>
               <div class="pa-stat"><div class="n">${A.trend.total ? Math.round((A.trend.ontime / A.trend.total) * 100) + "<small>%</small>" : "--"}</div><div class="k">周期准时</div></div>
             </div>
             ${nextHtml}
-            ${hasDetail ? `
+            ${
+              hasDetail
+                ? `
             <div class="pa-detail">
               <div class="pa-detail-hd" id="pdToggle" data-open="0" role="button" tabindex="0">
                 <span>🗓️ 本周期详解</span>
@@ -19522,7 +19608,9 @@
                 ${regHtml}
                 <div class="pa-note">· 基于最近 ${Math.min(6, Math.max(1, A.trend.total || 1))} 次周期推算，仅作日常参考，不作医学诊断 · 周期若有推迟/提前，安全期可能不准。</div>
               </div>
-            </div>` : `<div class="pa-note" style="margin-top:12px">· 基于平均周期推算，仅作日常参考，不作医学诊断。</div>`}
+            </div>`
+                : `<div class="pa-note" style="margin-top:12px">· 基于平均周期推算，仅作日常参考，不作医学诊断。</div>`
+            }
           </div>`;
         })();
 
@@ -19530,66 +19618,71 @@
         ${heroHtml}
         ${analysisCard}
         <div class="sec card" style="margin-top:12px">
-          <div class="pd-sec-head">
-            <div class="pd-sec-title"><span class="pd-sec-dot"></span><span class="pd-sec-t">记录</span></div>
-            <div class="pd-sec-tools">
-              <div class="pd-mode-seg">
-                <button class="${pdMode === "single" ? "on" : ""}" onclick="pdSetMode('single')">单日</button>
-                <button class="${pdMode === "range" ? "on" : ""}" onclick="pdSetMode('range')">区间</button>
-              </div>
-              ${pdMode === "single" ? `
-              <button class="pd-date-btn" onclick="pickPeriodDate('${pdDate}')">
-                <span>${fmtShort(pdDate)} ${weekday(pdDate)}</span>
-                <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><path d="M1 3h8L5 8 1 3z"/></svg>
-              </button>
-              ` : `
-              <div style="display:inline-flex;align-items:center;gap:6px;">
-                <button class="pd-date-btn" id="pbS" onclick="pbPick('start')">
-                  <span>${pbState && pbState.start ? fmtShort(pbState.start) : "开始"}</span>
-                  <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><path d="M1 3h8L5 8 1 3z"/></svg>
-                </button>
-                <span style="color:var(--sub);font-size:13px">—</span>
-                <button class="pd-date-btn" id="pbE" onclick="pbPick('end')">
-                  <span>${pbState && pbState.end ? fmtShort(pbState.end) : "结束"}</span>
-                  <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><path d="M1 3h8L5 8 1 3z"/></svg>
-                </button>
-              </div>
-              `}
-              <button class="pd-manage" onclick="openSub('标签管理',rPeriodTags)">🏷️ 管理</button>
+          <div class="sec-hd"><span class="sec-t">📝 记录</span>
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
+              ${
+                pdMode === "range"
+                  ? `<button class="sec-more" onclick="pdSetMode('single')">↩ 返回单日</button>`
+                  : ""
+              }
+              <button class="sec-more" onclick="openSub('标签管理',rPeriodTags)">🏷️ 管理</button>
             </div>
           </div>
-          ${pdMode === "single" ? `
+          ${
+            pdMode === "single"
+              ? `
+          ${
+            DB.period.rec[today()]
+              ? `<div class="pd-today-done">✅ 今天已记录 · <a class="link" onclick="pdEditDay(today())">点此修改</a></div>`
+              : `<button class="btn blk" id="pdQuick" onclick="pdQuickToday()">🩸 今天来月经了</button>`
+          }
+          <button class="btn blk ghost" style="margin-top:8px" onclick="pdSetMode('range')">📆 区间补录</button>
+          <div class="pd-divider"><span>或补记 / 编辑其它日期</span></div>
+          <div class="prow">
+            <div class="pl">📅 日期</div>
+            <button class="pd-date-btn" onclick="pickPeriodDate('${pdDate}')">
+              <span>${fmtShort(pdDate)} ${weekday(pdDate)}</span>
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><path d="M1 3h8L5 8 1 3z"/></svg>
+            </button>
+          </div>
           <div class="prow">
             <div class="pl">🩸 流量</div>
             <div class="flow-opt" id="flowOpt">
-              ${DB.period.flow.map((f) => `<button data-f="${esc(f)}" class="${pdSel.f === f ? "on" : ""}">💧 ${esc(f)}</button>`).join("")}
+              ${DB.period.flow.map((f) => `<button data-f="${esc(f)}" class="${pdSel.f === f ? "on" : ""}">${tagEmoji(f, "flow")} ${esc(f)}</button>`).join("")}
               <button data-f="${pdSel.f === "" ? "🚫 无" : ""}" class="${pdSel.f === "" ? "on" : ""}">🚫 无</button>
             </div>
           </div>
           <div class="prow">
             <div class="pl">🤒 症状</div>
             <div class="sym-grid" id="symGrid">
-              ${DB.period.symptoms.map((s) => `<button class="chip ${pdSel.s.includes(s) ? "on" : ""}" data-s="${esc(s)}">${esc(s)}</button>`).join("")}
-              <button class="chip ${pdSel.s.length === 0 ? "on" : ""}" data-s-none="1">🚫 无</button>
+              ${DB.period.symptoms.map((s) => `<button class="chip ${pdSel.s.includes(s) ? "on" : ""}" data-s="${esc(s)}">${tagEmoji(s, "symptoms")} ${esc(s)}</button>`).join("")}
+              <button class="chip ${pdSel.s.includes("__none__") ? "on" : ""}" data-s="__none__">🚫 无</button>
             </div>
           </div>
-          <div class="prow">
-            <div class="pl">💗 心情</div>
-            <div class="sym-grid" id="moodGrid">
-              ${["😄 开心", "😌 平静", "😢 低落", "😣 烦躁", "😰 焦虑"]
-                .map((mm) => {
-                  const v = mm.slice(2);
-                  return `<button class="chip ${pdSel.m === v ? "on" : ""}" data-m="${esc(v)}">${mm}</button>`;
-                })
-                .join("")}
+          <div class="pd-more" id="pdMoreToggle" role="button" tabindex="0">
+            <span>💗 心情 / 💬 备注（选填）</span><span class="pd-caret">▾</span>
+          </div>
+          <div id="pdMore" style="display:none">
+            <div class="prow">
+              <div class="pl">💗 心情</div>
+              <div class="sym-grid" id="moodGrid">
+                ${["😄 开心", "😌 平静", "😢 低落", "😣 烦躁", "😰 焦虑"]
+                  .map((mm) => {
+                    const v = mm.slice(2);
+                    return `<button class="chip ${pdSel.m === v ? "on" : ""}" data-m="${esc(v)}">${mm}</button>`;
+                  })
+                  .join("")}
+              </div>
+            </div>
+            <div class="prow">
+              <div class="pl">💬 备注</div>
+              <textarea class="input" id="pdNote" rows="2" placeholder="今天想记录点什么…">${esc(pdSel.n)}</textarea>
             </div>
           </div>
-          <div class="prow">
-            <div class="pl">💬 备注</div>
-            <textarea class="input" id="pdNote" rows="2" placeholder="今天想记录点什么…">${esc(pdSel.n)}</textarea>
-          </div>
-          <button class="btn blk" id="pdSave">💾 保存今日记录</button>
-          ` : pbInlineHtml()}
+          <button class="btn" id="pdSave" style="margin-top:4px">💾 保存</button>
+          `
+              : pbInlineHtml()
+          }
         </div>
         <div class="sec" style="margin-top:12px">
           <div class="sec-hd"><span class="sec-t">📚 历史记录</span>
@@ -19628,32 +19721,35 @@
             }
           });
         }
-        // 点击「累计次数」查看所有经期记录
-        const allRecBtn = p.querySelector("#pdAllRec");
-        if (allRecBtn) {
-          const go = () => openSub("全部经期记录", rAllPeriodRec);
-          allRecBtn.addEventListener("click", go);
-          allRecBtn.addEventListener("keydown", (e) => {
+        // 记录区“更多选项（心情/备注）”折叠
+        const pdMT = p.querySelector("#pdMoreToggle");
+        if (pdMT) {
+          const toggleMore = () => {
+            const body = p.querySelector("#pdMore");
+            const caret = pdMT.querySelector(".pd-caret");
+            const open = body.style.display !== "none";
+            body.style.display = open ? "none" : "block";
+            pdMT.setAttribute("aria-open", open ? "0" : "1");
+            if (caret) caret.textContent = open ? "▾" : "▴";
+          };
+          pdMT.addEventListener("click", toggleMore);
+          pdMT.addEventListener("keydown", (e) => {
             if (e.key === "Enter" || e.key === " ") {
               e.preventDefault();
-              go();
+              toggleMore();
             }
           });
         }
-        // 历史记录每一天：左滑编辑 / 删除（替代原铅笔、垃圾桶图标）
-        p.querySelectorAll(".pep-day-wrap").forEach((wrap) => {
+        // 经期历史：逐日卡片绑定滑动（编辑=蓝 / 删除=二次确认）
+        p.querySelectorAll(".swipe-wrap[data-pep]").forEach((wrap) => {
+          const d = wrap.dataset.pep;
           const content = wrap.querySelector(".swipe-c");
-          const d = content.dataset.pdDay;
           attachSwipe(
             wrap,
             content,
             () => pdEditDay(d),
-            () => pdDeleteDay(d),
+            () => pdDeleteDayNow(d),
           );
-          content.addEventListener("click", () => {
-            if (content.style.transform && content.style.transform !== "translateX(0px)") return;
-            pdEditDay(d);
-          });
         });
         if (pdMode === "single") {
           p.querySelector("#flowOpt").addEventListener("click", (e) => {
@@ -19665,25 +19761,20 @@
             );
           });
           p.querySelector("#symGrid").addEventListener("click", (e) => {
-            const b = e.target.closest("button");
+            const b = e.target.closest("[data-s]");
             if (!b) return;
-            if (b.dataset.sNone !== undefined) {
-              // 点「无」：清空所有症状
-              pdSel.s = [];
-              p.querySelectorAll("#symGrid button").forEach((x) =>
-                x.classList.toggle("on", x.dataset.sNone !== undefined),
-              );
-              return;
-            }
             const s = b.dataset.s;
-            if (s === undefined) return;
-            pdSel.s.includes(s)
-              ? (pdSel.s = pdSel.s.filter((x) => x !== s))
-              : pdSel.s.push(s);
-            b.classList.toggle("on");
-            // 有选症状则取消「无」的高亮
-            const noneBtn = p.querySelector("#symGrid [data-s-none]");
-            if (noneBtn) noneBtn.classList.toggle("on", pdSel.s.length === 0);
+            if (s === "__none__") {
+              pdSel.s = pdSel.s.includes("__none__") ? [] : ["__none__"];
+            } else {
+              pdSel.s = pdSel.s.filter((x) => x !== "__none__");
+              pdSel.s.includes(s)
+                ? (pdSel.s = pdSel.s.filter((x) => x !== s))
+                : pdSel.s.push(s);
+            }
+            p.querySelectorAll("#symGrid button[data-s]").forEach((x) =>
+              x.classList.toggle("on", pdSel.s.includes(x.dataset.s)),
+            );
           });
           p.querySelector("#moodGrid").addEventListener("click", (e) => {
             const b = e.target.closest("[data-m]");
@@ -19696,7 +19787,7 @@
           $("#pdSave").onclick = () => {
             const rec = {
               f: pdSel.f,
-              s: pdSel.s,
+              s: pdSel.s.filter((x) => x !== "__none__"),
               m: pdSel.m,
               n: $("#pdNote").value.trim(),
               updatedAt: new Date().toISOString(),
@@ -19710,46 +19801,64 @@
             rPeriod();
           };
         } else {
-          // 逐日列表事件委托
-          const list = p.querySelector("#pbDaysList");
-          if (list) {
-            list.addEventListener("click", (e) => {
-              const b = e.target.closest("[data-pbd]");
-              if (!b) return;
-              const ds = b.dataset.pbd;
-              const cfg = pbDayCfg(ds);
-              if (b.dataset.sNone !== undefined) {
-                // 点「无」：清空该天所有症状
-                cfg.syms = [];
-                list.querySelectorAll(`[data-pbd="${ds}"]`).forEach((x) => {
-                  if (x.dataset.sNone !== undefined) x.classList.add("on");
-                  else if (x.dataset.s !== undefined) x.classList.remove("on");
+          // 区间模式：逐天向导 / 选区间
+          if (pbState && pbState.wizard) {
+            const wiz = p.querySelector("#pbWizard");
+            if (wiz) {
+              wiz.addEventListener("click", (e) => {
+                const b = e.target.closest("[data-pbw]");
+                if (!b) return;
+                const ds = pbRangeDays()[pbState.cur];
+                const cfg =
+                  pbState.days[ds] ||
+                  (pbState.days[ds] = { flow: "", syms: [], mood: "", note: "" });
+                if (b.dataset.f !== undefined) {
+                  cfg.flow = b.dataset.f;
+                  wiz
+                    .querySelectorAll("[data-pbw][data-f]")
+                    .forEach((x) => x.classList.toggle("on", x === b));
+                } else if (b.dataset.s !== undefined) {
+                  const s = b.dataset.s;
+                  if (s === "__none__") {
+                    cfg.syms = cfg.syms.includes("__none__") ? [] : ["__none__"];
+                  } else {
+                    cfg.syms = cfg.syms.filter((x) => x !== "__none__");
+                    cfg.syms.includes(s)
+                      ? (cfg.syms = cfg.syms.filter((x) => x !== s))
+                      : cfg.syms.push(s);
+                  }
+                  wiz
+                    .querySelectorAll("[data-pbw][data-s]")
+                    .forEach((x) =>
+                      x.classList.toggle("on", cfg.syms.includes(x.dataset.s)),
+                    );
+                } else if (b.dataset.m !== undefined) {
+                  const v = b.dataset.m;
+                  cfg.mood = cfg.mood === v ? "" : v;
+                  wiz
+                    .querySelectorAll("[data-pbw][data-m]")
+                    .forEach((x) =>
+                      x.classList.toggle(
+                        "on",
+                        x.dataset.m === cfg.mood && cfg.mood,
+                      ),
+                    );
+                }
+              });
+              const note = wiz.querySelector("#pbwNote");
+              if (note)
+                note.addEventListener("input", () => {
+                  const ds = pbRangeDays()[pbState.cur];
+                  (pbState.days[ds] ||
+                    (pbState.days[ds] = {
+                      flow: "",
+                      syms: [],
+                      mood: "",
+                      note: "",
+                    })).note = note.value;
                 });
-              } else if (b.dataset.f !== undefined) {
-                cfg.flow = b.dataset.f;
-                list.querySelectorAll(`[data-pbd="${ds}"][data-f]`).forEach((x) => x.classList.toggle("on", x === b));
-              } else if (b.dataset.s !== undefined) {
-                const s = b.dataset.s;
-                cfg.syms.includes(s) ? (cfg.syms = cfg.syms.filter((x) => x !== s)) : cfg.syms.push(s);
-                b.classList.toggle("on");
-                const noneBtn = list.querySelector(`[data-pbd="${ds}"][data-s-none]`);
-                if (noneBtn) noneBtn.classList.toggle("on", cfg.syms.length === 0);
-              } else if (b.dataset.m !== undefined) {
-                const v = b.dataset.m;
-                cfg.mood = cfg.mood === v ? "" : v;
-                list.querySelectorAll(`[data-pbd="${ds}"][data-m]`).forEach((x) =>
-                  x.classList.toggle("on", x.dataset.m === cfg.mood && cfg.mood),
-                );
-              }
-            });
-            list.addEventListener("input", (e) => {
-              const inp = e.target.closest("[data-pbd][data-note]");
-              if (!inp) return;
-              pbDayCfg(inp.dataset.pbd).note = inp.value;
-            });
+            }
           }
-          const saveBtn = $("#pbSave");
-          if (saveBtn) saveBtn.onclick = pbCommit;
         }
         window.pickPeriodDate = (d) => {
           const [y, m, day] = (d || today()).split("-").map(Number);
@@ -19782,130 +19891,205 @@
         });
       }
 
-      /* 全部经期记录：按经期分组列出每一天，支持左滑编辑 / 删除 */
-      function rAllPeriodRec(el) {
-        const rec = DB.period.rec;
-        const moodEmoji = { 开心: "😄", 平静: "😌", 低落: "😢", 烦躁: "😣", 焦虑: "😰" };
-        const todayS = today();
-        const episodes = periodEpisodes().filter((e) => e.start <= todayS);
-        const groups = [];
-        for (let i = episodes.length - 1; i >= 0; i--) {
-          const ep = episodes[i];
-          const days = [];
-          let d = ep.start;
-          while (d <= ep.end) {
-            if (rec[d] && (rec[d].f || (rec[d].s || []).length || rec[d].m || rec[d].n))
-              days.push(d);
-            d = addDays(d, 1);
-          }
-          if (days.length) groups.push({ ep, days });
+      // 供滑动卡片二次确认后直接调用（不再弹 confirmBox）
+      function pdDeleteDayNow(d) {
+        if (DB.period.rec[d]) {
+          delete DB.period.rec[d];
+          save();
+          rPeriod();
+          toast("已删除");
         }
-        const totalDays = groups.reduce((n, g) => n + g.days.length, 0);
-        el.innerHTML = `
-          <div style="margin-top:8px">
-            <div style="font-size:12px;color:var(--sub);margin:2px 0 12px">
-              共 ${groups.length} 次经期 · ${totalDays} 天记录 · 左滑每一天可编辑或删除
-            </div>
-            ${
-              groups.length
-                ? groups
-                    .map((g) => {
-                      const dayHtml = g.days
-                        .map((d) => {
-                          const r = rec[d];
-                          const chips = [];
-                          if (r.f) chips.push(`<span class="tag">💧 ${esc(r.f)}</span>`);
-                          if (r.m) chips.push(`<span class="tag grey">${moodEmoji[r.m] || "💗"} ${esc(r.m)}</span>`);
-                          const syms = (r.s || []).slice(0, 4);
-                          const more = (r.s || []).length > 4 ? "+" + ((r.s || []).length - 4) : "";
-                          const dd = new Date(d + "T00:00:00");
-                          return `<div class="swipe-wrap pep-day-wrap">
-                            <div class="swipe-c pep-day" data-pd-day="${d}">
-                              <div class="dd">${dd.getDate()}日<small>${fmtShort(d)}</small></div>
-                              <div class="chips">
-                                ${chips.join("")}
-                                ${syms.length ? `<span style="font-size:11px;color:var(--sub)">${syms.map(esc).join("、")}${more}</span>` : ""}
-                              </div>
-                              ${r.n ? `<span class="n">${esc(r.n)}</span>` : ""}
-                            </div>
-                            <div class="swipe-act"><button class="ed">编辑</button><button class="de">删除</button></div>
-                          </div>`;
-                        })
-                        .join("");
-                      return `<div class="pep-card">
-                        <div class="pep-top">
-                          <div class="dt"><span class="dot"></span>${fmtCN(g.ep.start)} ～ ${fmtCN(g.ep.end)}</div>
-                          <div class="meta"><span class="tag">${g.days.length} 天</span></div>
-                        </div>
-                        <div class="pep-days">${dayHtml}</div>
-                      </div>`;
-                    })
-                    .join("")
-                : `<div style="text-align:center;padding:28px 0;color:var(--sub);font-size:13px">还没有经期记录</div>`
-            }
-          </div>`;        // 绑定左滑
-        el.querySelectorAll(".pep-day-wrap").forEach((wrap) => {
-          const content = wrap.querySelector(".swipe-c");
-          const d = content.dataset.pdDay;
-          attachSwipe(
-            wrap,
-            content,
-            () => {
-              closeSub();
-              setTimeout(() => pdEditDay(d), 240);
-            },
-            () => {
-              confirmBox(`删除 ${fmtCN(d)} 的经期记录？`, () => {
-                if (DB.period.rec[d]) {
-                  delete DB.period.rec[d];
-                  save();
-                  rPeriod();
-                  rAllPeriodRec(el);
-                  toast("已删除");
-                }
-              });
-            },
-          );
-          content.addEventListener("click", () => {
-            if (content.style.transform && content.style.transform !== "translateX(0px)") return;
-            closeSub();
-            setTimeout(() => pdEditDay(d), 240);
-          });
-        });
+      }
+
+      // 一键记录“今天来月经了”：默认取中等流量，免填其余字段
+      function pdQuickToday() {
+        const d = today();
+        pdDate = d;
+        pdMode = "single";
+        const rec = DB.period.rec[d] || { f: "", s: [], m: "", n: "" };
+        if (!rec.f && !DB.period.flow.length) {
+          // 还没设置过流量标签时，仅标记开始
+        } else if (!rec.f) {
+          rec.f = DB.period.flow[1] || DB.period.flow[0] || "适中";
+        }
+        DB.period.rec[d] = rec;
+        save();
+        checkAchAll();
+        toast("已记录今天 🩸");
+        rPeriod();
       }
 
       function pbInlineHtml() {
         if (!pbState) pbInit();
         const days = pbRangeDays();
-        if (!days.length) {
-          return `<div id="pbInlineBox" style="text-align:center;padding:18px 0 8px">
-            <div style="font-size:13px;color:var(--sub)">请选择起止日期</div>
-            <div style="font-size:11px;color:var(--sub);margin-top:4px">可快速补录近一周、近一个月或整个月</div>
-            <div style="display:flex;gap:6px;justify-content:center;margin-top:12px;flex-wrap:wrap">
-              <button class="chip" onclick="pbQuick(-6,-1)">近一周</button>
-              <button class="chip" onclick="pbQuick(-27,-1)">近一个月</button>
-              <button class="chip" onclick="pbQuickMonth()">📅 整个月</button>
+        // —— 向导模式：逐天填写 ——
+        if (pbState.wizard) {
+          const N = days.length;
+          const cur = Math.min(Math.max(pbState.cur, 0), N - 1);
+          const ds = days[cur];
+          const cfg =
+            pbState.days[ds] ||
+            (pbState.days[ds] = { flow: "", syms: [], mood: "", note: "" });
+          const pct = Math.round(((cur + 1) / N) * 100);
+          return `<div id="pbWizard">
+            <div class="pb-progress"><div class="pb-prog-bar" style="width:${pct}%"></div></div>
+            <div class="pb-wiz-head">
+              <span class="pb-wiz-idx">第 ${cur + 1} / ${N} 天</span>
+              <span class="pb-wiz-date">${fmtShort(ds)} ${weekday(ds)}</span>
+            </div>
+            <div class="prow" style="margin-top:2px">
+              <div class="pl">🩸 流量</div>
+              <div class="flow-opt" id="pbwFlow">
+                ${["少量", "适中", "大量", ""].map((f) => `<button data-pbw data-f="${esc(f)}" class="${cfg.flow === f ? "on" : ""}">${f ? tagEmoji(f, "flow") + " " + f : "🚫 无"}</button>`).join("")}
+              </div>
+            </div>
+            <div class="prow">
+              <div class="pl">🤒 症状</div>
+              <div class="sym-grid" id="pbwSym">
+                ${DB.period.symptoms.map((s) => `<button class="chip" data-pbw data-s="${esc(s)}" class="${cfg.syms.includes(s) ? "on" : ""}">${tagEmoji(s, "symptoms")} ${esc(s)}</button>`).join("")}
+                <button class="chip" data-pbw data-s="__none__" class="${cfg.syms.includes("__none__") ? "on" : ""}">🚫 无</button>
+              </div>
+            </div>
+            <div class="prow">
+              <div class="pl">💗 心情</div>
+              <div class="sym-grid" id="pbwMood">
+                ${PB_MOODS.map((mm) => {
+                  const v = mm.slice(2);
+                  return `<button class="chip" data-pbw data-m="${esc(v)}" class="${cfg.mood === v ? "on" : ""}">${mm}</button>`;
+                }).join("")}
+              </div>
+            </div>
+            <div class="prow">
+              <div class="pl">💬 备注</div>
+              <textarea class="input" id="pbwNote" rows="2" placeholder="今天想记录点什么…">${esc(cfg.note)}</textarea>
+            </div>
+            <div class="pb-wiz-nav">
+              ${cur > 0 ? `<button class="btn ghost" id="pbPrev" onclick="pbPrev()">← 上一天</button>` : ""}
+              ${cur < N - 1
+                ? `<button class="btn blk" id="pbNext" onclick="pbNext()">下一天 →</button>`
+                : `<button class="btn blk" id="pbFinish" onclick="pbFinish()">✅ 完成并保存</button>`}
+            </div>
+            <div class="pb-wiz-foot">
+              <button class="sec-more" onclick="pbExitWizard()">↩ 退出向导（保留已填）</button>
             </div>
           </div>`;
         }
-        return `<div id="pbInlineBox">
-          <div style="display:flex;gap:6px;margin:4px 0 10px;flex-wrap:wrap">
+        // —— 选区间界面 ——
+        const quick = `
+          <div style="display:flex;gap:6px;justify-content:center;margin:10px 0 4px;flex-wrap:wrap">
             <button class="chip" onclick="pbQuick(-6,-1)">近一周</button>
             <button class="chip" onclick="pbQuick(-27,-1)">近一个月</button>
             <button class="chip" onclick="pbQuickMonth()">📅 整个月</button>
+          </div>`;
+        if (!days.length) {
+          return `<div id="pbStep1" style="text-align:center;padding:12px 0 6px">
+            <div style="font-size:13px;color:var(--sub);margin-bottom:12px">选择要补录的日期区间</div>
+            <div style="display:flex;align-items:center;gap:8px;justify-content:center;flex-wrap:wrap">
+              <button class="pd-date-btn" onclick="pbPick('start')"><span>开始日期</span><svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><path d="M1 3h8L5 8 1 3z"/></svg></button>
+              <span style="color:var(--sub)">—</span>
+              <button class="pd-date-btn" onclick="pbPick('end')"><span>结束日期</span><svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><path d="M1 3h8L5 8 1 3z"/></svg></button>
+            </div>
+            ${quick}
+          </div>`;
+        }
+        return `<div id="pbStep1">
+          <div style="font-size:12px;color:var(--sub);text-align:center;margin:6px 0 12px">已选 ${days.length} 天：${fmtCN(days[0])} ～ ${fmtCN(days[days.length - 1])}</div>
+          <div style="display:flex;align-items:center;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px">
+            <button class="pd-date-btn" onclick="pbPick('start')"><span>${fmtShort(pbState.start)}</span><svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><path d="M1 3h8L5 8 1 3z"/></svg></button>
+            <span style="color:var(--sub)">—</span>
+            <button class="pd-date-btn" onclick="pbPick('end')"><span>${fmtShort(pbState.end)}</span><svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><path d="M1 3h8L5 8 1 3z"/></svg></button>
           </div>
-          <div style="font-size:12px;color:var(--sub);margin-bottom:10px">已选 ${days.length} 天：${fmtCN(days[0])} ～ ${fmtCN(days[days.length - 1])}</div>
-          <div id="pbDaysList">${pbDaysListHtml()}</div>
-          <div id="pbPreview" style="font-size:12px;color:var(--sub);text-align:center;margin:8px 0 14px">共 ${days.length} 天，可单独调整每一天后保存</div>
-          <button class="btn blk" id="pbSave" style="width:100%">💾 保存这段记录</button>
+          <button class="btn blk" id="pbStartWiz" onclick="pbStartWizard()">✍️ 开始逐天填写（共 ${days.length} 天）</button>
+          ${quick}
         </div>`;
       }
 
+      // 进入逐天填写向导
+      function pbStartWizard() {
+        const days = pbRangeDays();
+        if (!days.length) return toast("请先选择日期区间");
+        days.forEach((ds) => {
+          if (!pbState.days[ds]) {
+            const cur = DB.period.rec[ds] || {};
+            pbState.days[ds] = {
+              flow: cur.f || "",
+              syms: [...(cur.s || [])],
+              mood: cur.m || "",
+              note: cur.n || "",
+            };
+          }
+        });
+        pbState.cur = 0;
+        pbState.wizard = true;
+        rPeriod();
+      }
+      // 读取当前向导天（DOM）的值进 pbState.days
+      function pbReadCur() {
+        const days = pbRangeDays();
+        const ds = days[pbState.cur];
+        if (!ds) return;
+        const cfg =
+          pbState.days[ds] ||
+          (pbState.days[ds] = { flow: "", syms: [], mood: "", note: "" });
+        const fOn = document.querySelector("#pbwFlow button.on");
+        cfg.flow = fOn ? fOn.dataset.f : "";
+        cfg.syms = Array.from(
+          document.querySelectorAll("#pbwSym button.on"),
+        ).map((b) => b.dataset.s);
+        const mOn = document.querySelector("#pbwMood button.on");
+        cfg.mood = mOn ? mOn.dataset.m : "";
+        const note = document.querySelector("#pbwNote");
+        cfg.note = note ? note.value.trim() : "";
+      }
+      function pbNext() {
+        pbReadCur();
+        pbState.cur++;
+        rPeriod();
+      }
+      function pbPrev() {
+        pbReadCur();
+        pbState.cur--;
+        rPeriod();
+      }
+      function pbFinish() {
+        pbReadCur();
+        pbCommit();
+      }
+      function pbExitWizard() {
+        pbState.wizard = false;
+        rPeriod();
+      }
+
       /* ================================================================
-       * 经期 · 批量补录（选区间 → 下方逐日可编辑 → 统一保存）
+       * 经期 · 批量补录（选区间 → 逐天向导填写 → 统一保存）
        * ================================================================ */
       let pbState = null;
       const PB_MOODS = ["😄 开心", "😌 平静", "😢 低落", "😣 烦躁", "😰 焦虑"];
+
+      /* 经期标签 emoji 映射（内置标签给对应表情，自定义标签按类别兜底） */
+      const TAG_EMOJI = {
+        // 流量档位
+        少量: "💧",
+        适中: "💧💧",
+        大量: "💧💧💧",
+        // 身体症状
+        腹痛: "😖",
+        腰酸: "🦴",
+        头痛: "🤕",
+        疲劳: "😪",
+        胸胀: "🎈",
+        失眠: "😵",
+        // 心情标签
+        平静: "😌",
+        开心: "😄",
+        烦躁: "😣",
+        低落: "😢",
+        焦虑: "😰",
+      };
+      const TAG_EMOJI_FALLBACK = { flow: "💧", symptoms: "🤒", moods: "💗" };
+      function tagEmoji(name, key) {
+        return TAG_EMOJI[name] || TAG_EMOJI_FALLBACK[key] || "🏷️";
+      }
 
       function pbInit() {
         pbState = {
@@ -19913,6 +20097,8 @@
           end: "",
           defaults: { flow: "少量", syms: [], mood: "", note: "" },
           days: {}, // { "YYYY-MM-DD": { flow, syms, mood, note } }
+          wizard: false,
+          cur: 0,
         };
       }
 
@@ -19932,7 +20118,8 @@
       // 同步清理不在区间内的 day 配置
       function pbCleanDays() {
         const keep = new Set(pbRangeDays());
-        for (const ds in pbState.days) if (!keep.has(ds)) delete pbState.days[ds];
+        for (const ds in pbState.days)
+          if (!keep.has(ds)) delete pbState.days[ds];
       }
 
       function periodBatchPage() {
@@ -19946,30 +20133,28 @@
         return days
           .map((ds) => {
             const cfg = pbDayCfg(ds);
-            const moodEmoji = { 开心: "😄", 平静: "😌", 低落: "😢", 烦躁: "😣", 焦虑: "😰" };
+            const moodEmoji = {
+              开心: "😄",
+              平静: "😌",
+              低落: "😢",
+              烦躁: "😣",
+              焦虑: "😰",
+            };
             return `
             <div class="pb-day-row">
-              <div class="pb-day-t"><span class="pb-day-date">${fmtShort(ds)}</span><span class="pb-day-week">${weekday(ds)}</span></div>
-              <div class="pb-day-field">
-                <div class="pb-day-label">流量</div>
+              <div class="pb-day-hd">
+                <div class="pb-day-t"><span class="pb-day-date">${fmtShort(ds)}</span><span class="pb-day-week">${weekday(ds)}</span></div>
                 <div class="pb-day-flow">
                   ${["少量", "适中", "大量", ""].map((f) => `<button class="${cfg.flow === f ? "on" : ""}" data-pbd="${ds}" data-f="${esc(f)}">${f || "无"}</button>`).join("")}
                 </div>
-              </div>
-              <div class="pb-day-field">
-                <div class="pb-day-label">心情</div>
                 <div class="pb-day-mood">
                   ${["开心", "平静", "低落", "烦躁", "焦虑"].map((v) => `<button class="${cfg.mood === v ? "on" : ""}" title="${v}" data-pbd="${ds}" data-m="${esc(v)}">${moodEmoji[v] || "💗"}</button>`).join("")}
                 </div>
               </div>
-              <div class="pb-day-field">
-                <div class="pb-day-label">症状</div>
+              <div class="pb-day-body">
                 <div class="pb-day-sym">
                   ${DB.period.symptoms.map((s) => `<button class="chip ${cfg.syms.includes(s) ? "on" : ""}" data-pbd="${ds}" data-s="${esc(s)}">${esc(s)}</button>`).join("")}
-                  <button class="chip ${cfg.syms.length === 0 ? "on" : ""}" data-pbd="${ds}" data-s-none="1">🚫 无</button>
                 </div>
-              </div>
-              <div class="pb-day-body">
                 <input type="text" class="input pb-day-note" data-pbd="${ds}" data-note placeholder="备注（可选）" value="${esc(cfg.note)}">
               </div>
             </div>`;
@@ -19978,7 +20163,8 @@
       }
 
       function pbRangeDays() {
-        const s = pbState.start, e = pbState.end;
+        const s = pbState.start,
+          e = pbState.end;
         if (!s || !e || s > e) return [];
         const out = [];
         let d = s;
@@ -19995,13 +20181,16 @@
         const [y, m, d] = cur.split("-").map(Number);
         showDatePicker({
           title: kind === "start" ? "选择开始日期" : "选择结束日期",
-          year: y, month: m, day: d,
+          year: y,
+          month: m,
+          day: d,
           onConfirm: (val) => {
             pbState[kind] = val;
             if (kind === "start" && !pbState.end) pbState.end = val;
             if (kind === "end" && !pbState.start) pbState.start = val;
             if (pbState.start && pbState.end && pbState.start > pbState.end) {
-              if (kind === "start") pbState.end = val; else pbState.start = val;
+              if (kind === "start") pbState.end = val;
+              else pbState.start = val;
             }
             pbCleanDays();
             rPeriod();
@@ -20032,6 +20221,20 @@
         });
       }
 
+      function pbApplyDefaultsToAll() {
+        pbRangeDays().forEach((ds) => {
+          pbState.days[ds] = {
+            flow: pbState.defaults.flow,
+            syms: [...pbState.defaults.syms],
+            mood: pbState.defaults.mood,
+            note: pbState.defaults.note,
+          };
+        });
+        pbCleanDays();
+        rPeriod();
+        toast("已把默认值应用到全部已选日期");
+      }
+
       function pbCommit() {
         const days = pbRangeDays();
         if (!days.length) return toast("请先选择日期区间");
@@ -20040,10 +20243,14 @@
           const cfg = pbDayCfg(ds);
           const cur = DB.period.rec[ds] || {};
           const next = { ...cur };
-          if (cfg.flow) next.f = cfg.flow; else next.f = "";
-          if (cfg.syms.length) next.s = [...cfg.syms]; else if (cur.s) next.s = [];
+          if (cfg.flow) next.f = cfg.flow;
+          else next.f = "";
+          const syms = (cfg.syms || []).filter((x) => x !== "__none__");
+          if (syms.length) next.s = syms;
+          else if (cur.s) next.s = [];
           if (cfg.mood) next.m = cfg.mood;
-          if (cfg.note) next.n = cfg.note; else if (cur.n) delete next.n;
+          if (cfg.note) next.n = cfg.note;
+          else if (cur.n) delete next.n;
           next.updatedAt = new Date().toISOString();
           DB.period.rec[ds] = next;
           changed++;
@@ -20073,7 +20280,9 @@
           ["🏞️", "相册管理", "全部图文照片", "albumsPage()"],
         ];
         // 「回忆」分区功能入口（成就墙等）
-        const memCells = [["🏆", "成就墙", `已解锁 ${unlockedN} 枚`, "achWall()"]];
+        const memCells = [
+          ["🏆", "成就墙", `已解锁 ${unlockedN} 枚`, "achWall()"],
+        ];
         const bdShort = (s) =>
           s ? +s.slice(5, 7) + "月" + +s.slice(8, 10) + "日" : "未设置";
         const loveDayTxt = C.loveStart ? `${loveDays()}天` : "未设置";
@@ -20087,7 +20296,9 @@
         // 每人：返回 {avatar, name, hbd(阳历农历), ymd(年龄/星座/生肖串)}
         const profileBrief = (p, isPartner) => {
           const name = esc(p.name || (isPartner ? "TA" : "我"));
-          const avatarColor = isPartner ? "var(--accent-weak)" : "var(--primary-weak)";
+          const avatarColor = isPartner
+            ? "var(--accent-weak)"
+            : "var(--primary-weak)";
           const avatarE = isPartner ? "👧" : "🧑";
           if (!p.birthday)
             return {
@@ -20110,7 +20321,11 @@
         const meB = profileBrief(C.me, false);
         const taB = profileBrief(C.partner, true);
         const md = [C.me, C.partner]
-          .map((p) => (p.birthday ? { p, n: getAgeDetail(p.birthday).daysToBirthday } : null))
+          .map((p) =>
+            p.birthday
+              ? { p, n: getAgeDetail(p.birthday).daysToBirthday }
+              : null,
+          )
           .filter(Boolean)
           .sort((a, b) => a.n - b.n)[0];
         const nextBdLine = md
@@ -20137,7 +20352,6 @@
             <div class="cp-hside">
               <div class="cp-avatar" style="background:${meB.avatarColor};">${meB.avatarE}</div>
               <div class="cp-name">${meB.name}</div>
-              <div class="cp-hbd">${meB.hbd}</div>
             </div>
             <div class="cp-heart">
               <span class="heart-emo">${C.paired ? (relS.together ? "❤️" : "🖤") : "💗"}</span>
@@ -20147,7 +20361,6 @@
             <div class="cp-hside">
               <div class="cp-avatar" style="background:${taB.avatarColor};">${taB.avatarE}</div>
               <div class="cp-name">${taB.name}</div>
-              <div class="cp-hbd">${taB.hbd}</div>
             </div>
           </div>
           <div class="cp-meta">
@@ -20157,15 +20370,15 @@
           <div class="cp-hint">${nextBdLine}</div>
           <div class="cp-footer">
             <div class="cp-f-item">
-              <span class="cp-f-num" style="color:var(--primary)">${nextAnniversary !== null ? nextAnniversary + " 天" : "—"}</span>
+              <span class="cp-f-num">${nextAnniversary !== null ? nextAnniversary + " 天" : "—"}</span>
               <span class="cp-f-label">距离周年</span>
             </div>
             <div class="cp-f-item">
-              <span class="cp-f-num" style="color:var(--primary)">${loveDayTxt}</span>
+              <span class="cp-f-num">${loveDayTxt}</span>
               <span class="cp-f-label">已在一起</span>
             </div>
             <div class="cp-f-item">
-              <span class="cp-f-num" style="font-size:14px">${C.loveStart ? loveStartYMD() : "—"}</span>
+              <span class="cp-f-num cp-f-sm">${C.loveStart ? loveStartYMD() : "—"}</span>
               <span class="cp-f-label">恋爱起始</span>
             </div>
           </div>
@@ -20181,7 +20394,9 @@
             relEventsArr.length
               ? relEventsArr
                   .map(
-                    (e) => `<div class="rel-mini ${e.type === "bk" ? "bk" : "rc"}">
+                    (
+                      e,
+                    ) => `<div class="rel-mini ${e.type === "bk" ? "bk" : "rc"}">
             <span class="re-dot ${e.type === "bk" ? "bk" : "rc"}">${e.type === "bk" ? "分" : "和"}</span>
             <span class="re-t">${e.type === "bk" ? "分手" : "和好"} · ${fmtCN(e.date)}</span>
             <span class="re-days">${
@@ -20345,8 +20560,8 @@
           </div>
           <div style="display:flex;gap:10px;margin-top:14px;">
             
-            <button class="btn danger" style="flex:1" onclick="confirmBox('删除此时间胶囊？',()=>{DB.timeCapsules=DB.timeCapsules.filter(x=>x.id!=='${id}');save();closeSub();toast('已删除')})">🗑 删除</button>
-            <button class="btn ghost" style="flex:1" onclick="capsuleEdit('${id}')">✏️ 编辑</button>
+            <button class="btn danger" style="flex:1" onclick="confirmBox('删除此时间胶囊？',()=>{DB.timeCapsules=DB.timeCapsules.filter(x=>x.id!=='${id}');save();closeSub();toast('已删除')})">删除</button>
+            <button class="btn ghost" style="flex:1" onclick="capsuleEdit('${id}')">编辑</button>
           </div>`;
         });
       }
@@ -20407,7 +20622,7 @@
                   "appearancePage()",
                 ],
                 [
-                  "🎨",
+                  "🖌️",
                   "默认卡片颜色",
                   "新记录默认颜色",
                   "defaultCardColorPage()",
@@ -20426,7 +20641,7 @@
                   "fieldsPage()",
                 ],
                 [
-                  "📋",
+                  "🗂️",
                   "默认记录类型",
                   "新建时默认选择",
                   "defaultRecordTypePage()",
@@ -20438,7 +20653,7 @@
               title: "🔔 通知",
               items: [
                 ["🔔", "提醒设置", "生日 · 经期", "remindPage()"],
-                ["🔔", "成就通知", "解锁时弹出提示", "achNotifyPage()"],
+                ["🏅", "成就通知", "解锁时弹出提示", "achNotifyPage()"],
               ],
             },
             {
@@ -20479,15 +20694,13 @@
           el.innerHTML = html;
           // 顶部“编排顺序”入口：调整各设置分组的前后顺序
           const orderEntry = document.createElement("div");
-          orderEntry.innerHTML = `<div style="margin:4px 2px 12px">
-            <button onclick="settingsSortPage()" style="display:flex;align-items:center;width:100%;gap:8px;background:none;border:0;cursor:pointer;color:var(--sub)">
-              <span style="font-size:14px;display:inline-flex;align-items:center;gap:6px">
-                <span class="sort-grip">☰</span>编排分组顺序
-              </span>
-              <span class="arr" style="margin-left:auto;color:var(--sub)">›</span>
-            </button>
-          </div>`;
-          el.insertBefore(orderEntry.firstElementChild, el.firstChild);
+          orderEntry.className = "glist";
+          orderEntry.style.marginTop = "8px";
+          orderEntry.innerHTML = `<button class="cell" style="width:100%;text-align:left" onclick="settingsSortPage()">
+            <span class="ic sort-grip">☰</span>
+            <span class="tt">编排分组顺序<div class="desc">长按拖动手柄调整各分组前后</div></span>
+            <span class="arr">›</span></button>`;
+          el.insertBefore(orderEntry, el.firstChild);
           window.settingsSortPage = () => {
             openSub("分组排序", (el2) => {
               const applyOrder = () => {
@@ -20695,21 +20908,22 @@
           const S = DB.settings;
           const draw = () => {
             el.innerHTML = `
-            <div class="glist" style="margin-top:8px">
-              <div class="cell" style="cursor:default"><span class="tt">🤖 自动备份（实验性）</span>
+            <div class="sec-t" style="font-size:12px;color:var(--sub);margin:8px 4px 6px;font-weight:600;letter-spacing:.3px">实验性 · 预留功能</div>
+            <div class="glist">
+              <div class="cell" style="cursor:default;opacity:.9"><span class="tt">🤖 自动备份<div class="desc">暂未自动执行，仅保存开关状态</div></span>
                 <button class="switch ${S.autoBackup ? "on" : ""}" id="autoBk"></button></div>
-              <div class="cell" style="cursor:default"><span class="tt">⏱️ 备份间隔（天）</span>
+              <div class="cell" style="cursor:default;opacity:.9"><span class="tt">⏱️ 备份间隔（天）</span>
                 <input type="number" min="1" max="30" value="${S.backupInterval}" id="bkInterval" style="width:60px;text-align:center;font-size:15px;background:var(--bg);border-radius:6px;padding:4px 8px;border:1px solid var(--line)"></div>
-              <div class="cell" style="cursor:default"><span class="tt">🌐 语言</span>
-                <select id="langSel" style="font-size:15px;background:var(--bg);border-radius:6px;padding:4px 8px;border:1px solid var(--line);font-family:inherit;">
-                  <option value="zh" ${S.language === "zh" ? "selected" : ""}>简体中文</option>
-                  <option value="en" ${S.language === "en" ? "selected" : ""}>English</option>
+              <div class="cell" style="cursor:default;opacity:.72"><span class="tt">🌐 多语言<div class="desc">暂未开放，当前仅支持简体中文</div></span>
+                <select id="langSel" disabled style="font-size:15px;background:var(--bg);border-radius:6px;padding:4px 8px;border:1px solid var(--line);font-family:inherit;opacity:.7;">
+                  <option value="zh" selected>简体中文</option>
+                  <option value="en">English</option>
                 </select></div>
             </div>
             <button class="btn blk" id="advSave" style="margin-top:16px">保存设置</button>
             <div style="font-size:12px;color:var(--sub);margin-top:12px;line-height:1.7">
-              💡 自动备份会在每次保存数据时检查间隔，若超过设定天数则自动导出备份到 localStorage。<br>
-              语言设置目前仅预留接口，后续版本将支持多语言界面。
+              💡 本页功能均为实验性 / 预留，可能随版本调整。<br>
+              📤 需要备份数据时，请到「数据管理 → 导出数据」。
             </div>`;
             $("#autoBk").onclick = () => {
               S.autoBackup = !S.autoBackup;
@@ -20805,9 +21019,9 @@
             });
           };
           const draw = () => {
-            const evs = (C.relEvents || []).slice().sort((a, b) =>
-              a.date < b.date ? -1 : 1,
-            );
+            const evs = (C.relEvents || [])
+              .slice()
+              .sort((a, b) => (a.date < b.date ? -1 : 1));
             const st = relNow();
             el.innerHTML = `<div class="card" style="margin-top:8px;padding:14px">
               <div style="display:flex;align-items:center;justify-content:space-between">
@@ -20851,9 +21065,7 @@
               b.onclick = () => {
                 const id = b.dataset.del;
                 confirmBox("确定删除这条记录？", () => {
-                  C.relEvents = (C.relEvents || []).filter(
-                    (x) => x.id !== id,
-                  );
+                  C.relEvents = (C.relEvents || []).filter((x) => x.id !== id);
                   save();
                   toast("已删除");
                   draw();
@@ -20888,8 +21100,8 @@
                       (f) =>
                         `<div class="cell"><span class="ic">📋</span>
               <span class="tt">${esc(f.name)}<div class="desc">${esc(f.value || "未填写")}</div></span>
-              <button class="btn sm ghost" data-ef="${f.id}">编辑</button>
-              <button class="btn sm danger" data-df="${f.id}">删除</button></div>`,
+              <button class="btn sm danger" data-df="${f.id}">删除</button>
+              <button class="btn sm ghost" data-ef="${f.id}">编辑</button></div>`,
                     )
                     .join("")
                 : '<div class="cell"><span class="tt" style="color:var(--sub)">如爱好、忌口、心愿等，无限新增</span></div>'
@@ -20947,38 +21159,10 @@
       function recEditor(type, id) {
         if (!type) type = DB.settings.defaultRecordType || "happy";
         const r = id ? DB[type].find((x) => x.id === id) : null;
-        // 新增时默认日期：优先用最近一次新增的开始/结束日期，其次用该类型最近一条记录，最后今天
-        const lastRec =
-          (DB.settings.lastRecordStart &&
-            DB.settings.lastRecordStart[type]) ||
-          "";
-        const lastStart =
-          typeof lastRec === "object" && lastRec
-            ? lastRec.start || ""
-            : typeof lastRec === "string"
-              ? lastRec
-              : "";
-        const lastEnd =
-          typeof lastRec === "object" && lastRec && lastRec.end
-            ? lastRec.end
-            : "";
-        const lastRecStart =
-          lastStart ||
-          (DB[type] && DB[type].length
-            ? DB[type][DB[type].length - 1].startDate ||
-              DB[type][DB[type].length - 1].date
-            : "") ||
-          today();
-        const lastRecEnd =
-          lastEnd ||
-          (DB[type] && DB[type].length
-            ? DB[type][DB[type].length - 1].endDate ||
-              DB[type][DB[type].length - 1].date
-            : "");
         const d = r
           ? { ...r }
           : {
-              date: "",
+              date: today(),
               place: "",
               from: "",
               to: "",
@@ -20987,18 +21171,11 @@
               imgs: [],
               tags: [],
               color: DB.settings.defaultCardColor || "",
-              startDate: lastRecStart,
-              endDate: "",
+              startDate: today(),
+              endDate: today(),
             };
-        if (r) {
-          // 编辑：完整恢复起止日期
-          if (!d.startDate) d.startDate = d.date || today();
-          if (!d.endDate)
-            d.endDate = addDays(d.startDate, Math.max(1, d.days || 1) - 1);
-        } else {
-          // 新增：结束日期默认定位到“上次新增/最近记录”的结束日期（无则等于开始日期）
-          d.endDate = lastRecEnd || d.startDate;
-        }
+        if (!d.startDate) d.startDate = d.date || today();
+        if (!d.endDate) d.endDate = addDays(d.startDate, (d.days || 1) - 1);
         d.imgs = d.imgs || [];
         d.tags = d.tags || [];
         d.color = d.color || "";
@@ -21006,26 +21183,20 @@
           (id ? "编辑" : "新增") + (type === "happy" ? "快乐记录" : "旅行记录");
         openSub(title, (el) => {
           const imgs = d.imgs;
-          // 依据已选开始/结束日期自动重算并展示持续天数；若结束早于开始则校正结束=开始
-          const refreshRange = () => {
+          const updateEndDate = () => {
             const start = $("#reStartDate").value;
-            let end = $("#reEndDate").value;
-            if (!start) return;
-            if (!end || end < start) end = start;
-            $("#reEndDate").value = end;
-            $("#reEndDateBtn").textContent = fmtCN(end) + " ▾";
-            const days = dayDiff(start, end) + 1;
-            const show = $("#reDaysShow");
-            if (show)
-              show.textContent =
-                "共 " + days + (days === 1 ? " 天" : " 天（含首尾）");
-            d.startDate = start;
-            d.endDate = end;
-            d.days = days;
+            const days = +$("#reDays").value || 1;
+            if (start) {
+              const end = addDays(start, days - 1);
+              $("#reEndDate").value = end;
+              d.endDate = end;
+            }
           };
           const fields = [
+            ["reDate", "date", d.date],
             ["reStartDate", "date", d.startDate],
             ["reEndDate", "date", d.endDate],
+            ["reDays", "number", d.days],
             ["rePlace", "text", d.place],
             ["reFrom", "text", d.from],
             ["reTo", "text", d.to],
@@ -21034,13 +21205,14 @@
           fields.forEach(([fid, type, val]) => {
             const i = el.querySelector("#" + fid);
             if (!i) return;
-            i.value = val;
-            // 日期由滚轮按钮驱动（见下方 bindDatePicker），此处只绑定普通文本/多行字段
-            if (fid === "reStartDate" || fid === "reEndDate") return;
+            if (type === "textarea") i.value = val;
+            else i.value = val;
             i.addEventListener("input", () => {
+              if (fid === "reStartDate" || fid === "reDays") updateEndDate();
               d[fid.replace("re", "").toLowerCase()] = i.value;
             });
             i.addEventListener("change", () => {
+              if (fid === "reStartDate" || fid === "reDays") updateEndDate();
               d[fid.replace("re", "").toLowerCase()] = i.value;
             });
           });
@@ -21049,23 +21221,25 @@
               ? `<div class="field-l">使用模板</div><div class="sym-grid" id="tplChips">${DB.templates.map((t) => `<button class="chip" data-tp="${t.id}">${esc(t.name)}</button>`).join("")}</div>`
               : "";
           el.innerHTML = `<div class="card">${tplChips}
-          <div class="field"><div class="field-l">开始日期 *</div>
+          <div class="field"><div class="field-l">日期 *</div>
+            <button class="btn ghost" style="width:100%;" id="reDateBtn">${fmtCN(d.date)} ▾</button>
+            <input type="hidden" id="reDate" value="${d.date}">
+          </div>
+          <div class="field"><div class="field-l">开始日期</div>
             <button class="btn ghost" style="width:100%;" id="reStartDateBtn">${d.startDate ? fmtCN(d.startDate) : "选择"} ▾</button>
             <input type="hidden" id="reStartDate" value="${d.startDate}">
           </div>
-          <div class="field"><div class="field-l">结束日期</div>
-            <button class="btn ghost" style="width:100%;" id="reEndDateBtn">${d.endDate ? fmtCN(d.endDate) : "选择"} ▾</button>
-            <input type="hidden" id="reEndDate" value="${d.endDate}">
+          <div class="field"><div class="field-l">结束日期（自动计算）</div>
+            <input class="input" id="reEndDate" value="${d.endDate ? fmtCN(d.endDate) : ""}" readonly style="background:#e8e8ea;">
           </div>
-          <div class="field"><div class="field-l" style="color:var(--sub);font-weight:400">⏱ 持续 <b id="reDaysShow" style="color:var(--primary);font-weight:600">共 ${d.days || 1} 天</b></div></div>
+          <div class="field"><div class="field-l">持续天数</div>
+            <input class="input" type="number" min="1" id="reDays" value="${d.days || 1}"></div>
           ${
             type === "happy"
               ? `
             <div class="field"><div class="field-l">地点</div><input class="input" id="rePlace" value="${esc(d.place || "")}" placeholder="在哪里？"></div>
             <div class="field"><div class="field-l">事件标签</div><div class="sym-grid" id="reTags">
-              ${happyTagList()
-                .map((t) => `<button class="chip ${d.tags && d.tags.includes(t.name) ? "on" : ""}" data-tg="${esc(t.name)}">${t.emoji} ${esc(t.name)}</button>`)
-                .join("")}
+              ${DB.tags.happy.map((t) => `<button class="chip ${d.tags && d.tags.includes(t) ? "on" : ""}" data-tg="${esc(t)}">${esc(t)}</button>`).join("")}
               <button class="chip" id="reAddTag">＋ 新标签</button></div></div>`
               : `
             <div class="field"><div class="field-l">出发地</div><input class="input" id="reFrom" value="${esc(d.from || "")}" placeholder="如：上海"></div>
@@ -21078,7 +21252,7 @@
               .map(
                 (im, i) =>
                   `<div style="position:relative;width:86px"><img src="${im}" style="width:86px;height:86px;object-fit:cover;border-radius:8px">
-              <button data-rm="${i}" aria-label="删除图片" style="position:absolute;top:-9px;right:-9px;width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;font-size:13px;line-height:1">✕</button></div>`,
+              <button data-rm="${i}" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;font-size:11px">✕</button></div>`,
               )
               .join("")}
             <button id="reAddImg" style="width:86px;height:86px;border-radius:8px;border:1px dashed #C9CDD4;color:var(--sub);font-size:24px">＋</button></div></div>
@@ -21086,7 +21260,7 @@
             ${CARD_COLORS.map((c, i) => `<button data-c="${i}" style="width:34px;height:34px;border-radius:8px;background:${c || "var(--card)"};border:1px solid ${(d.color || "") === c ? "var(--primary)" : "var(--line)"}"></button>`).join("")}</div></div>
           <button class="btn blk" id="reSave">保存</button></div>`;
 
-          // 日期选择器绑定：开始/结束都用同一个滚动式滚轮（showDatePicker）
+          // 日期选择器绑定
           const bindDatePicker = (btnId, inputId, title) => {
             const btn = el.querySelector(btnId);
             const inp = el.querySelector(inputId);
@@ -21102,16 +21276,16 @@
                 onConfirm: (res) => {
                   inp.value = res;
                   btn.textContent = fmtCN(res) + " ▾";
-                  if (inputId === "#reStartDate") d.startDate = res;
-                  if (inputId === "#reEndDate") d.endDate = res;
-                  refreshRange();
+                  d[inputId.replace("#", "").replace("re", "").toLowerCase()] =
+                    res;
+                  if (inputId === "#reStartDate") updateEndDate();
+                  if (inputId === "#reDate") d.date = res;
                 },
               });
             };
           };
-          // 开始日期默认聚焦到本次起始（含记忆的上次日期）
+          bindDatePicker("#reDateBtn", "#reDate", "选择日期");
           bindDatePicker("#reStartDateBtn", "#reStartDate", "选择开始日期");
-          bindDatePicker("#reEndDateBtn", "#reEndDate", "选择结束日期");
 
           let color = d.color || "";
           let tags = new Set(d.tags || []);
@@ -21145,15 +21319,12 @@
               "新增标签",
               [{ k: "t", label: "标签名", req: 1 }],
               (v) => {
-                const nm = (v.t || "").trim();
-                if (!nm) return;
-                if (!happyTagList().some((x) => x.name === nm))
-                  happyTagEnsure(nm, DEFAULT_HAPPY_EMOJI);
-                tags.add(nm);
+                if (!DB.tags.happy.includes(v.t)) DB.tags.happy.push(v.t);
+                tags.add(v.t);
                 save();
                 paintSub();
                 setTimeout(() => {
-                  const c = $(`#reTags [data-tg="${nm}"]`);
+                  const c = $(`#reTags [data-tg="${v.t}"]`);
                   c && c.click();
                 }, 0);
               },
@@ -21187,17 +21358,18 @@
               }),
           );
           $("#reSave").onclick = () => {
+            const date = $("#reDate").value;
+            if (!date) {
+              toast("请选择日期");
+              return;
+            }
             const startDate = $("#reStartDate").value;
-            let endDate = $("#reEndDate").value;
+            const days = +$("#reDays").value || 1;
             if (!startDate) {
               toast("请选择开始日期");
               return;
             }
-            refreshRange();
-            endDate = $("#reEndDate").value || startDate;
-            const days = dayDiff(startDate, endDate) + 1;
-            // date 字段与开始日期对齐，向下兼容旧数据/旧列表展示
-            const date = startDate;
+            const endDate = addDays(startDate, days - 1);
             let obj;
             if (type === "happy") {
               const text = $("#reText").value.trim(),
@@ -21238,23 +21410,19 @@
             if (r) {
               Object.assign(r, obj);
               r.updatedAt = new Date().toISOString();
-            } else {
+            } else
               DB[type].push({
                 id: uid(),
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
                 ...obj,
               });
-              // 记忆本次新增的开始/结束日期，供下次新增默认定位（含开始与结束）
-              DB.settings.lastRecordStart = DB.settings.lastRecordStart || {};
-              DB.settings.lastRecordStart[type] = { start: startDate, end: endDate };
-            }
             save();
             checkAchAll();
             toast("已保存");
             closeSub();
           };
-          refreshRange();
+          updateEndDate();
         });
       }
 
@@ -21307,12 +21475,7 @@
             {
               icon: "🏷️",
               label: "标签",
-              value: (r.tags || []).length
-                ? r.tags
-                    .filter(Boolean)
-                    .map((t) => `${happyTagEmoji(t)} ${esc(t)}`)
-                    .join("　")
-                : "—",
+              value: (r.tags || []).length ? r.tags.map(esc).join("、") : "—",
             },
             {
               icon: "📷",
@@ -21341,34 +21504,39 @@
             (r.imgs || []).length
               ? `<div class="card" style="margin-top:12px;padding:12px">
             <div class="sec-hd" style="margin:0 2px 10px"><span class="sec-t">🖼️ 图片 · ${(r.imgs || []).length}张</span>
-              <span class="chip" style="height:22px;font-size:11px">${(r.imgs || []).length} 张，可左右切换</span></div>
-            <div class="dt-imgs">${r.imgs.map((im, i) => `<img class="dt-img" src="${im}" data-i="${i}" style="border-radius:12px" alt="${i + 1}/${r.imgs.length}">`).join("")}</div></div>`
+              ${(r.imgs || []).length > 1 ? `<span class="chip" style="height:22px;font-size:11px">可左右滑动切换</span>` : ""}</div>
+            ${
+              (r.imgs || []).length === 1
+                ? `<div class="imggrid n1">${r.imgs.map((im, i) => `<img class="im" src="${im}" data-i="${i}" loading="lazy">`).join("")}</div>`
+                : `<div class="imggrid carousel">${r.imgs.map((im, i) => `<button class="im" data-i="${i}"><img src="${im}" loading="lazy" alt="${i + 1}/${r.imgs.length}"></button>`).join("")}</div>`
+            }</div>`
               : ""
           }
           <div class="card" style="margin-top:12px;padding:6px 16px">${rowsHtml}</div>
           <div style="display:flex;gap:10px;margin-top:14px">
-            <button class="btn ghost" style="flex:1" onclick="recEditor('${type}','${id}')">✏️ 编辑</button>
-            <button class="btn danger" style="flex:1" onclick="recDetailDelete('${type}','${id}')">🗑 删除</button>
+            <button class="btn danger" style="flex:1" onclick="recDetailDelete('${type}','${id}')">删除</button>
+            <button class="btn ghost" style="flex:1" onclick="recEditor('${type}','${id}')">编辑</button>
           </div>`;
-          el.querySelectorAll(".dt-img").forEach(
-            (im) =>
-              (im.onclick = () => {
-                lightbox(r.imgs, +im.dataset.i, {
-                  onDelete: (i) => {
-                    removeImgFromAlbums(r.imgs[i]);
-                    r.imgs.splice(i, 1);
-                    save();
-                    paintSub();
-                  },
-                });
-              }),
-          );
+          const dtDel = (i) => {
+            removeImgFromAlbums(r.imgs[i]);
+            r.imgs.splice(i, 1);
+            save();
+            paintSub();
+          };
+          const dtCarousel = el.querySelector(".imggrid.carousel");
+          if (dtCarousel) bindImageCarousel(dtCarousel, () => r, dtDel);
+          const dtSingle = el.querySelector(".imggrid.n1 .im");
+          if (dtSingle)
+            dtSingle.onclick = () => lightbox(r.imgs, 0, { onDelete: dtDel });
         });
       }
 
       // 记录详情删除：轻确认，删除后提供 toast 撤销
       function recDetailDelete(type, id) {
-        deleteRecordWithUndo(type, id, { closeSubAfter: true, source: "detail" });
+        deleteRecordWithUndo(type, id, {
+          closeSubAfter: true,
+          source: "detail",
+        });
       }
 
       function removeImgFromAlbums(img) {
@@ -21419,7 +21587,11 @@
         }, duration);
       }
 
-      function deleteRecordWithUndo(type, id, { closeSubAfter = false, source = "list" } = {}) {
+      function deleteRecordWithUndo(
+        type,
+        id,
+        { closeSubAfter = false, source = "list" } = {},
+      ) {
         if (undoRec) {
           clearTimeout(undoRec.timer);
           commitDelete();
@@ -22129,9 +22301,9 @@
                 <span style="width:14px;height:14px;border-radius:4px;background:${t.color || "var(--primary-weak)"}"></span>
                 <b style="font-size:14px">${esc(t.name)}</b>
                 <span style="flex:1"></span>
-                <button class="btn sm ghost" data-et="${t.id}">编辑</button>
-                <button class="btn sm danger" data-dt="${t.id}">删除</button></div>
-              <div class="mom-tags" style="margin-top:6px">${(t.tags || []).map((x) => `<span class="tag mom-happy-tag">${happyTagEmoji(x)} ${esc(x)}</span>`).join("")}</div>
+                <button class="btn sm danger" data-dt="${t.id}">删除</button>
+                <button class="btn sm ghost" data-et="${t.id}">编辑</button></div>
+              <div class="mom-tags" style="margin-top:6px">${(t.tags || []).map((x) => `<span class="tag"># ${esc(x)}</span>`).join("")}</div>
               ${t.text ? `<div style="font-size:12px;color:var(--sub);margin-top:4px">${esc(t.text)}</div>` : ""}
             </div>`,
                   )
@@ -22212,145 +22384,73 @@
 
       function tagsPage() {
         openSub("标签管理", (el) => {
-          // 可选 emoji 调色板
-          const EMOJI_PRESET = [
-            "💑",
-            "🍽️",
-            "🎬",
-            "🛍️",
-            "🎡",
-            "🍳",
-            "🎁",
-            "🎂",
-            "🎉",
-            "🍺",
-            "☕",
-            "🍰",
-            "🎮",
-            "🎤",
-            "🎵",
-            "🎨",
-            "📚",
-            "🏀",
-            "🚗",
-            "✈️",
-            "🏕️",
-            "🏖️",
-            "🌹",
-            "💍",
-            "💕",
-            "😄",
-            "🐱",
-            "🌙",
-          ];
-          const openEmojiPicker = (name, cb) => {
-            const body = `<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px">${EMOJI_PRESET.map(
-              (e) =>
-                `<button data-emo="${e}" style="font-size:22px;line-height:1;height:44px;background:var(--bg);border:none;border-radius:10px;cursor:pointer">${e}</button>`,
-            ).join("")}</div>`;
-            const m = modal({
-              title: `给「${name}」选个表情`,
-              body,
-              cancel: "",
-              ok: "取消",
-              onOk: () => true,
-            });
-            m.querySelectorAll("[data-emo]").forEach((b) => {
-              b.onclick = () => {
-                cb(b.dataset.emo);
-                m.remove();
-              };
-            });
-          };
-          const list = () => happyTagList();
           const draw = () => {
-            const tg = list();
             el.innerHTML = `<div class="card" style="margin-top:8px;padding:12px 14px">
             <div style="font-size:13px;color:var(--sub);line-height:1.6">
-              🏷️ 管理快乐事件标签。<b style="color:var(--primary)">点表情可换 emoji</b>；✎ 重命名、✕ 删除。
-              改名/删除会同步到已保存的记录。
+              🏷️ 管理快乐事件标签。删除或重命名标签时，已保存记录中的对应标签也会同步更新。
             </div>
           </div>
           <div class="card" style="margin-top:12px">
-            <div class="field-l">当前标签</div>
-            <div class="sym-grid" style="margin-top:10px">${tg
+            <div class="field-l">当前标签（点击 ✎ 重命名，✕ 删除）</div>
+            <div class="sym-grid" style="margin-top:10px">${DB.tags.happy
               .map(
-                (t) => `<span class="chip chip-tag" style="padding-right:6px">
-              <button data-emo="${esc(t.name)}" aria-label="更换表情" class="chip-emo">${t.emoji}</button>
-              <span>${esc(t.name)}</span>
-              <button class="chip-btn" data-e="${esc(t.name)}" aria-label="重命名">✎</button>
-              <button class="chip-btn x" data-x="${esc(t.name)}" aria-label="删除">✕</button></span>`,
+                (t) => `<span class="chip">${esc(t)}
+              <span style="cursor:pointer" data-e="${esc(t)}">✎</span>
+              <span class="x" data-x="${esc(t)}">✕</span></span>`,
               )
               .join("")}</div>
             <div style="display:flex;gap:8px;margin-top:14px">
               <input class="input" id="tagIn" placeholder="输入新标签，如：露营">
               <button class="btn" id="tagAdd" style="flex:none">添加</button></div>
           </div>
-          <div style="font-size:12px;color:var(--sub);margin:10px 4px">没有找到想要的表情？可先用任意一个，之后随时更换。</div>`;
+          <div style="font-size:12px;color:var(--sub);margin:10px 4px">默认标签：约会、干饭、看电影、逛街、游玩、做饭</div>`;
             $("#tagAdd").onclick = () => {
               const v = $("#tagIn").value.trim();
               if (!v) return;
-              if (happyTagList().some((x) => x.name === v))
-                return toast("标签已存在");
-              happyTagEnsure(v, DEFAULT_HAPPY_EMOJI);
+              if (DB.tags.happy.includes(v)) return toast("标签已存在");
+              DB.tags.happy.push(v);
               save();
               draw();
             };
-            el.querySelectorAll("[data-emo]").forEach((b) => {
-              b.onclick = () => {
-                const name = b.dataset.emo;
-                openEmojiPicker(name, (emo) => {
-                  happyTagEnsure(name, emo);
+            el.querySelectorAll("[data-x]").forEach(
+              (x) =>
+                (x.onclick = () => {
+                  const tag = x.dataset.x;
+                  DB.tags.happy = DB.tags.happy.filter((t) => t !== tag);
+                  DB.happy.forEach((r) => {
+                    if (r.tags) r.tags = r.tags.filter((t) => t !== tag);
+                  });
                   save();
                   draw();
-                });
-              };
-            });
-            el.querySelectorAll("[data-x]").forEach((x) => {
-              x.onclick = () => {
-                const tag = x.dataset.x;
-                DB.tags.happy = DB.tags.happy.filter((t) =>
-                  typeof t === "string" ? t !== tag : t.name !== tag,
-                );
-                DB.happy.forEach((r) => {
-                  if (r.tags) r.tags = r.tags.filter((t) => t !== tag);
-                });
-                save();
-                draw();
-              };
-            });
-            el.querySelectorAll("[data-e]").forEach((x) => {
-              x.onclick = () => {
-                const oldTag = x.dataset.e;
-                inputModal(
-                  "重命名标签",
-                  [{ k: "name", label: "新名称", val: oldTag, req: 1 }],
-                  (v) => {
-                    const newTag = v.name.trim();
-                    if (!newTag || newTag === oldTag) return;
-                    if (happyTagList().some((x) => x.name === newTag))
-                      return toast("标签已存在");
-                    DB.tags.happy = DB.tags.happy.map((t) =>
-                      typeof t === "string"
-                        ? t === oldTag
-                          ? { name: newTag, emoji: DEFAULT_HAPPY_EMOJI }
-                          : t
-                        : t.name === oldTag
-                          ? { ...t, name: newTag }
-                          : t,
-                    );
-                    DB.happy.forEach((r) => {
-                      if (r.tags)
-                        r.tags = r.tags.map((t) =>
-                          t === oldTag ? newTag : t,
-                        );
-                    });
-                    save();
-                    draw();
-                  },
-                );
-              };
-            });
+                }),
+            );
+            el.querySelectorAll("[data-e]").forEach(
+              (x) =>
+                (x.onclick = () => {
+                  const oldTag = x.dataset.e;
+                  inputModal(
+                    "重命名标签",
+                    [{ k: "name", label: "新名称", val: oldTag, req: 1 }],
+                    (v) => {
+                      const newTag = v.name.trim();
+                      if (!newTag || newTag === oldTag) return;
+                      if (DB.tags.happy.includes(newTag))
+                        return toast("标签已存在");
+                      DB.tags.happy = DB.tags.happy.map((t) =>
+                        t === oldTag ? newTag : t,
+                      );
+                      DB.happy.forEach((r) => {
+                        if (r.tags)
+                          r.tags = r.tags.map((t) =>
+                            t === oldTag ? newTag : t,
+                          );
+                      });
+                      save();
+                      draw();
+                    },
+                  );
+                }),
+            );
           };
           draw();
         });
@@ -22542,8 +22642,8 @@
                       `<div class="cell">
                 <span class="ic">${c.icon || "⭐"}</span>
                 <span class="tt">${esc(c.title)}<div class="desc">${esc(c.group || "默认分组")} · ${c.date ? fmtShort(c.date) : ""}</div></span>
-                <button class="btn sm ghost" data-ea="${c.id}">编辑</button>
-                <button class="btn sm danger" data-da="${c.id}">删除</button></div>`,
+                <button class="btn sm danger" data-da="${c.id}">删除</button>
+                <button class="btn sm ghost" data-ea="${c.id}">编辑</button></div>`,
                   )
                   .join("")
               : '<div class="cell"><span class="tt" style="color:var(--sub)">暂无自定义成就</span></div>'
@@ -22767,16 +22867,9 @@
                 .join("")}
             </div>
             <div style="margin-top:14px;"><button class="btn" id="uiReset" style="width:100%">恢复默认配色</button></div>
-            <div style="margin-top:14px">
-              <div style="display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid var(--line)">
-                <span style="font-size:14px;font-weight:500">🌙 外观模式</span>
-              </div>
-              <div class="seg" style="margin-top:10px">
-                <button data-tm="auto" class="${(U.themeMode || "auto") === "auto" ? "on" : ""}">自动</button>
-                <button data-tm="light" class="${(U.themeMode || "auto") === "light" ? "on" : ""}">浅色</button>
-                <button data-tm="dark" class="${(U.themeMode || "auto") === "dark" ? "on" : ""}">深色</button>
-              </div>
-              <div style="font-size:11px;color:var(--sub);margin-top:6px">自动：跟随系统深浅色切换</div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)">
+              <span style="font-size:14px;font-weight:500">🌙 深色模式</span>
+              <button class="switch ${U.darkMode ? "on" : ""}" id="darkModeSw"></button>
             </div>
           </div>
           <div class="card" style="margin-top:12px">
@@ -22860,17 +22953,12 @@
                   draw();
                 }),
             );
-            document.querySelectorAll("[data-tm]").forEach((b) => {
-              b.onclick = () => {
-                U.themeMode = b.dataset.tm;
-                U.darkMode = b.dataset.tm === "dark"; // 兼容旧逻辑
-                save();
-                document.querySelectorAll("[data-tm]").forEach((x) =>
-                  x.classList.toggle("on", x === b),
-                );
-                applyTheme();
-              };
-            });
+            $("#darkModeSw").onclick = () => {
+              U.darkMode = !U.darkMode;
+              save();
+              applyTheme();
+              draw();
+            };
             $("#rdR").oninput = (e) => {
               U.radius = +e.target.value;
               $("#rdV").textContent = e.target.value;
@@ -22907,8 +22995,7 @@
               U.text = "#22242A";
               U.lineColor = "#E5E5EA";
               U.shadowIntensity = 0.06;
-              U.cardRadius = 14;
-              U.themeMode = "auto";
+              U.radius = 12;
               U.darkMode = false;
               save();
               applyTheme();
@@ -22921,15 +23008,47 @@
 
       function dataPage() {
         openSub("数据管理", (el) => {
-          const bytes = new Blob([localStorage.getItem(KEY) || ""]).size;
-          el.innerHTML = `<div class="card" style="margin-top:8px">
+          const draw = () => {
+            const raw = localStorage.getItem(KEY) || "";
+            let imgChars = 0,
+              imgCount = 0;
+            const walk = (o) => {
+              if (!o || typeof o !== "object") return;
+              if (Array.isArray(o)) {
+                o.forEach(walk);
+                return;
+              }
+              for (const k in o) {
+                const v = o[k];
+                if (typeof v === "string" && /^data:image\//.test(v)) {
+                  imgChars += v.length;
+                  imgCount++;
+                } else walk(v);
+              }
+            };
+            walk(DB);
+            // localStorage 以 UTF-16 存储，约 2 字节/字符，与 5MB 上限口径一致
+            const totalKB = (raw.length * 2) / 1024;
+            const imgKB = (imgChars * 2) / 1024;
+            const recKB = Math.max(0, totalKB - imgKB);
+            const pct =
+              totalKB > 0 ? Math.max(2, Math.round((imgKB / totalKB) * 100)) : 0;
+            el.innerHTML = `<div class="card" style="margin-top:8px">
           <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:500">
-            <span style="color:var(--sub)">本地存储占用</span><b style="font-weight:600">${(bytes / 1024).toFixed(1)} KB</b></div></div>
+            <span style="color:var(--sub)">本地存储占用</span><b style="font-weight:600">${totalKB.toFixed(1)} KB</b></div>
+          <div style="height:8px;border-radius:6px;background:var(--bg);overflow:hidden;margin-top:10px;display:flex">
+            <span style="width:${pct}%;background:var(--primary)"></span>
+            <span style="flex:1;background:var(--accent)"></span></div>
+          <div style="display:flex;gap:16px;margin-top:8px;font-size:12px;color:var(--sub);font-weight:500;flex-wrap:wrap">
+            <span>🖼️ 图片 ${imgCount} 张 · ${imgKB.toFixed(1)} KB</span>
+            <span>📝 记录等 ${recKB.toFixed(1)} KB</span></div></div>
         <div class="glist" style="margin-top:12px">
           <button class="cell" style="width:100%;text-align:left" id="dExp"><span class="ic">📤</span>
             <span class="tt">导出数据（JSON备份）<div class="desc">跨设备迁移前，先在旧设备导出</div></span><span class="arr">›</span></button>
           <button class="cell" style="width:100%;text-align:left" id="dImp"><span class="ic">📥</span>
             <span class="tt">导入数据<div class="desc">支持合并去重，重复记录自动跳过</div></span><span class="arr">›</span></button>
+          <button class="cell" style="width:100%;text-align:left" id="dImg"><span class="ic">🧹</span>
+            <span class="tt">清理所有图片<div class="desc">删除全部照片以释放空间（文字记录保留）</div></span><span class="arr">›</span></button>
           <button class="cell" style="width:100%;text-align:left" id="dClr"><span class="ic">🗑️</span>
             <span class="tt" style="color:var(--danger);font-weight:500">清空全部数据<div class="desc">不可恢复，请先导出备份</div></span></button></div>
         <div style="font-size:12px;color:var(--sub);margin:14px 4px;line-height:1.7;font-weight:500">
@@ -22988,6 +23107,17 @@
             };
             inp.click();
           };
+          $("#dImg").onclick = () =>
+            confirmBox(
+              `将删除全部 ${imgCount} 张图片（文字记录会保留），确定继续？`,
+              () => {
+                const n = clearAllImages();
+                save();
+                applyTheme();
+                toast(`已清理 ${n} 张图片`);
+                draw();
+              },
+            );
           $("#dClr").onclick = () =>
             confirmBox("将清空所有本地数据且不可恢复，确定继续？", () => {
               modal({
@@ -23005,6 +23135,8 @@
                 },
               });
             });
+          };
+          draw();
         });
       }
 
@@ -23042,13 +23174,13 @@
       function rPeriodTags(el) {
         const P = DB.period;
         const draw = () => {
-          const one = (label, arr, key) =>
+          const one = (label, arr, key, emoji) =>
             `<div class="card" style="margin-top:12px">
-          <div class="sec-t" style="font-size:14px;font-weight:500">${label}</div>
+          <div class="sec-t" style="font-size:14px;font-weight:500">${emoji ? emoji + " " : ""}${label}</div>
           <div class="sym-grid">${arr
             .map(
               (s, i) =>
-                `<span class="chip">${esc(s)}
+                `<span class="chip">${tagEmoji(s, key)} ${esc(s)}
             <button data-up="${key}:${i}" style="font-size:11px;color:var(--sub)">↑</button>
             <span class="x" data-px="${key}:${i}">✕</span></span>`,
             )
@@ -23056,7 +23188,7 @@
           <div style="display:flex;gap:8px;margin-top:12px">
             <input class="input" data-pin="${key}" placeholder="新增${label.replace("档位", "")}标签">
             <button class="btn" data-padd="${key}" style="flex:none">添加</button></div></div>`;
-          el.innerHTML = `<div style="margin-top:8px">${one("流量档位", P.flow, "flow")}${one("身体症状", P.symptoms, "symptoms")}${one("心情标签", P.moods, "moods")}</div>`;
+          el.innerHTML = `<div style="margin-top:8px">${one("流量档位", P.flow, "flow", "🩸")}${one("身体症状", P.symptoms, "symptoms", "🤒")}${one("心情标签", P.moods, "moods", "💗")}</div>`;
           el.querySelectorAll("[data-px]").forEach(
             (x) =>
               (x.onclick = () => {
@@ -23328,91 +23460,6 @@
       /* ================================================================
        * 初始化
        * ================================================================ */
-      // iOS 风格：屏幕左缘右滑返回上一子页面（带视差跟随 + 松手回弹/滑出）
-      function initSwipeBack() {
-        const subEl = $("#sub");
-        if (!subEl) return;
-        let sx = 0,
-          sy = 0,
-          active = false,
-          lockV = false,
-          fired = false,
-          canceled = false;
-        const W = () => window.innerWidth || document.documentElement.clientWidth;
-        const apply = (x) => {
-          // x 为 0~1 进度；0 原样，1 完全右移滑出
-          const ease = Math.min(1, x);
-          subEl.style.transition = "none";
-          subEl.style.transform = `translateX(${Math.round(
-            ease * W() * 0.55,
-          )}px)`;
-          subEl.style.opacity = String(1 - ease * 0.55);
-        };
-        const clearFx = () => {
-          subEl.style.transition = "";
-          subEl.style.transform = "";
-          subEl.style.opacity = "";
-        };
-        const isOverlay = (t) =>
-          !!(t && t.closest && t.closest(".dt-picker-mask, .modal, .sheet, .lightbox"));
-        const start = (e) => {
-          const t = e.touches && e.touches[0];
-          if (!t) return;
-          // 仅在子页面已打开、起始点在左缘、且起点不在弹层上时启用
-          if (!subStack.length || !subEl.classList.contains("on")) return;
-          if (t.clientX > 32) return;
-          if (isOverlay(e.target)) return;
-          sx = t.clientX;
-          sy = t.clientY;
-          active = true;
-          lockV = false;
-          fired = false;
-          canceled = false;
-        };
-        const move = (e) => {
-          if (!active || !subStack.length) return;
-          const t = e.touches && e.touches[0];
-          if (!t) return;
-          const mx = t.clientX - sx;
-          const my = t.clientY - sy;
-          if (!lockV) {
-            // 若明显倾向纵向滚动，放弃手势，避免影响页面上下滑
-            if (Math.abs(my) > 14 && Math.abs(my) > Math.abs(mx)) {
-              lockV = true;
-              canceled = true;
-              clearFx();
-              return;
-            }
-            // 轻微左右抖动不理会
-            if (mx < 0) {
-              apply(Math.max(0, mx / 260));
-              return;
-            }
-          }
-          if (lockV || fired) return;
-          e.preventDefault();
-          apply(Math.min(1, mx / 260));
-        };
-        const release = () => {
-          if (!active) return;
-          const wasActive = active;
-          active = false;
-          // 先读取当前跟随进度，再清除效果
-          let p = 0;
-          const cur = subEl.style.transform || "";
-          const m = cur.match(/translateX\(([-0-9.]+)px\)/);
-          if (m) p = Math.max(0, Math.min(1, parseFloat(m[1]) / (W() * 0.55)));
-          clearFx();
-          if (canceled || !wasActive || !subStack.length) return;
-          if (p > 0.42) navBack();
-        };
-        // passive:false 以允许 preventDefault，屏蔽 iOS 页面惯性回弹
-        subEl.addEventListener("touchstart", start, { passive: true });
-        subEl.addEventListener("touchmove", move, { passive: false });
-        subEl.addEventListener("touchend", release, { passive: true });
-        subEl.addEventListener("touchcancel", release, { passive: true });
-      }
-
       function showSplash() {
         const S = DB.ui.splash;
         if (!S.on) return;
@@ -23448,17 +23495,6 @@
         rHome();
         switchTab("home");
         showSplash();
-        initSwipeBack();
-        // 系统深浅色切换时，若为“跟随系统”则即时重绘主题
-        if (window.matchMedia) {
-          const mq = window.matchMedia("(prefers-color-scheme: dark)");
-          const onChange = () => {
-            const tm = DB.ui && DB.ui.themeMode;
-            if (!tm || tm === "auto") applyTheme();
-          };
-          if (mq.addEventListener) mq.addEventListener("change", onChange);
-          else if (mq.addListener) mq.addListener(onChange);
-        }
       })();
     </script>
   </body>
