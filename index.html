@@ -1257,6 +1257,13 @@
         color: var(--sub);
         margin-top: 3px;
       }
+      .pa-stat[role="button"] {
+        transition: background 0.15s, transform 0.1s;
+      }
+      .pa-stat[role="button"]:active {
+        background: #eef0f3;
+        transform: scale(0.96);
+      }
       .pa-next {
         display: flex;
         align-items: center;
@@ -1482,13 +1489,32 @@
         flex-direction: column;
         gap: 6px;
       }
+      /* 历史记录每一天：左滑编辑/删除 */
+      .pep-day-wrap {
+        margin-bottom: 0;
+        border-radius: 10px;
+        background: #f7f8fa;
+      }
+      .pep-day-wrap .swipe-c.pep-day {
+        background: #f7f8fa;
+        border-radius: 10px;
+      }
+      .pep-day-wrap .swipe-act {
+        width: 140px;
+      }
+      .pep-day-wrap .swipe-act .ed {
+        border-radius: 0;
+      }
+      .pep-day-wrap .swipe-act .de {
+        border-radius: 0 10px 10px 0;
+      }
       .pep-day {
         display: flex;
         align-items: center;
         gap: 10px;
         background: #f7f8fa;
         border-radius: 10px;
-        padding: 7px 10px;
+        padding: 9px 11px;
         cursor: pointer;
         transition: background 0.15s;
       }
@@ -1525,35 +1551,6 @@
         text-overflow: ellipsis;
         white-space: nowrap;
         max-width: 70px;
-      }
-      .pep-actions {
-        flex: none;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        margin-left: 2px;
-      }
-      .pep-act {
-        background: none;
-        border: 0;
-        font-size: 15px;
-        width: 38px;
-        height: 38px;
-        border-radius: 10px;
-        cursor: pointer;
-        opacity: 0.6;
-        line-height: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .pep-act:active {
-        opacity: 1;
-        transform: scale(0.88);
-        background: rgba(0, 0, 0, 0.05);
-      }
-      .pep-act.del {
-        color: var(--danger);
       }
 
       /* ============ 相册、日历、地图等 ============ */
@@ -2416,6 +2413,17 @@
         color: var(--text);
         font-size: 13px;
         cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+        transition: background 0.15s, border-color 0.15s, color 0.15s;
+      }
+      .pb-day-flow button:active {
+        background: var(--bg);
+      }
+      .pb-day-flow button.on {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: #fff;
+        font-weight: 600;
       }
       .pb-day-mood {
         display: flex;
@@ -19298,17 +19306,16 @@
                 const syms = (r.s || []).slice(0, 4);
                 const more = (r.s || []).length > 4 ? "+" + ((r.s || []).length - 4) : "";
                 const dd = new Date(d + "T00:00:00");
-                return `<div class="pep-day" onclick="pdEditDay('${d}')">
-                  <div class="dd">${dd.getDate()}日<small>${fmtShort(d)}</small></div>
-                  <div class="chips">
-                    ${chips.join("")}
-                    ${syms.length ? `<span style="font-size:11px;color:var(--sub)">${syms.map(esc).join("、")}${more}</span>` : ""}
+                return `<div class="swipe-wrap pep-day-wrap">
+                  <div class="swipe-c pep-day" data-pd-day="${d}">
+                    <div class="dd">${dd.getDate()}日<small>${fmtShort(d)}</small></div>
+                    <div class="chips">
+                      ${chips.join("")}
+                      ${syms.length ? `<span style="font-size:11px;color:var(--sub)">${syms.map(esc).join("、")}${more}</span>` : ""}
+                    </div>
+                    ${r.n ? `<span class="n">${esc(r.n)}</span>` : ""}
                   </div>
-                  ${r.n ? `<span class="n">${esc(r.n)}</span>` : ""}
-                  <div class="pep-actions">
-                    <button class="pep-act" onclick="event.stopPropagation();pdEditDay('${d}')" title="编辑">✏️</button>
-                    <button class="pep-act del" onclick="event.stopPropagation();pdDeleteDay('${d}')" title="删除">🗑️</button>
-                  </div>
+                  <div class="swipe-act"><button class="ed">编辑</button><button class="de">删除</button></div>
                 </div>`;
               })
               .join("");
@@ -19486,7 +19493,10 @@
             <div class="pa-stats">
               <div class="pa-stat"><div class="n">${A.avg}<small>天</small></div><div class="k">平均周期</div></div>
               <div class="pa-stat"><div class="n">${avgDur}<small>天</small></div><div class="k">平均经期</div></div>
-              <div class="pa-stat"><div class="n">${A.eps.length}</div><div class="k">累计次数</div></div>
+              <div class="pa-stat" id="pdAllRec" role="button" tabindex="0" style="cursor:pointer">
+                <div class="n">${A.eps.length}<small style="font-size:11px">›</small></div>
+                <div class="k">累计次数</div>
+              </div>
               <div class="pa-stat"><div class="n">${A.trend.total ? Math.round((A.trend.ontime / A.trend.total) * 100) + "<small>%</small>" : "--"}</div><div class="k">周期准时</div></div>
             </div>
             ${nextHtml}
@@ -19549,6 +19559,7 @@
             <div class="pl">🤒 症状</div>
             <div class="sym-grid" id="symGrid">
               ${DB.period.symptoms.map((s) => `<button class="chip ${pdSel.s.includes(s) ? "on" : ""}" data-s="${esc(s)}">${esc(s)}</button>`).join("")}
+              <button class="chip ${pdSel.s.length === 0 ? "on" : ""}" data-s-none="1">🚫 无</button>
             </div>
           </div>
           <div class="prow">
@@ -19606,6 +19617,33 @@
             }
           });
         }
+        // 点击「累计次数」查看所有经期记录
+        const allRecBtn = p.querySelector("#pdAllRec");
+        if (allRecBtn) {
+          const go = () => openSub("全部经期记录", rAllPeriodRec);
+          allRecBtn.addEventListener("click", go);
+          allRecBtn.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              go();
+            }
+          });
+        }
+        // 历史记录每一天：左滑编辑 / 删除（替代原铅笔、垃圾桶图标）
+        p.querySelectorAll(".pep-day-wrap").forEach((wrap) => {
+          const content = wrap.querySelector(".swipe-c");
+          const d = content.dataset.pdDay;
+          attachSwipe(
+            wrap,
+            content,
+            () => pdEditDay(d),
+            () => pdDeleteDay(d),
+          );
+          content.addEventListener("click", () => {
+            if (wrap._swipeData && wrap._swipeData.open) return;
+            pdEditDay(d);
+          });
+        });
         if (pdMode === "single") {
           p.querySelector("#flowOpt").addEventListener("click", (e) => {
             const b = e.target.closest("[data-f]");
@@ -19616,13 +19654,25 @@
             );
           });
           p.querySelector("#symGrid").addEventListener("click", (e) => {
-            const b = e.target.closest("[data-s]");
+            const b = e.target.closest("button");
             if (!b) return;
+            if (b.dataset.sNone !== undefined) {
+              // 点「无」：清空所有症状
+              pdSel.s = [];
+              p.querySelectorAll("#symGrid button").forEach((x) =>
+                x.classList.toggle("on", x.dataset.sNone !== undefined),
+              );
+              return;
+            }
             const s = b.dataset.s;
+            if (s === undefined) return;
             pdSel.s.includes(s)
               ? (pdSel.s = pdSel.s.filter((x) => x !== s))
               : pdSel.s.push(s);
             b.classList.toggle("on");
+            // 有选症状则取消「无」的高亮
+            const noneBtn = p.querySelector("#symGrid [data-s-none]");
+            if (noneBtn) noneBtn.classList.toggle("on", pdSel.s.length === 0);
           });
           p.querySelector("#moodGrid").addEventListener("click", (e) => {
             const b = e.target.closest("[data-m]");
@@ -19657,13 +19707,22 @@
               if (!b) return;
               const ds = b.dataset.pbd;
               const cfg = pbDayCfg(ds);
-              if (b.dataset.f !== undefined) {
+              if (b.dataset.sNone !== undefined) {
+                // 点「无」：清空该天所有症状
+                cfg.syms = [];
+                list.querySelectorAll(`[data-pbd="${ds}"]`).forEach((x) => {
+                  if (x.dataset.sNone !== undefined) x.classList.add("on");
+                  else if (x.dataset.s !== undefined) x.classList.remove("on");
+                });
+              } else if (b.dataset.f !== undefined) {
                 cfg.flow = b.dataset.f;
                 list.querySelectorAll(`[data-pbd="${ds}"][data-f]`).forEach((x) => x.classList.toggle("on", x === b));
               } else if (b.dataset.s !== undefined) {
                 const s = b.dataset.s;
                 cfg.syms.includes(s) ? (cfg.syms = cfg.syms.filter((x) => x !== s)) : cfg.syms.push(s);
                 b.classList.toggle("on");
+                const noneBtn = list.querySelector(`[data-pbd="${ds}"][data-s-none]`);
+                if (noneBtn) noneBtn.classList.toggle("on", cfg.syms.length === 0);
               } else if (b.dataset.m !== undefined) {
                 const v = b.dataset.m;
                 cfg.mood = cfg.mood === v ? "" : v;
@@ -19709,6 +19768,98 @@
             rPeriod();
             toast("已删除");
           }
+        });
+      }
+
+      /* 全部经期记录：按经期分组列出每一天，支持左滑编辑 / 删除 */
+      function rAllPeriodRec(el) {
+        const rec = DB.period.rec;
+        const moodEmoji = { 开心: "😄", 平静: "😌", 低落: "😢", 烦躁: "😣", 焦虑: "😰" };
+        const todayS = today();
+        const episodes = periodEpisodes().filter((e) => e.start <= todayS);
+        const groups = [];
+        for (let i = episodes.length - 1; i >= 0; i--) {
+          const ep = episodes[i];
+          const days = [];
+          let d = ep.start;
+          while (d <= ep.end) {
+            if (rec[d] && (rec[d].f || (rec[d].s || []).length || rec[d].m || rec[d].n))
+              days.push(d);
+            d = addDays(d, 1);
+          }
+          if (days.length) groups.push({ ep, days });
+        }
+        const totalDays = groups.reduce((n, g) => n + g.days.length, 0);
+        el.innerHTML = `
+          <div style="margin-top:8px">
+            <div style="font-size:12px;color:var(--sub);margin:2px 0 12px">
+              共 ${groups.length} 次经期 · ${totalDays} 天记录 · 左滑每一天可编辑或删除
+            </div>
+            ${
+              groups.length
+                ? groups
+                    .map((g) => {
+                      const dayHtml = g.days
+                        .map((d) => {
+                          const r = rec[d];
+                          const chips = [];
+                          if (r.f) chips.push(`<span class="tag">💧 ${esc(r.f)}</span>`);
+                          if (r.m) chips.push(`<span class="tag grey">${moodEmoji[r.m] || "💗"} ${esc(r.m)}</span>`);
+                          const syms = (r.s || []).slice(0, 4);
+                          const more = (r.s || []).length > 4 ? "+" + ((r.s || []).length - 4) : "";
+                          const dd = new Date(d + "T00:00:00");
+                          return `<div class="swipe-wrap pep-day-wrap">
+                            <div class="swipe-c pep-day" data-pd-day="${d}">
+                              <div class="dd">${dd.getDate()}日<small>${fmtShort(d)}</small></div>
+                              <div class="chips">
+                                ${chips.join("")}
+                                ${syms.length ? `<span style="font-size:11px;color:var(--sub)">${syms.map(esc).join("、")}${more}</span>` : ""}
+                              </div>
+                              ${r.n ? `<span class="n">${esc(r.n)}</span>` : ""}
+                            </div>
+                            <div class="swipe-act"><button class="ed">编辑</button><button class="de">删除</button></div>
+                          </div>`;
+                        })
+                        .join("");
+                      return `<div class="pep-card">
+                        <div class="pep-top">
+                          <div class="dt"><span class="dot"></span>${fmtCN(g.ep.start)} ～ ${fmtCN(g.ep.end)}</div>
+                          <div class="meta"><span class="tag">${g.days.length} 天</span></div>
+                        </div>
+                        <div class="pep-days">${dayHtml}</div>
+                      </div>`;
+                    })
+                    .join("")
+                : `<div style="text-align:center;padding:28px 0;color:var(--sub);font-size:13px">还没有经期记录</div>`
+            }
+          </div>`;        // 绑定左滑
+        el.querySelectorAll(".pep-day-wrap").forEach((wrap) => {
+          const content = wrap.querySelector(".swipe-c");
+          const d = content.dataset.pdDay;
+          attachSwipe(
+            wrap,
+            content,
+            () => {
+              closeSub();
+              setTimeout(() => pdEditDay(d), 240);
+            },
+            () => {
+              confirmBox(`删除 ${fmtCN(d)} 的经期记录？`, () => {
+                if (DB.period.rec[d]) {
+                  delete DB.period.rec[d];
+                  save();
+                  rPeriod();
+                  rAllPeriodRec(el);
+                  toast("已删除");
+                }
+              });
+            },
+          );
+          content.addEventListener("click", () => {
+            if (wrap._swipeData && wrap._swipeData.open) return;
+            closeSub();
+            setTimeout(() => pdEditDay(d), 240);
+          });
         });
       }
 
@@ -19800,10 +19951,14 @@
                   ${["开心", "平静", "低落", "烦躁", "焦虑"].map((v) => `<button class="${cfg.mood === v ? "on" : ""}" title="${v}" data-pbd="${ds}" data-m="${esc(v)}">${moodEmoji[v] || "💗"}</button>`).join("")}
                 </div>
               </div>
-              <div class="pb-day-body">
+              <div class="pb-day-field">
+                <div class="pb-day-label">症状</div>
                 <div class="pb-day-sym">
                   ${DB.period.symptoms.map((s) => `<button class="chip ${cfg.syms.includes(s) ? "on" : ""}" data-pbd="${ds}" data-s="${esc(s)}">${esc(s)}</button>`).join("")}
+                  <button class="chip ${cfg.syms.length === 0 ? "on" : ""}" data-pbd="${ds}" data-s-none="1">🚫 无</button>
                 </div>
+              </div>
+              <div class="pb-day-body">
                 <input type="text" class="input pb-day-note" data-pbd="${ds}" data-note placeholder="备注（可选）" value="${esc(cfg.note)}">
               </div>
             </div>`;
