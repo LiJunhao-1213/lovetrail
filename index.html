@@ -31,14 +31,19 @@
         --shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
         --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.04);
         --fs: 15px;
+        --fs-t: 17px; /* 标题级 */
+        --fs-c: 13px; /* 注释级 */
         --gap: 16px;
-        --sec: 20px;
+        --sec: 22px;
         --safe-b: env(safe-area-inset-bottom, 0px);
         --tab-h: 50px;
         --hd-h: 60px;
+        /* 模块标题吸顶位置：运行时会由 syncStickyTop() 动态同步为“顶栏下沿”，
+           确保标题钉住时正好接在顶栏下方，上方不会露出本模块的内容 */
+        --sticky-top: calc(109px - var(--page-pt));
         --line-color: #e5e5ea;
         --shadow-intensity: 0.06;
-        --card-radius: 18px;
+        --card-radius: 14px;
         --page-pt: 126px;
         --tab-inactive: #55555d;
         --hd-bg: rgba(255, 255, 255, 0.72);
@@ -296,7 +301,7 @@
         justify-content: center;
         gap: 1px;
         color: var(--tab-inactive);
-        font-size: 10px;
+        font-size: 11px;
         font-weight: 500;
         transition: color 0.15s;
         padding-bottom: 1px;
@@ -322,11 +327,40 @@
       .sec {
         margin-top: var(--sec);
       }
+      /* 分节标题：默认在页面灰底上吸顶（iOS 分组列表风格）；
+         若它是白卡的第一个子元素，则作为卡片顶栏（白底、贴合、圆角顶边） */
       .sec-hd {
+        position: sticky;
+        top: var(--sticky-top);
+        z-index: 5;
+        background: var(--bg);
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin: 0 4px 10px;
+        margin: 0;
+        padding: 8px 2px;
+        border-bottom: 0.5px solid var(--line);
+      }
+      .card > .sec-hd:first-child {
+        margin: -16px -16px 0;
+        padding: 16px 16px 12px;
+        background: var(--card);
+        border-bottom: 0.5px solid var(--line);
+        border-radius: var(--card-radius, var(--r))
+          var(--card-radius, var(--r)) 0 0;
+      }
+      .sec.card.story-card > .sec-hd:first-child {
+        margin-top: -14px;
+        padding-top: 14px;
+      }
+      /* 子页面（#sub）内不启用吸顶，避免与主导航错位 */
+      #sub .sec-hd {
+        position: static;
+        z-index: auto;
+        background: transparent;
+        border-bottom: 0.5px solid var(--line);
+        margin: 0;
+        padding: 8px 2px;
       }
       .sec-t {
         font-size: 13px;
@@ -338,6 +372,78 @@
         font-size: 13px;
         color: var(--primary);
         font-weight: 500;
+      }
+      /* ============ 模块（苹果天气式吸顶） ============ */
+      .mod {
+        margin-top: var(--sec);
+      }
+      .mod-hd {
+        position: sticky;
+        top: var(--sticky-top);
+        z-index: 5;
+        background: var(--bg);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 0;
+        padding: 8px 2px;
+        border-bottom: 0.5px solid var(--line);
+      }
+      .mod-t {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .mod-act {
+        font-size: 13px;
+        color: var(--primary);
+        font-weight: 600;
+        background: transparent;
+        border: 0;
+        padding: 6px 4px;
+      }
+      .mod .age-card,
+      .mod .tree-card {
+        margin: 0;
+      }
+      /* 首页次级信息折叠分组（渐进式披露） */
+      .more-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: var(--sec);
+        padding: 12px 14px;
+        background: var(--card);
+        border-radius: var(--card-radius, var(--r));
+        box-shadow: 0 2px 12px rgba(0, 0, 0, var(--shadow-intensity, 0.06));
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text);
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+        transition: opacity 0.15s;
+      }
+      .more-toggle:active {
+        opacity: 0.7;
+      }
+      .more-toggle .mt-sub {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--sub);
+      }
+      .more-toggle .mt-chev {
+        color: var(--sub);
+        transition: transform 0.22s ease;
+        font-size: 12px;
+      }
+      .more-toggle.collapsed .mt-chev {
+        transform: rotate(-90deg);
+      }
+      .more-toggle.collapsed + .more-body {
+        display: none;
       }
       .card {
         background: var(--card);
@@ -374,9 +480,12 @@
         color: var(--primary);
       }
       .btn.ghost {
-        background: var(--card);
+        background: rgba(120, 120, 128, 0.12);
         color: var(--text);
         border: 1px solid var(--line);
+      }
+      .btn.ghost:active {
+        background: rgba(120, 120, 128, 0.22);
       }
       .btn.danger {
         background: #f7e9e7;
@@ -533,17 +642,29 @@
         cursor: grab;
         user-select: none;
         -webkit-user-select: none;
+        position: relative;
+        z-index: 1;
+        background: var(--card);
+        will-change: transform;
+      }
+      #sortList.drag-active .sort-row {
+        transition: transform 0.24s cubic-bezier(0.32, 0.72, 0, 1);
       }
       .sort-row .sort-grip {
         font-size: 18px;
         color: var(--sub);
         opacity: 0.55;
         cursor: grab;
+        padding: 2px 4px;
+        margin: -2px 0;
       }
       .sort-row.dragging {
-        opacity: 0.6;
-        background: var(--bg);
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        z-index: 20;
+        transition: none !important;
+        background: var(--primary-weak);
+        box-shadow:
+          inset 0 0 0 1.5px var(--primary),
+          0 6px 16px rgba(0, 0, 0, 0.1);
       }
       .sort-row .tt {
         cursor: grab;
@@ -1118,7 +1239,7 @@
         transition: background 0.1s;
       }
       .swipe-act .ed {
-        background: var(--accent);
+        background: var(--primary);
         border-radius: 0;
         font-weight: 600;
       }
@@ -1126,22 +1247,24 @@
         background: var(--danger);
         border-radius: 0 var(--card-radius, var(--r))
           var(--card-radius, var(--r)) 0;
+        transition: flex 0.24s cubic-bezier(0.32, 0.72, 0, 1),
+          background 0.12s;
+        white-space: nowrap;
       }
-      /* 删除二次确认态：高亮危险色，提示用户再次点击才真正删除 */
-      .swipe-act .de.confirm {
-        background: #c1140b;
-        font-weight: 800;
-        letter-spacing: 1px;
-        box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.45);
-        animation: deConfirm 0.18s ease;
+      /* 删除二次确认态：编辑按钮收起，删除按钮展开铺满整条（仿 iOS 微信），再次点击才真正删除 */
+      .swipe-act.confirming .ed {
+        flex: 0 0 0%;
+        opacity: 0;
+        padding: 0;
+        overflow: hidden;
+        pointer-events: none;
+        transition: flex 0.24s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.12s;
       }
-      @keyframes deConfirm {
-        from {
-          transform: scale(0.92);
-        }
-        to {
-          transform: scale(1);
-        }
+      .swipe-act.confirming .de {
+        flex: 0 0 100%;
+        background: var(--danger);
+        font-weight: 700;
+        letter-spacing: 0.5px;
       }
       .swipe-act button:active {
         opacity: 0.85;
@@ -1946,6 +2069,115 @@
         color: var(--sub);
       }
 
+      /* ============ 编辑看板面板（重设计） ============ */
+      .db-hd {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--sub);
+        letter-spacing: 0.3px;
+        margin: 20px 4px 8px;
+      }
+      .db-hd.first {
+        margin-top: 4px;
+      }
+      .db-tip {
+        font-size: 12px;
+        color: var(--sub);
+        margin: 0 4px 10px;
+      }
+      .db-card {
+        background: var(--card);
+        border-radius: var(--r);
+        box-shadow: 0 2px 12px rgba(0, 0, 0, var(--shadow-intensity, 0.06));
+        overflow: hidden;
+      }
+      .db-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 11px 14px;
+        border-bottom: 0.5px solid var(--line);
+      }
+      .db-row:last-child {
+        border-bottom: 0;
+      }
+      .db-ic {
+        width: 30px;
+        height: 30px;
+        flex: none;
+        border-radius: 9px;
+        background: var(--bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+      }
+      .db-nm {
+        flex: 1;
+        min-width: 0;
+        font-size: 15px;
+        font-weight: 500;
+        color: var(--text);
+      }
+      .db-mv {
+        display: flex;
+        gap: 6px;
+        flex: none;
+      }
+      .db-mv button {
+        width: 30px;
+        height: 30px;
+        border: 0;
+        border-radius: 50%;
+        background: rgba(120, 120, 128, 0.12);
+        color: var(--text);
+        font-size: 14px;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+          background 0.15s,
+          transform 0.1s;
+      }
+      .db-mv button:active {
+        background: rgba(120, 120, 128, 0.22);
+        transform: scale(0.9);
+      }
+      .db-mv button:disabled {
+        opacity: 0.3;
+      }
+      .db-wrow {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 14px;
+        border-bottom: 0.5px solid var(--line);
+      }
+      .db-wrow:last-child {
+        border-bottom: 0;
+      }
+      .db-wl {
+        width: 74px;
+        flex: none;
+        font-size: 14px;
+        color: var(--text);
+      }
+      .db-wrow input[type="range"] {
+        flex: 1;
+        min-width: 0;
+        accent-color: var(--primary);
+      }
+      .db-wv {
+        width: 34px;
+        flex: none;
+        text-align: right;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--primary);
+        font-variant-numeric: tabular-nums;
+      }
+
       .flow-opt {
         display: flex;
         flex-wrap: wrap;
@@ -2068,7 +2300,13 @@
         display: block;
         transform: translateX(0);
         opacity: 1;
-        animation: subIn 0.34s cubic-bezier(0.32, 0.72, 0, 1);
+      }
+      /* 方向动画：进入（右侧滑入）/ 返回（左侧滑回） */
+      #sub.anim-fwd {
+        animation: subIn 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+      }
+      #sub.anim-back {
+        animation: subBackIn 0.3s cubic-bezier(0.32, 0.72, 0, 1);
       }
       #sub.closing {
         display: block;
@@ -2080,6 +2318,16 @@
         from {
           transform: translateX(100%);
           opacity: 0.55;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+      @keyframes subBackIn {
+        from {
+          transform: translateX(-26%);
+          opacity: 0.5;
         }
         to {
           transform: translateX(0);
@@ -2558,12 +2806,12 @@
         text-align: center;
         margin-top: 8px;
       }
-      .btn.ghost {
+      .pb-wiz-nav .btn.ghost {
         background: var(--bg);
         color: var(--text);
         border: 1px solid var(--line);
       }
-      .btn.ghost:active {
+      .pb-wiz-nav .btn.ghost:active {
         background: #e3e5e9;
       }
 
@@ -2701,6 +2949,7 @@
         color: var(--text);
         font-size: 14px;
         box-sizing: border-box;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, var(--shadow-intensity, 0.06));
       }
       .empty-link .arr {
         margin-left: auto;
@@ -2856,32 +3105,40 @@
       }
       .couple-profile .cp-heart {
         flex: none;
-        width: 72px;
-        margin: 0 6px;
-        padding: 12px 0;
-        border-radius: 18px;
-        background: linear-gradient(180deg, var(--primary-weak), #ffd9e3);
+        min-width: 78px;
+        margin: 0 4px;
+        padding: 0;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        box-shadow: var(--shadow-sm);
       }
       .couple-profile .cp-heart .heart-emo {
-        font-size: 20px;
+        font-size: 24px;
         line-height: 1;
       }
       .couple-profile .cp-heart .heart-num {
-        font-size: 16px;
+        font-size: 27px;
         font-weight: 800;
         color: var(--primary);
         margin-top: 3px;
         line-height: 1;
+        letter-spacing: -0.5px;
+      }
+      .couple-profile .cp-heart .heart-num i.heart-u {
+        font-size: 13px;
+        font-weight: 600;
+        font-style: normal;
+        margin-left: 2px;
       }
       .couple-profile .cp-heart .heart-unit {
-        font-size: 10px;
-        color: var(--primary);
-        margin-top: 2px;
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--sub);
+        margin-top: 3px;
       }
       /* —— 中间：一行年龄标签 —— */
       .couple-profile .cp-meta {
@@ -3001,36 +3258,34 @@
       /* ============ 数据看板统计卡片 ============ */
       .stat-card {
         position: relative;
-        min-height: 110px;
+        min-height: 94px;
         background: var(--card);
         border-radius: var(--card-radius);
-        padding: 34px 12px 14px;
+        padding: 15px 16px;
         box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
         display: flex;
         flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
+        align-items: flex-start;
+        justify-content: space-between;
+        text-align: left;
       }
       .stat-card .st-t {
-        position: absolute;
-        top: 12px;
-        left: 12px;
         font-size: 12px;
         color: var(--sub);
         font-weight: 500;
       }
       .stat-card .st-v {
-        font-size: 28px;
+        font-size: 27px;
         font-weight: 700;
         color: var(--primary);
-        line-height: 1.1;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
       }
       .stat-card .st-v small {
         font-size: 13px;
         font-weight: 400;
         color: var(--sub);
-        margin-left: 2px;
+        margin-left: 3px;
       }
       .stat-card.wide {
         grid-column: span 2;
@@ -3049,6 +3304,147 @@
         color: var(--sub);
         line-height: 1.9;
         text-align: left;
+      }
+      /* 健康/健身风：大圆环做视觉中心 + 大数字网格 */
+      .stat-grid {
+        display: block;
+        margin-top: 12px;
+      }
+      /* 苹果天气式吸顶：每行卡片到顶后固定标题，下一行上滑把上一行顶走 */
+      .stat-row {
+        position: sticky;
+        /* 钉在「📊 数据看板」吸顶标题下沿（标题约 40px 高） */
+        top: calc(var(--sticky-top) + 40px);
+        z-index: 1;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        background: var(--bg);
+        padding-bottom: 10px;
+        margin-bottom: 0;
+      }
+      .stat-row:last-child {
+        padding-bottom: 0;
+      }
+      /* 幸福指数：左大环 + 右维度进度条（苹果健康「摘要」卡） */
+      .dash-hero {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding: 18px;
+        background: var(--card);
+        border-radius: var(--card-radius);
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+      }
+      .dash-hero .ring {
+        flex: none;
+        margin: 0;
+      }
+      .dash-hero .ring .rv b {
+        font-size: 30px;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+      }
+      .dh-dims {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 11px;
+      }
+      .dh-dim {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        font-size: 13px;
+      }
+      .dh-e {
+        flex: none;
+        font-size: 15px;
+        line-height: 1;
+      }
+      .dh-n {
+        flex: none;
+        width: 30px;
+        color: var(--sub);
+      }
+      .dh-bar {
+        flex: 1;
+        min-width: 0;
+        height: 6px;
+        border-radius: 3px;
+        background: #f0f1f3;
+        overflow: hidden;
+      }
+      .dh-bar i {
+        display: block;
+        height: 100%;
+        border-radius: 3px;
+        background: linear-gradient(90deg, var(--primary), #ff8fab);
+        transition: width 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+      }
+      .dh-p {
+        flex: none;
+        width: 38px;
+        text-align: right;
+        font-weight: 600;
+        color: var(--text);
+        font-variant-numeric: tabular-nums;
+      }
+      /* 经期横向时间轴（iOS 健康-周期风格） */
+      .tl-scroll {
+        display: flex;
+        gap: 16px;
+        overflow-x: auto;
+        padding: 6px 2px 10px;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x proximity;
+      }
+      .tl-month {
+        flex: 0 0 auto;
+        scroll-snap-align: start;
+      }
+      .tl-mlabel {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--sub);
+        margin-bottom: 6px;
+        text-align: center;
+      }
+      .tl-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 4px;
+        width: 182px;
+      }
+      .tl-cell {
+        width: 22px;
+        height: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        color: var(--sub);
+        border-radius: 50%;
+        cursor: default;
+      }
+      .tl-cell.empty {
+        visibility: hidden;
+      }
+      .tl-cell.on {
+        background: var(--primary);
+        color: #fff;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .tl-cell.today {
+        box-shadow: 0 0 0 2px var(--primary);
+      }
+      .tl-hint {
+        font-size: 11px;
+        color: var(--sub);
+        text-align: center;
+        margin-top: 2px;
       }
 
       /* 数据叙事卡片 */
@@ -3294,6 +3690,108 @@
         font-size: 12px;
         color: var(--sub);
         font-weight: 500;
+        white-space: nowrap;
+      }
+
+      /* ============ 顶部 Hero 卡（早安 + 恋爱计时 合并） ============ */
+      .hero-card {
+        background: var(--card);
+        border-radius: var(--card-radius, var(--r));
+        padding: 18px 18px 14px;
+        color: var(--text);
+        margin: 0 0 12px 0;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        position: relative;
+        overflow: hidden;
+      }
+      .hero-card .hero-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+      }
+      .hero-card .hero-hi {
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        color: var(--text);
+      }
+      .hero-card .hero-lunar {
+        font-size: 13px;
+        color: var(--sub);
+        margin-top: 4px;
+      }
+      .hero-card .hero-day {
+        font-size: 42px;
+        font-weight: 700;
+        line-height: 1;
+        color: var(--primary);
+        font-variant-numeric: lining-nums;
+      }
+      .hero-card .hero-mon {
+        font-size: 13px;
+        color: var(--sub);
+        text-align: right;
+        margin-top: 2px;
+      }
+      .hero-card .hero-love {
+        margin-top: 16px;
+        padding-top: 14px;
+        border-top: 0.5px solid var(--line);
+      }
+      .hero-card .hero-love-status {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text);
+      }
+      .hero-card .hero-love-time {
+        font-size: 26px;
+        font-weight: 700;
+        margin: 2px 0;
+        color: var(--primary);
+        letter-spacing: 0.5px;
+        font-variant-numeric: lining-nums;
+      }
+      .hero-card .hero-love.off .hero-love-time {
+        font-size: 18px;
+      }
+      .hero-card .hero-love-sub {
+        font-size: 12.5px;
+        color: var(--sub);
+      }
+      .hero-card .hero-love.unset {
+        background: var(--primary-weak);
+        border-radius: 12px;
+        padding: 12px 14px;
+        cursor: pointer;
+        border-top: 0;
+        margin-top: 0;
+        padding-top: 12px;
+      }
+      .hero-card .hero-love.unset:active {
+        background: var(--primary-weak-d);
+      }
+      .hero-card .hero-progress {
+        margin-top: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .hero-card .hero-progress-bar {
+        flex: 1;
+        height: 5px;
+        background: var(--line);
+        border-radius: 3px;
+        overflow: hidden;
+      }
+      .hero-card .hero-progress-bar .fill {
+        height: 100%;
+        background: var(--primary);
+        border-radius: 3px;
+        transition: width 0.3s;
+      }
+      .hero-card .hero-progress-label {
+        font-size: 12px;
+        color: var(--sub);
         white-space: nowrap;
       }
 
@@ -3638,7 +4136,7 @@
       .tree-card .tc-bar .fill {
         height: 100%;
         border-radius: 999px;
-        background: linear-gradient(90deg, var(--primary), var(--accent));
+        background: linear-gradient(90deg, var(--primary), #ff85a1);
         transition: width 0.5s ease;
       }
       .tree-card .tc-xp-txt {
@@ -16617,9 +17115,10 @@
         let delConfirmed = false;
         function clearDel() {
           delConfirmed = false;
+          const act = wrap.querySelector(".swipe-act");
+          if (act) act.classList.remove("confirming");
           if (delBtn) {
             delBtn.textContent = delBtn.dataset.orig || "删除";
-            delBtn.classList.remove("confirm");
           }
         }
         const reset = (animate = true) => {
@@ -16714,14 +17213,15 @@
           });
         }
         if (delBtn) {
+          const swipeAct = wrap.querySelector(".swipe-act");
           delBtn.dataset.orig = delBtn.textContent;
           delBtn.addEventListener("click", (e) => {
             e.stopPropagation();
-            // 第一次点击：进入确认态，按钮变“确认删除”高亮
+            // 第一次点击：进入确认态，删除按钮展开铺满并提示“确认删除”
             if (!delConfirmed) {
               delConfirmed = true;
+              if (swipeAct) swipeAct.classList.add("confirming");
               delBtn.textContent = "确认删除";
-              delBtn.classList.add("confirm");
               return;
             }
             // 第二次点击：执行真正删除
@@ -17399,10 +17899,7 @@
         if (tab === "home") {
           const d = new Date();
           const t = TAB_HINTS.home[d.getHours() < 12 ? 0 : 1];
-          const together = DB.couple.loveStart
-            ? `💕 ${loveDays()} 天在一起 · `
-            : "";
-          return `${together}${d.getMonth() + 1}月${d.getDate()}日 周${WEEK[d.getDay()]} · ${t}`;
+          return t;
         }
         if (tab === "records") {
           const n = DB.happy.length + DB.travel.length + DB.memo.length;
@@ -17452,18 +17949,42 @@
         $("#hdAct").textContent = act;
         $("#hdAct").onclick = onAct || null;
         $("#hdBack").onclick = () => {
-          if (subStack.length) {
-            if (subStack.length === 1) {
-              closeSub(true);
-            } else {
-              const cur = subStack[subStack.length - 1];
-              cur.scrollTop = $("#sub").scrollTop;
-              subStack.pop();
-              paintSub();
-            }
-          }
+          if (subStack.length) subGoBack();
         };
+        // 顶栏高度随内容变化，重算标题吸顶偏移（钉在顶栏下沿）
+        requestAnimationFrame(syncStickyTop);
+        setTimeout(syncStickyTop, 350);
       }
+
+      // 把吸顶偏移同步为顶栏下沿：钉住时标题正接在顶栏下方，上方不留内容窗口
+      function syncStickyTop() {
+        const hd = document.getElementById("hd");
+        if (!hd) return;
+        const navBottom = hd.getBoundingClientRect().bottom;
+        const sub = document.getElementById("sub");
+        const container =
+          sub && sub.classList.contains("on")
+            ? sub
+            : document.querySelector(".page.on");
+        if (!container) return;
+        // 容器（.page / #sub）均为 inset:0，top 恒为 0；动画只作用于 X 轴，
+        // 因此用 paddingTop 作为稳定基准，不受切换动画影响
+        const padTop = parseFloat(getComputedStyle(container).paddingTop) || 0;
+        document.documentElement.style.setProperty(
+          "--sticky-top",
+          Math.round(navBottom - padTop) + "px",
+        );
+      }
+      window.addEventListener("resize", syncStickyTop);
+      window.addEventListener("orientationchange", syncStickyTop);
+      window.addEventListener("load", syncStickyTop);
+      setTimeout(syncStickyTop, 400);
+      // 顶栏高度一旦变化（含文字换行/字体加载），立即重算吸顶偏移
+      try {
+        const _hdEl = document.getElementById("hd");
+        if (_hdEl && window.ResizeObserver)
+          new ResizeObserver(() => syncStickyTop()).observe(_hdEl);
+      } catch (e) {}
 
       function openSub(title, renderFn, act = "", onAct = null) {
         if (subStack.length) {
@@ -17471,15 +17992,15 @@
           cur.scrollTop = $("#sub").scrollTop;
         }
         subStack.push({ title, renderFn, act, onAct, scrollTop: 0 });
-        paintSub();
+        paintSub("fwd");
       }
 
-      function paintSub() {
+      // dir: "fwd" 从右侧滑入 / "back" 从左侧滑回 / "none" 原地刷新（无动画）
+      function paintSub(dir = "none") {
         const cur = subStack[subStack.length - 1];
         if (!cur) return;
         const sub = $("#sub");
         // 重建期间冻结容器：避免用户看到“回顶→再定位”的跳动
-        const wasOn = sub.classList.contains("on");
         sub.classList.add("on");
         $("#main").classList.add("dim");
         sub.style.visibility = "hidden";
@@ -17494,14 +18015,32 @@
         sub.scrollTop = cur.scrollTop && cur.scrollTop > 0 ? cur.scrollTop : 0;
         void sub.offsetHeight; // 强制回流，确保定位生效后再显示
         sub.style.visibility = "";
-        // 若刚从主页面进入（首次显示），补上入场动画
-        if (!wasOn) sub.classList.add("on");
+        // 方向动画：进入 → 右侧滑入；返回 → 左侧滑回；原地刷新 → 不动画
+        sub.classList.remove("anim-fwd", "anim-back");
+        if (dir !== "none") {
+          void sub.offsetHeight; // 重置动画，确保每次都能重播
+          sub.classList.add(dir === "back" ? "anim-back" : "anim-fwd");
+        }
         $("#fab").classList.remove("on");
+      }
+
+      // 返回上一级（子页 → 父页）：带动画
+      function subGoBack() {
+        if (!subStack.length) return;
+        if (subStack.length === 1) {
+          closeSub(true);
+        } else {
+          const cur = subStack[subStack.length - 1];
+          cur.scrollTop = $("#sub").scrollTop;
+          subStack.pop();
+          paintSub("back");
+        }
       }
 
       function closeSub(render = true) {
         const sub = $("#sub");
         if (sub.classList.contains("on") && !sub.classList.contains("closing")) {
+          sub.classList.remove("anim-fwd", "anim-back");
           sub.classList.add("closing");
           sub.classList.remove("on");
           $("#main").classList.remove("dim");
@@ -17519,7 +18058,7 @@
           sub.addEventListener("animationend", done);
           setTimeout(done, 380);
         } else {
-          sub.classList.remove("closing");
+          sub.classList.remove("closing", "anim-fwd", "anim-back");
           sub.innerHTML = "";
           subStack = [];
           $("#main").classList.remove("dim");
@@ -17841,40 +18380,41 @@
           !DB.happy.length &&
           !DB.travel.length &&
           !(C.relEvents || []).length;
-        // 未设定恋爱日时的空态：若已是首启引导状态则由 onboard 承接；
-        // 若已有记录但未设恋爱日，用一行轻量入口承接（避免大块占位卡和「有这么大」挤在一起）
-        const loveUnsetCta = isFresh
-          ? ""
-          : `
-          <div class="sec love-unset-row">
-            <div class="sec-hd"><span class="sec-t">💕 恋爱计时</span></div>
-            <div class="love-unset-card">
-              <div style="display:flex;align-items:center;gap:10px">
-                <div style="font-size:24px">💑</div>
-                <div style="flex:1">
-                  <div style="font-weight:600;font-size:14px">设定你们的恋爱起始日</div>
-                  <div style="font-size:12px;color:var(--sub);margin-top:2px">纪念日、计时器与恋爱天数都会自动点亮</div>
-                </div>
-                <button class="btn sm" onclick="profileEdit()">去设置</button>
-              </div>
-            </div>
-          </div>`;
+        // 未设定恋爱日时的空态已整合进顶部 Hero 卡（unset 分支）
+        const greeting = now.getHours() < 12 ? "☀️ 早安" : "🌙 晚安";
+        const heroLove = C.loveStart
+          ? relS.together
+            ? `<div class="hero-love">
+                 <div class="hero-love-status">💗 ${esc(emoji)} · 在一起</div>
+                 <div class="hero-love-time" id="lvTime">0天0时0分0秒</div>
+                 <div class="hero-love-sub">已累计 ${loveDays()} 天 · 始于 ${loveStartYMD()}</div>
+               </div>`
+            : `<div class="hero-love off">
+                 <div class="hero-love-status">💔 暂未在一起</div>
+                 <div class="hero-love-time">始于 ${loveStartYMD()}</div>
+                 <div class="hero-love-sub">累计在一起 ${loveDays()} 天 · 分开期间不计入</div>
+               </div>`
+          : `<div class="hero-love unset" onclick="profileEdit()">
+               <div class="hero-love-status">💑 设定恋爱起始日</div>
+               <div class="hero-love-sub">纪念日、计时器与恋爱天数都会自动点亮 ›</div>
+             </div>`;
         p.innerHTML = `
-        <!-- 早上好·今天 卡片 -->
-        <div class="morning-card">
-          <div class="mc-top">
-            <div>
-              <div class="mc-greeting">☀️ 早上好·今天</div>
-              <div class="mc-date">${year}年${month}月${day}日 · ${lunarDateStr} · 周${WEEK[now.getDay()]}</div>
+        <!-- 顶部 Hero：早安 + 恋爱计时 合并为一张卡 -->
+        <div class="hero-card" id="loveTimerCard">
+          <div class="hero-top">
+            <div class="hero-greet">
+              <div class="hero-hi">${greeting}</div>
+              <div class="hero-lunar">${lunarDateStr}</div>
             </div>
-            <div class="mc-right">
-              <div class="mc-day">${day}</div>
-              <div class="mc-month">${month}月</div>
+            <div class="hero-cal">
+              <div class="hero-day">${day}</div>
+              <div class="hero-mon">${month}月</div>
             </div>
           </div>
-          <div class="mc-progress">
-            <div class="mc-progress-bar"><div class="fill" style="width:${progress}%"></div></div>
-            <span class="mc-progress-label">${year}已经过去 ${progress}%</span>
+          ${heroLove}
+          <div class="hero-progress">
+            <div class="hero-progress-bar"><div class="fill" style="width:${progress}%"></div></div>
+            <span class="hero-progress-label">${year} 已过 ${progress}%</span>
           </div>
         </div>
 
@@ -17890,42 +18430,23 @@
             : ""
         }
 
-        ${
-          C.loveStart
-            ? relS.together
-              ? `
-          <div class="sec love-timer-card" id="loveTimerCard">
-            <div class="lt-header" style="justify-content:flex-start;font-size:14px;font-weight:600;color:var(--sub);">💕 恋爱计时</div>
-            <div class="lt-status" style="font-size:13px;color:var(--sub);margin-top:0;">在一起 · 已累计 ${loveDays()} 天</div>
-            <div class="lt-time" id="lvTime" style="font-size:20px;">0天0时0分0秒</div>
-            <div class="lt-phase">💗 ${esc(emoji)}</div>
-            <div class="lt-start">始于 ${loveStartYMD()}</div>
-          </div>
-        `
-              : `
-          <div class="sec love-timer-card" style="opacity:.92">
-            <div class="lt-header" style="justify-content:flex-start;font-size:14px;font-weight:600;color:var(--danger);">💔 暂未在一起</div>
-            <div class="lt-status" style="font-size:13px;color:var(--sub);margin-top:0;">累计在一起 ${loveDays()} 天</div>
-            <div class="lt-time" style="font-size:18px;">始于 ${loveStartYMD()}</div>
-            <div class="lt-phase">🕊️ 分开期间不计入恋爱天数</div>
-            <div class="lt-start" style="color:var(--sub)">分手 / 和好记录请前往「我的」页查看与管理</div>
-          </div>
-        `
-            : loveUnsetCta
-        }
+        <!-- 年龄计算器 / 爱情树：主区域 -->
+        <section class="mod">
+          <div class="mod-hd"><span class="mod-t">🎂 有这么大</span><button class="mod-act" onclick="ageEdit()">${DB.ageData.saved ? "编辑" : "添加"}</button></div>
+          <div class="age-card" id="ageCard">${renderAgeData()}</div>
+        </section>
 
-        <!-- 年龄计算器 -->
-        <div class="age-card" id="ageCard">
-          <div class="ac-header">
-            <span class="ac-title">🎂 有这么大</span>
-            <button class="btn sm plain" onclick="ageEdit()">${DB.ageData.saved ? "编辑" : "添加"}</button>
-          </div>
-          ${renderAgeData()}
+        <section class="mod">
+          <div class="mod-hd"><span class="mod-t">🌳 爱情树</span><button class="mod-act" onclick="treeDetail()">经验明细 ›</button></div>
+          <div class="tree-card" id="treeCard">${renderLoveTree()}</div>
+        </section>
+
+        <!-- 次级信息：可折叠（渐进式披露，首屏减负） -->
+        <div class="more-toggle collapsed" onclick="toggleMore(this)">
+          <span><span class="mt-chev">▾</span> 更多信息</span>
+          <span class="mt-sub">温馨提醒 · 最近动态</span>
         </div>
-
-        <!-- 爱情树 -->
-        <div class="tree-card" id="treeCard">${renderLoveTree()}</div>
-
+        <div class="more-body">
         <div class="sec">
           <div class="sec-hd"><span class="sec-t">🔔 温馨提醒</span></div>
           <div class="reminder-list">
@@ -17976,6 +18497,7 @@
                   </div>
                 </div>`
           }
+        </div>
         </div>`;
 
         p.querySelectorAll(".mom[data-id]").forEach((m) => {
@@ -17989,6 +18511,10 @@
           });
         });
         tickLoveTimer();
+      }
+
+      function toggleMore(el) {
+        el.classList.toggle("collapsed");
       }
 
       function renderAgeData() {
@@ -18279,10 +18805,6 @@
             : `<span style="font-size:11px;color:var(--sub);font-weight:500">每天记得浇水、施肥，让爱情树快快长大</span>`;
 
         return `
-        <div class="tc-header">
-          <span class="tc-title">🌳 爱情树</span>
-          <button class="btn sm plain" onclick="treeDetail()">经验明细 ›</button>
-        </div>
         <div class="tc-tree">
           <div class="tc-emoji">${st.cur.emoji}</div>
           <div style="flex:1;min-width:0">
@@ -18930,18 +19452,26 @@
           },
         };
         const totalDays = DB.happy.length + DB.travel.length;
-        p.innerHTML = `
-        <div class="sec-hd"><span class="sec-t">📊 数据看板</span>
-          <button class="sec-more" onclick="dashEdit()">编辑看板</button></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        ${D.order
-          .filter(
-            (k) =>
-              !D.hidden.includes(k) &&
-              k !== "happiness" &&
-              k !== "trend" &&
-              k !== "map",
-          )
+        // 幸福指数四维达成度（与 happiness() 的 parts 口径一致）
+        const dims = [
+          ["💞", "恋爱", loveDays() / 365],
+          ["💖", "快乐", DB.happy.length / 50],
+          ["🧳", "旅行", DB.travel.length / 10],
+          ["📅", "打卡", new Set(DB.checkin.map((c) => c.date)).size / 30],
+        ].map(([e, n, r]) => ({
+          e,
+          n,
+          p: Math.round(Math.min(r, 1) * 100),
+        }));
+        // 统计卡片：过滤隐藏项后两两成行，每行做成苹果天气式吸顶单元
+        const statKeys = D.order.filter(
+          (k) =>
+            !D.hidden.includes(k) &&
+            k !== "happiness" &&
+            k !== "trend" &&
+            k !== "map",
+        );
+        const statCards = statKeys
           .map((k) => {
             const m = mods[k];
             if (!m) return "";
@@ -18950,23 +19480,37 @@
               <div class="st-v">${m.v}<small>${m.u}</small></div>
             </div>`;
           })
-          .join("")}
+          .filter(Boolean);
+        let statRows = "";
+        for (let i = 0; i < statCards.length; i += 2) {
+          statRows += `<div class="stat-row">${statCards.slice(i, i + 2).join("")}</div>`;
+        }
+        p.innerHTML = `
+        <div class="sec">
+        <div class="sec-hd"><span class="sec-t">📊 数据看板</span>
+          <button class="sec-more" onclick="dashEdit()">编辑看板</button></div>
         ${
           D.hidden.includes("happiness")
             ? ""
             : `
-          <div class="stat-card wide">
-            <div class="st-t">✨ 幸福指数</div>
-            <div class="st-content">
-              <div class="ring" style="width:84px;height:84px">
-                ${ringSVG(happiness(), 84)}
-                <div class="rv"><b style="font-size:18px">${happiness()}</b><span>幸福值</span></div></div>
-              <div class="st-weights">
-                💞 恋爱权重 ${D.weights.love}　💖 快乐权重 ${D.weights.happy}<br>
-                🧳 旅行权重 ${D.weights.travel}　📅 打卡权重 ${D.weights.checkin}</div>
-            </div>
-          </div>`
+        <div class="dash-hero">
+          <div class="ring" style="width:112px;height:112px">
+            ${ringSVG(happiness(), 112)}
+            <div class="rv"><b>${happiness()}</b><span>幸福指数</span></div>
+          </div>
+          <div class="dh-dims">
+            ${dims
+              .map(
+                (d) =>
+                  `<div class="dh-dim"><span class="dh-e">${d.e}</span><span class="dh-n">${d.n}</span><span class="dh-bar"><i style="width:${d.p}%"></i></span><span class="dh-p">${d.p}%</span></div>`,
+              )
+              .join("")}
+          </div>
+        </div>`
         }
+        <div class="stat-grid">
+        ${statRows}
+        </div>
         </div>
         ${storyCardsHtml()}
         ${monthSummaryHtml()}
@@ -18976,7 +19520,7 @@
             : `
           <div class="sec card">
             <div class="sec-hd"><span class="sec-t">📈 月度趋势</span><span style="font-size:11px;color:var(--sub)">${totalDays ? "" : "暂无数据"}</span></div>
-            <canvas id="trendCv" style="width:100%;height:150px"></canvas>
+            <canvas id="trendCv" style="width:100%;height:150px;display:block;margin-top:14px"></canvas>
             <div style="display:flex;gap:14px;font-size:11px;color:var(--sub);margin-top:6px">
               <span><i style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--primary);margin-right:4px"></i>快乐</span>
               <span><i style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--accent);margin-right:4px"></i>旅行</span>
@@ -19184,20 +19728,27 @@
             trend: "📈 月度趋势",
             map: "🗺️ 旅行足迹图",
           };
-          el.innerHTML = `<div class="sec-hd" style="margin-top:6px"><span class="sec-t">板块排序与显隐</span></div>
-          <div style="font-size:12px;color:var(--sub);margin:0 2px 4px">点按 ↑↓ 调整顺序</div>
+          el.innerHTML = `<div class="db-hd first">板块排序与显隐</div>
+          <div class="db-tip">点按 ↑ ↓ 调整顺序，右侧开关控制是否展示</div>
+          <div class="db-card">
           ${D.order
-            .map(
-              (k, i) => `
-            <div class="dash-it"><span class="grip">⠿</span><span class="nm">${NAMES[k] || k}</span>
-            <button class="btn sm ghost" data-mv="${i}" data-dir="-1" ${i === 0 ? 'disabled style="opacity:.3"' : ""}>↑</button>
-            <button class="btn sm ghost" data-mv="${i}" data-dir="1" ${i === D.order.length - 1 ? 'disabled style="opacity:.3"' : ""}>↓</button>
-            <button class="switch ${D.hidden.includes(k) ? "" : "on"}" data-tg="${k}"></button></div>
-          `,
-            )
+            .map((k, i) => {
+              const full = NAMES[k] || k;
+              const sp = full.indexOf(" ");
+              const ic = sp > 0 ? full.slice(0, sp) : "•";
+              const nm = sp > 0 ? full.slice(sp + 1) : full;
+              return `<div class="db-row">
+            <span class="db-ic">${ic}</span><span class="db-nm">${nm}</span>
+            <span class="db-mv">
+              <button data-mv="${i}" data-dir="-1" ${i === 0 ? "disabled" : ""}>↑</button>
+              <button data-mv="${i}" data-dir="1" ${i === D.order.length - 1 ? "disabled" : ""}>↓</button>
+            </span>
+            <button class="switch ${D.hidden.includes(k) ? "" : "on"}" data-tg="${k}"></button></div>`;
+            })
             .join("")}
-          <div class="sec-hd" style="margin-top:20px"><span class="sec-t">幸福指数权重</span></div>
-          <div class="card">
+          </div>
+          <div class="db-hd">幸福指数权重</div>
+          <div class="db-card">
             ${[
               ["love", "💞 恋爱"],
               ["happy", "💖 快乐"],
@@ -19208,9 +19759,9 @@
                 ([
                   k,
                   n,
-                ]) => `<div class="wrow"><span style="width:70px;font-size:13px">${n}</span>
+                ]) => `<div class="db-wrow"><span class="db-wl">${n}</span>
               <input type="range" min="0" max="60" value="${D.weights[k]}" data-w="${k}">
-              <span class="wn">${D.weights[k]}</span></div>`,
+              <span class="db-wv">${D.weights[k]}</span></div>`,
               )
               .join("")}
           </div>`;
@@ -19320,6 +19871,33 @@
         if (mode === "range" && !pbState) pbInit();
         rPeriod();
         $("#pg-period").scrollTop = 0;
+      }
+
+      function periodTimelineHtml() {
+        const rec = DB.period.rec;
+        const now = new Date(today() + "T00:00:00");
+        const months = [];
+        for (let i = 0; i < 8; i++) {
+          const d = new Date(now.getFullYear(), now.getMonth() - i + 1, 0);
+          months.unshift({ y: d.getFullYear(), m: d.getMonth() });
+        }
+        let html = '<div class="tl-scroll">';
+        for (const { y, m } of months) {
+          const lead = new Date(y, m, 1).getDay();
+          const dim = new Date(y, m + 1, 0).getDate();
+          let cells = "";
+          for (let b = 0; b < lead; b++) cells += '<span class="tl-cell empty"></span>';
+          for (let day = 1; day <= dim; day++) {
+            const ds = `${y}-${String(m + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+            const isP = !!(rec[ds] && rec[ds].f);
+            const isToday = ds === today();
+            const cls = "tl-cell" + (isP ? " on" : "") + (isToday ? " today" : "");
+            cells += `<span class="${cls}"${isP ? ` onclick="pdEditDay('${ds}')"` : ""}>${day}</span>`;
+          }
+          html += `<div class="tl-month"><div class="tl-mlabel">${y}年${m + 1}月</div><div class="tl-grid">${cells}</div></div>`;
+        }
+        html += "</div>";
+        return html;
       }
 
       function rPeriod() {
@@ -19679,7 +20257,7 @@
               <textarea class="input" id="pdNote" rows="2" placeholder="今天想记录点什么…">${esc(pdSel.n)}</textarea>
             </div>
           </div>
-          <button class="btn" id="pdSave" style="margin-top:4px">💾 保存</button>
+          <button class="btn blk" id="pdSave" style="margin-top:10px">💾 保存</button>
           `
               : pbInlineHtml()
           }
@@ -19688,11 +20266,9 @@
           <div class="sec-hd"><span class="sec-t">📚 历史记录</span>
             <button class="sec-more" onclick="pdEditDay(today())">记一笔</button></div>
           ${
-            episodeCardsHtml
-              ? episodeCardsHtml +
-                (dates.length > 30
-                  ? `<div style="font-size:12px;color:var(--sub);text-align:center;padding:4px 0 2px">仅显示最近 ${HISTORY_LIMIT} 段经期</div>`
-                  : "")
+            dates.length
+              ? periodTimelineHtml() +
+                `<div class="tl-hint">← 左右滑动查看 · 点粉色经期日可编辑 →</div>`
               : empty(
                   "🩸",
                   "开始你的第一次经期记录",
@@ -20355,8 +20931,8 @@
             </div>
             <div class="cp-heart">
               <span class="heart-emo">${C.paired ? (relS.together ? "❤️" : "🖤") : "💗"}</span>
-              <span class="heart-num">${C.loveStart ? loveDays() : "—"}</span>
-              <span class="heart-unit">${C.loveStart ? (relS.together ? "在一起累计天" : "累计在一起天") : "在一起天"}</span>
+              <span class="heart-num">${C.loveStart ? loveDays() : "—"}<i class="heart-u">天</i></span>
+              <span class="heart-unit">${C.loveStart ? (relS.together ? "在一起" : "累计在一起") : "在一起"}</span>
             </div>
             <div class="cp-hside">
               <div class="cp-avatar" style="background:${taB.avatarColor};">${taB.avatarE}</div>
@@ -20719,14 +21295,14 @@
                   const cur = subStack[subStack.length - 1];
                   cur.scrollTop = $("#sub").scrollTop;
                   subStack.pop();
-                  paintSub();
+                  paintSub("back");
                 } else {
                   settingsPage();
                 }
               };
 
               const render = () => {
-                el2.innerHTML = `<div style="font-size:12px;color:var(--sub);margin:4px 2px 12px">长按拖动手柄可调整设置分组顺序</div>
+                el2.innerHTML = `<div style="font-size:12px;color:var(--sub);margin:4px 2px 12px">按住 ☰ 拖动可调整设置分组顺序</div>
                 <div class="glist" id="sortList">${list
                   .map(
                     (t, i) =>
@@ -20740,71 +21316,7 @@
                   <button class="btn ghost blk" id="sortReset">恢复默认</button>
                   <button class="btn blk" id="sortSave">完成</button></div>`;
 
-                const box = el2.querySelector("#sortList");
-                const rows = [...box.querySelectorAll(".sort-row")];
-                let dragIdx = -1,
-                  dragging = false,
-                  startY = 0;
-
-                rows.forEach((row, idx) => {
-                  row.addEventListener("pointerdown", (e) => {
-                    if (!e.target.closest(".sort-grip, .sort-row")) return;
-                    dragging = true;
-                    dragIdx = list.indexOf(row.dataset.title);
-                    startY = e.clientY;
-                    if (row.setPointerCapture)
-                      row.setPointerCapture(e.pointerId);
-                    row.classList.add("dragging");
-                    e.preventDefault();
-                  });
-                });
-
-                box.addEventListener("pointermove", (e) => {
-                  if (!dragging || dragIdx < 0) return;
-                  const curRows = [...box.querySelectorAll(".sort-row")];
-                  const rowH = curRows[0] ? curRows[0].offsetHeight : 44;
-                  const dy = e.clientY - startY;
-                  const move = Math.round(dy / rowH);
-                  const target = Math.max(
-                    0,
-                    Math.min(list.length - 1, dragIdx + move),
-                  );
-                  if (target !== dragIdx) {
-                    const item = list.splice(dragIdx, 1)[0];
-                    list.splice(target, 0, item);
-                    dragIdx = target;
-                    box.innerHTML = "";
-                    list.forEach((t) => {
-                      const i = list.indexOf(t);
-                      const row = document.createElement("div");
-                      row.className = "cell sort-row";
-                      row.dataset.title = esc(t);
-                      row.innerHTML = `<span class="ic sort-grip">☰</span><span class="tt">${t}<div class="desc">位置 ${i + 1}</div></span>`;
-                      box.appendChild(row);
-                      row.addEventListener("pointerdown", (ev) => {
-                        if (!ev.target.closest(".sort-grip, .sort-row")) return;
-                        dragging = true;
-                        dragIdx = list.indexOf(row.dataset.title);
-                        startY = ev.clientY;
-                        if (row.setPointerCapture)
-                          row.setPointerCapture(ev.pointerId);
-                        row.classList.add("dragging");
-                        ev.preventDefault();
-                      });
-                    });
-                  }
-                });
-
-                const endDrag = () => {
-                  dragging = false;
-                  dragIdx = -1;
-                  box
-                    .querySelectorAll(".sort-row")
-                    .forEach((r) => r.classList.remove("dragging"));
-                };
-                box.addEventListener("pointerup", endDrag);
-                box.addEventListener("pointercancel", endDrag);
-                box.addEventListener("pointerleave", endDrag);
+                bindSortDrag(el2.querySelector("#sortList"));
 
                 $("#sortReset").onclick = () => {
                   DB.settings.groupOrder = [];
@@ -20813,12 +21325,117 @@
                   backToSettings();
                 };
                 $("#sortSave").onclick = () => {
-                  DB.settings.groupOrder = list;
+                  DB.settings.groupOrder = list.slice();
                   save();
                   toast("顺序已保存");
                   backToSettings();
                 };
               };
+
+              // 拖拽重排：跟手 + 让位动画 + 精确插入任意位置
+              const bindSortDrag = (box) => {
+                if (!box) return;
+                let dragEl = null,
+                  order = [],
+                  startIdx = -1,
+                  curIdx = -1,
+                  startY = 0,
+                  rowH = 44,
+                  n = 0,
+                  activeId = -1;
+
+                const clearShift = () => {
+                  order.forEach((r) => {
+                    r.style.transform = "";
+                  });
+                };
+
+                const shiftOthers = () => {
+                  order.forEach((r, j) => {
+                    if (r === dragEl) return;
+                    let ty = 0;
+                    if (j > startIdx && j <= curIdx) ty = -rowH;
+                    else if (j >= curIdx && j < startIdx) ty = rowH;
+                    r.style.transform = ty ? `translateY(${ty}px)` : "";
+                  });
+                };
+
+                const onDown = (e) => {
+                  if (e.button && e.button !== 0) return;
+                  const row = e.target.closest(".sort-row");
+                  if (!row) return;
+                  e.preventDefault();
+                  dragEl = row;
+                  order = [...box.querySelectorAll(".sort-row")];
+                  n = order.length;
+                  startIdx = order.indexOf(row);
+                  curIdx = startIdx;
+                  rowH = row.offsetHeight || 44;
+                  startY = e.clientY;
+                  activeId = e.pointerId;
+                  box.classList.add("drag-active");
+                  row.classList.add("dragging");
+                  try {
+                    row.setPointerCapture && row.setPointerCapture(e.pointerId);
+                  } catch (_) {}
+                };
+
+                const onMove = (e) => {
+                  if (!dragEl || e.pointerId !== activeId) return;
+                  const delta = e.clientY - startY;
+                  dragEl.style.transform = `translateY(${delta}px)`;
+                  let target = Math.round(startIdx + delta / rowH);
+                  target = Math.max(0, Math.min(n - 1, target));
+                  if (target !== curIdx) {
+                    curIdx = target;
+                    shiftOthers();
+                  }
+                };
+
+                const finishDrag = (e) => {
+                  const el = dragEl;
+                  if (!el) return;
+                  if (e && e.pointerId !== undefined && e.pointerId !== activeId)
+                    return;
+                  dragEl = null; // 防重入（释放指针捕获会再次触发 pointercancel）
+                  const moved = curIdx !== startIdx;
+                  try {
+                    el.releasePointerCapture && el.releasePointerCapture(activeId);
+                  } catch (_) {}
+                  // 先关闭过渡并清空位移，再重排 DOM（FLIP），避免回弹
+                  box.classList.remove("drag-active");
+                  order.forEach((r) => {
+                    r.style.transition = "none";
+                    r.style.transform = "";
+                    r.classList.remove("dragging");
+                  });
+                  if (moved) {
+                    const item = list.splice(startIdx, 1)[0];
+                    list.splice(curIdx, 0, item);
+                  }
+                  const byTitle = new Map(order.map((r) => [r.dataset.title, r]));
+                  list.forEach((t) => {
+                    const node = byTitle.get(t);
+                    if (node) box.appendChild(node);
+                  });
+                  // 更新“位置 N”
+                  [...box.querySelectorAll(".sort-row")].forEach((r, i) => {
+                    const d = r.querySelector(".desc");
+                    if (d) d.textContent = "位置 " + (i + 1);
+                  });
+                  // 下一帧恢复过渡
+                  requestAnimationFrame(() => {
+                    order.forEach((r) => (r.style.transition = ""));
+                  });
+                  activeId = -1;
+                };
+
+                box.addEventListener("pointerdown", onDown);
+                box.addEventListener("pointermove", onMove);
+                box.addEventListener("pointerup", finishDrag);
+                box.addEventListener("pointercancel", finishDrag);
+              };
+
               render();
             });
           };
