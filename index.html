@@ -22,7 +22,7 @@
         --card: #ffffff;
         --text: #1d1d1f;
         --sub: #86868b;
-        --line: #e5e5ea;
+        --line: #ececf0;
         --danger: #ff3b30;
         --ok: #34c759;
         --r: 12px;
@@ -38,21 +38,29 @@
         --safe-b: env(safe-area-inset-bottom, 0px);
         --tab-h: 50px;
         --hd-h: 60px;
-        /* 吸顶元素最后停的位置 = --sticky-top + --page-pt（Chrome 把滚动容器的
-           内容盒顶边当作基准，而内容盒顶边就是 padding-top 之后）。
-           想要「紧贴顶栏下沿」，就要让这个值等于顶栏高度：
-             --page-pt = 顶栏高度 + 间隙   →   --sticky-top 必须取「负的间隙」。
-           以前写 0，标题就会停在 page-pt 处，比顶栏下沿还低 33px，
-           于是顶栏与标题之间露出一条内容滚动过去的缝 —— 看着就是「没对齐 / 有层叠感」。 */
+        /* 吸顶基准（新版，引擎无关）：
+           .page / #sub 的顶部留白不再用 padding-top（Chrome/Safari 对「带 padding
+           的滚动容器」里 sticky 的基准边算法不一致，iPhone 上会钉错位置），
+           改成 ::before 占位元素撑出 --page-pt。这样滚动容器自身没有顶部 padding，
+           两个内核下 sticky 的基准都是可视区顶边：
+             sticky 元素钉在 viewport 顶边下方 --sticky-top 处
+             →  syncStickyTop() 把 --sticky-top 同步为「顶栏实际高度」，
+                标题就正好钉在顶栏下沿，任何浏览器都成立。 */
         --hd-gap: 16px;
-        --sticky-top: -16px;
-        --line-color: #e5e5ea;
+        --sticky-top: 96px; /* 兜底初始值，JS 会同步为顶栏实际高度 */
+        /* 统一分割线：全部走 --line / --line-color 同一个颜色，且调浅一档 */
+        --line-color: #ececf0;
         --shadow-intensity: 0.06;
         --card-radius: 12px;
+        /* 页面顶部留白 = 顶栏实际高度 + --hd-gap（syncHeaderMetrics 写入） */
         --page-pt: 126px;
         --tab-inactive: #55555d;
         --hd-bg: rgba(255, 255, 255, 0.72);
-        --hd-bd: rgba(0, 0, 0, 0.08);
+        --hd-bd: rgba(0, 0, 0, 0.06);
+        /* 底部胶囊 Tab 离屏幕底边的距离：
+           有安全区（iPhone 小白条）的机型只保留小白条一半的高度，
+           没有安全区的机型固定 10px —— 修复「Tab 栏离底部太远」。 */
+        --tab-bottom: max(6px, calc(var(--safe-b) - 26px));
         /* 顶栏字号（默认=中号），由 [data-font] 覆盖 */
         --hd-big: 22px;
         --hd-sub: 12.5px;
@@ -293,10 +301,19 @@
         overflow-x: hidden;
         -webkit-overflow-scrolling: touch;
         overscroll-behavior-x: none;
-        padding: calc(env(safe-area-inset-top, 0px) + var(--page-pt)) 16px
-          calc(84px + var(--safe-b));
+        /* 顶部留白改用 ::before 占位（高度 = --page-pt = 顶栏高度 + 间隙），
+           不再写进 padding-top：滚动容器一旦带顶部 padding，Chrome 与 Safari
+           对 sticky 基准边的解释不同，iPhone 上吸顶会钉错位置；
+           同时旧写法「safe-area + page-pt」把安全区算了两次，
+           二级页顶栏只有一行标题，多出来的空档特别显眼。 */
+        padding: 0 16px calc(var(--tab-bottom) + 84px);
         display: none;
         background: var(--bg);
+      }
+      .page::before {
+        content: "";
+        display: block;
+        height: var(--page-pt);
       }
       .page.on {
         display: block;
@@ -317,14 +334,13 @@
       /* 底部导航：胶囊 + 液态玻璃（Liquid Glass 质感） */
       #tabBar {
         position: fixed;
-        bottom: calc(12px + var(--safe-b));
+        bottom: var(--tab-bottom);
         left: 12px;
         right: 12px;
         z-index: 60;
         /* 半透明玻璃底：越透越能看见底下内容滚过 */
         background: var(--hd-bg);
-        -webkit-backdrop-filter: saturate(200%) blur(30px)
-          brightness(1.06);
+        -webkit-backdrop-filter: saturate(200%) blur(30px) brightness(1.06);
         backdrop-filter: saturate(200%) blur(30px) brightness(1.06);
         border: 0.5px solid var(--hd-bd);
         border-radius: 30px;
@@ -473,8 +489,8 @@
         margin: 0 -16px 0;
         padding: 16px 16px 12px;
         background: var(--card);
-        border-radius: var(--card-radius, var(--r))
-          var(--card-radius, var(--r)) 0 0;
+        border-radius: var(--card-radius, var(--r)) var(--card-radius, var(--r))
+          0 0;
         /* 卡片顶栏不吸顶，但要显式把 top 清掉：
            .sec-hd 基础规则里带了 top:var(--sticky-top)（-16px），
            position 一旦改成 relative，这个 top 就变成「相对自身上移 16px」的偏移，
@@ -548,8 +564,8 @@
            被啃掉的按钮（与主页 .card > .sec-hd:first-child 保持一致）。 */
         margin: 0 -16px 0;
         padding: 16px 16px 12px;
-        border-radius: var(--card-radius, var(--r))
-          var(--card-radius, var(--r)) 0 0;
+        border-radius: var(--card-radius, var(--r)) var(--card-radius, var(--r))
+          0 0;
       }
       .sec-t {
         font-size: 13px;
@@ -822,6 +838,7 @@
         position: sticky;
         top: var(--sticky-top);
         z-index: 20;
+        padding: 10px;
       }
       /* 吸顶时背后会有卡片滚过去：seg 自己的底色只有 16% 不透明度，会把下面的
          标题文字透出来。补一层不透明背板（左右各撑满 16px 页面边距、上下各多 8px），
@@ -830,7 +847,6 @@
         content: "";
         position: absolute;
         inset: -8px -16px;
-        background: var(--bg);
         z-index: -1;
       }
       /* 两层吸顶不能叠在同一个位置：月份头要让开一个 seg 的高度（36 + 8 间隙），
@@ -988,7 +1004,8 @@
       .fab {
         position: fixed;
         right: 20px;
-        bottom: calc(var(--safe-b) + 86px);
+        /* 跟着胶囊 Tab 的新位置走：Tab 底距 + 胶囊高度(~64px) + 10px 间距 */
+        bottom: calc(var(--tab-bottom) + 74px);
         z-index: 55;
         width: 56px;
         height: 56px;
@@ -1108,8 +1125,6 @@
         padding: 24px 22px;
         animation: pop 0.22s ease;
       }
-      // 关闭时的退出动画：遮罩淡出、弹窗缩小淡出。
-      // 否则点「取消」是瞬间消失（原来直接 remove）。
       .mask.closing {
         animation: fadeOut 0.16s ease forwards;
         pointer-events: none;
@@ -1158,7 +1173,7 @@
       #toast {
         position: fixed;
         left: 50%;
-        bottom: calc(var(--safe-b) + 122px);
+        bottom: calc(var(--tab-bottom) + 80px);
         transform: translateX(-50%);
         z-index: 200;
         background: rgba(28, 30, 34, 0.94);
@@ -1774,7 +1789,8 @@
         background: var(--danger);
         border-radius: 0 var(--card-radius, var(--r))
           var(--card-radius, var(--r)) 0;
-        transition: flex 0.24s cubic-bezier(0.32, 0.72, 0, 1),
+        transition:
+          flex 0.24s cubic-bezier(0.32, 0.72, 0, 1),
           background 0.12s;
         white-space: nowrap;
       }
@@ -1785,7 +1801,9 @@
         padding: 0;
         overflow: hidden;
         pointer-events: none;
-        transition: flex 0.24s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.12s;
+        transition:
+          flex 0.24s cubic-bezier(0.32, 0.72, 0, 1),
+          opacity 0.12s;
       }
       .swipe-act.confirming .de {
         flex: 0 0 100%;
@@ -2133,7 +2151,7 @@
       /* 本周期详解折叠 */
       .pa-detail {
         margin-top: 12px;
-        border-top: 1px solid var(--line);
+        border-top: 0.5px solid var(--line);
         padding-top: 2px;
       }
       .pa-detail-hd {
@@ -2357,22 +2375,22 @@
         background: var(--card);
         border-radius: var(--card-radius, var(--r));
         box-shadow: var(--shadow);
-        padding: 14px;
+        padding: 16px 14px;
       }
       .cal-hd {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 8px;
+        margin-bottom: 10px;
       }
       .cal-hd b {
-        font-size: 15px;
+        font-size: 17px;
       }
       .cal-hd button {
-        width: 32px;
-        height: 32px;
+        width: 38px;
+        height: 38px;
         color: var(--sub);
-        font-size: 16px;
+        font-size: 18px;
         background: none;
         border: none;
         font-family: inherit;
@@ -2381,29 +2399,31 @@
         display: grid;
         grid-template-columns: repeat(7, 1fr);
         text-align: center;
-        font-size: 11px;
+        font-size: 12px;
         color: var(--sub);
-        margin-bottom: 4px;
+        margin-bottom: 6px;
       }
       .cal-g {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
-        row-gap: 2px;
+        row-gap: 6px;
       }
       .cal-d {
-        aspect-ratio: 1;
+        aspect-ratio: 0.92;
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: flex-start;
-        padding-top: 4px;
-        font-size: 14px;
-        border-radius: 10px;
+        /* 数字（+事件图标）整组垂直居中：选中日的红色背景是整格填充，
+           内容若顶部对齐，色块重心会明显偏下、数字挤在顶上 */
+        justify-content: center;
+        padding-top: 0;
+        font-size: 16px;
+        border-radius: 12px;
         position: relative;
         cursor: pointer;
         transition: background 0.15s;
       }
-      .cal-d:hover:not(:empty) {
+      .cal-d:hover:not(:empty):not(.sel):not(.today) {
         background: rgba(0, 0, 0, 0.03);
       }
       .cal-d.today {
@@ -2414,20 +2434,27 @@
       .cal-d.sel {
         background: var(--primary);
         color: #fff;
+        border-radius: var(--card-radius, var(--r));
+      }
+      .cal-d.sel:hover {
+        background: var(--primary-d);
+      }
+      .cal-d.today:hover:not(.sel) {
+        background: var(--primary-weak-d);
       }
       .cal-d .cat-icons {
-        font-size: 9px;
+        font-size: 10px;
         line-height: 1;
         letter-spacing: -1px;
-        margin-top: 2px;
-        height: 10px;
+        margin-top: 3px;
+        height: 11px;
         display: flex;
         gap: 1px;
         align-items: center;
       }
       .cal-d .dots {
         position: absolute;
-        bottom: 4px;
+        bottom: 5px;
         left: 0;
         right: 0;
         display: flex;
@@ -2443,10 +2470,12 @@
       .cal-legend {
         display: flex;
         flex-wrap: wrap;
-        gap: 12px;
-        font-size: 11px;
+        gap: 12px 16px;
+        font-size: 11.5px;
         color: var(--sub);
-        margin-top: 10px;
+        margin-top: 14px;
+        padding-top: 12px;
+        border-top: 0.5px solid var(--line);
       }
       .cal-legend span {
         display: inline-flex;
@@ -2458,6 +2487,21 @@
         width: 6px;
         height: 6px;
         border-radius: 50%;
+      }
+      /* 日历页「本月概览」的小统计片 */
+      .cal-sum-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 13px;
+        color: var(--text);
+        background: var(--bg);
+        border-radius: 999px;
+        padding: 6px 12px;
+      }
+      .cal-sum-chip b {
+        color: var(--primary);
+        font-weight: 700;
       }
       .row-line {
         display: flex;
@@ -2675,6 +2719,13 @@
         font-weight: 500;
         color: var(--text);
       }
+      /* 拖拽排序：长按整行进入拖拽态，浮起的行加投影 */
+      .db-row.dragging {
+        z-index: 5;
+        background: var(--card);
+        border-radius: 12px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.14);
+      }
       .db-mv {
         display: flex;
         gap: 6px;
@@ -2763,6 +2814,92 @@
         color: var(--primary);
         font-weight: 600;
       }
+      /* 情感状态页的模式选择：整行可点的大卡片（替代原来的小胶囊 seg，
+         胶囊装不下说明文字，两个词并排也不知道各自是什么意思） */
+      .emo-opts {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 10px;
+      }
+      .emo-opt {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        text-align: left;
+        padding: 13px 14px;
+        border-radius: 14px;
+        background: var(--bg);
+        border: 1.5px solid transparent;
+        font-family: inherit;
+        cursor: pointer;
+        transition:
+          border-color 0.15s,
+          background 0.15s;
+      }
+      .emo-opt.on {
+        border-color: var(--primary);
+        background: var(--primary-weak);
+      }
+      .emo-opt .eo-ic {
+        flex: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: var(--card);
+        box-shadow: var(--shadow-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+      }
+      .emo-opt .eo-main {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .emo-opt .eo-t {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--text);
+      }
+      .emo-opt.on .eo-t {
+        color: var(--primary);
+      }
+      .emo-opt .eo-d {
+        font-size: 12px;
+        color: var(--sub);
+      }
+      /* 右侧单选圆点：未选中是空心灰圈，选中变实心主色 */
+      .emo-opt .eo-radio {
+        flex: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 2px solid var(--line);
+        background: var(--card);
+        position: relative;
+        transition:
+          border-color 0.15s,
+          background 0.15s;
+      }
+      .emo-opt.on .eo-radio {
+        border-color: var(--primary);
+        background: var(--primary);
+      }
+      .emo-opt.on .eo-radio::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        margin: auto;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #fff;
+      }
       .ring {
         position: relative;
         width: 104px;
@@ -2842,12 +2979,17 @@
         display: none;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
-        /* 与主页共用同一套留白：恒等于「顶栏实际高度 + 16px」（由 syncHeaderMetrics 写入） */
-        padding: calc(env(safe-area-inset-top, 0px) + var(--page-pt)) 16px
-          calc(30px + var(--safe-b));
+        /* 顶部留白与 .page 同一套（::before 占位 = 顶栏实际高度 + 16px），
+           由 syncHeaderMetrics 写入；不再叠加 safe-area（旧写法重复计算）。 */
+        padding: 0 16px calc(30px + var(--safe-b));
         transform: translateX(100%);
         opacity: 0;
         will-change: transform;
+      }
+      #sub::before {
+        content: "";
+        display: block;
+        height: var(--page-pt);
       }
       #sub.on {
         display: block;
@@ -2870,44 +3012,52 @@
       @keyframes subIn {
         from {
           transform: translateX(100%);
-          opacity: 0.55;
         }
         to {
           transform: translateX(0);
-          opacity: 1;
         }
       }
       @keyframes subBackIn {
         from {
           transform: translateX(-26%);
-          opacity: 0.5;
         }
         to {
           transform: translateX(0);
-          opacity: 1;
         }
       }
       @keyframes subOut {
         from {
           transform: translateX(0);
-          opacity: 1;
         }
         to {
           transform: translateX(100%);
-          opacity: 0.55;
         }
       }
+      /* 子页打开时主页的「压暗」效果：
+         以前直接改 #main 的 opacity（0.5 左右），半透明主页底下露出灰色
+         body 背景，看起来就是「灰蒙蒙」；而且 opacity 参与合成很伤流畅度。
+         改成在 #main 上盖一层黑色薄纱（::after，opacity 由 --veil 控制），
+         视觉上同样是「变暗」，但主页内容本身始终不透明、只有 transform
+         一个属性参与动画，跟手和回弹都顺滑。 */
       #main {
-        transition: transform 0.34s cubic-bezier(0.32, 0.72, 0, 1),
-          opacity 0.34s cubic-bezier(0.32, 0.72, 0, 1);
+        transition: transform 0.34s cubic-bezier(0.32, 0.72, 0, 1);
+      }
+      #main::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 90;
+        background: #000;
+        opacity: var(--veil, 0);
+        pointer-events: none;
+        transition: opacity 0.25s linear;
       }
       #main.dim {
-        opacity: 0.55;
+        --veil: 0.12;
       }
       @media (max-width: 600px) {
         #main.dim {
           transform: scale(0.96);
-          opacity: 0.5;
           transform-origin: center bottom;
         }
       }
@@ -3126,7 +3276,7 @@
         align-items: center;
         gap: 8px;
         padding: 10px 0;
-        border-bottom: 1px solid var(--line);
+        border-bottom: 0.5px solid var(--line);
       }
       .pb-preview .pb-row:last-child {
         border-bottom: none;
@@ -3292,7 +3442,6 @@
         min-height: 32px;
       }
 
-
       /* 单日：顶部快捷与表单分隔 */
       .pd-divider {
         display: flex;
@@ -3379,7 +3528,7 @@
         flex-wrap: nowrap;
         background: var(--card);
         /* 左右各 4px：按钮自己已经够宽，再留 10px 会显得空 */
-        padding: 5px 4px;
+        padding: 10px 10px;
         border-radius: 999px;
         box-shadow: var(--shadow-sm);
       }
@@ -3397,7 +3546,7 @@
         flex: 0 1 auto;
         min-width: 0;
         height: 28px;
-        padding: 0 9px;
+        padding: 15px 23px;
         border-radius: 999px;
         border: 1px solid var(--line);
         /* 白底而不是 --bg 浅灰：整排筛选栏的容器本身就是白的，
@@ -3451,11 +3600,22 @@
         align-items: center;
         gap: 12px;
         padding: 14px 0;
-        border-bottom: 1px solid var(--line);
+        position: relative;
       }
-      .detail-info-row:last-child {
-        border-bottom: none;
-        padding-bottom: 14px;
+      /* 分割线与全局统一：::after 半像素细线，颜色走 --line。
+         不用 border-bottom（1px 实线偏重，且与别处的 0.5px 线不一致）。 */
+      .detail-info-row::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 1px;
+        background: var(--line);
+        transform: scaleY(0.5);
+      }
+      .detail-info-row:last-child::after {
+        display: none;
       }
       .detail-info-row .di-icon {
         font-size: 18px;
@@ -3474,6 +3634,14 @@
         flex: 1;
         text-align: right;
         word-break: break-all;
+      }
+      /* 长内容（如「持续」的日期区间）折到独立的副行：
+         值保持一行干净的大字，区间用小字另起一行，
+         不会再出现换行文本被分割线从中间穿过的观感 */
+      .detail-info-row .di-sub {
+        font-size: 12px;
+        color: var(--sub);
+        margin-top: 3px;
       }
 
       /* ============ 设置分组（间距统一调整） ============ */
@@ -3598,6 +3766,151 @@
       }
 
       /* ============ 关于本产品 ============ */
+      .ab-head {
+        text-align: center;
+        padding: 18px 0 4px;
+      }
+      .ab-badge {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto;
+        border-radius: 18px;
+        background: var(--primary-weak);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+      }
+      .ab-name {
+        font-size: 20px;
+        font-weight: 700;
+        margin-top: 10px;
+      }
+      .ab-sub {
+        font-size: 12px;
+        color: var(--sub);
+        margin-top: 3px;
+      }
+      .about-sec-t {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--sub);
+        margin: 16px 4px 8px;
+      }
+      /* 版本记录：时间轴（细线 + 圆点），点条目展开详情 */
+      .vtl {
+        position: relative;
+        padding-left: 20px;
+      }
+      .vtl::before {
+        content: "";
+        position: absolute;
+        left: 5px;
+        top: 14px;
+        bottom: 14px;
+        width: 2px;
+        border-radius: 1px;
+        background: var(--line);
+      }
+      .vtl-item {
+        position: relative;
+        padding: 11px 0;
+      }
+      .vtl-dot {
+        position: absolute;
+        left: -20px;
+        top: 19px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--sub);
+        box-shadow: 0 0 0 3px var(--card);
+      }
+      .vtl-item.cur .vtl-dot {
+        background: var(--primary);
+        box-shadow: 0 0 0 3px var(--primary-weak);
+      }
+      .vtl-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+      }
+      .vtl-v {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--text);
+      }
+      .vtl-tag {
+        flex: none;
+        font-size: 10px;
+        font-weight: 600;
+        color: #fff;
+        background: var(--primary);
+        border-radius: 999px;
+        padding: 2px 8px;
+      }
+      .vtl-date {
+        margin-left: auto;
+        font-size: 12px;
+        color: var(--sub);
+      }
+      .vtl-arrow {
+        flex: none;
+        color: var(--sub);
+        font-size: 14px;
+        transition: transform 0.2s;
+      }
+      .vtl-item.open .vtl-arrow {
+        transform: rotate(90deg);
+      }
+      .vtl-body {
+        display: none;
+        margin-top: 8px;
+        padding: 0 2px;
+      }
+      .vtl-item.open .vtl-body {
+        display: block;
+      }
+      .vtl-body div {
+        position: relative;
+        font-size: 13px;
+        color: var(--text);
+        line-height: 1.7;
+        padding: 3px 0 3px 14px;
+      }
+      .vtl-body div::before {
+        content: "";
+        position: absolute;
+        left: 2px;
+        top: 12px;
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--line);
+      }
+      /* 功能亮点分组：每组一个专属色，不再全是粉勾 */
+      .about-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 8px 0;
+        font-size: 14px;
+        color: var(--text);
+        line-height: 1.55;
+      }
+      .about-item .ai-ck {
+        flex: none;
+        width: 18px;
+        height: 18px;
+        margin-top: 1px;
+        border-radius: 50%;
+        font-size: 11px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
       .about-list {
         margin-top: 12px;
       }
@@ -3607,17 +3920,19 @@
         gap: 12px;
         padding: 12px 0;
         position: relative;
-      .about-list .item::after {
-        content: "";
-        position: absolute;
-        left: 40px;
-        right: 0px;
-        bottom: 0;
-        height: 1px;
-        background: var(--line);
-        transform: scaleY(0.5);
-      }
-      .about-list .item:last-child::after { display: none; }
+        .about-list .item::after {
+          content: "";
+          position: absolute;
+          left: 40px;
+          right: 0px;
+          bottom: 0;
+          height: 1px;
+          background: var(--line);
+          transform: scaleY(0.5);
+        }
+        .about-list .item:last-child::after {
+          display: none;
+        }
       }
       .about-list .item:last-child {
         border-bottom: 0;
@@ -3962,6 +4277,108 @@
       .stat-row:last-child {
         padding-bottom: 0;
       }
+      /* ============ 「全部指标」独立页版式 ============ */
+      /* 首指标英雄卡：主色打底 + 大数字，作为整页视觉锚点 */
+      .mx-hero {
+        position: relative;
+        overflow: hidden;
+        margin-top: 12px;
+        padding: 22px 20px 20px;
+        border-radius: var(--card-radius);
+        background: var(--primary);
+        color: #fff;
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.14);
+      }
+      .mx-hero::before,
+      .mx-hero::after {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.12);
+      }
+      .mx-hero::before {
+        width: 170px;
+        height: 170px;
+        right: -50px;
+        top: -60px;
+      }
+      .mx-hero::after {
+        width: 110px;
+        height: 110px;
+        right: 30px;
+        bottom: -55px;
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .mx-hero .mxh-t {
+        font-size: 13px;
+        font-weight: 500;
+        opacity: 0.9;
+      }
+      .mx-hero .mxh-v {
+        margin-top: 10px;
+        font-size: 54px;
+        font-weight: 800;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+        position: relative;
+        z-index: 1;
+      }
+      .mx-hero .mxh-v small {
+        font-size: 15px;
+        font-weight: 400;
+        margin-left: 6px;
+        opacity: 0.85;
+      }
+      .mx-hero .mxh-d {
+        margin-top: 10px;
+        font-size: 12px;
+        opacity: 0.8;
+        position: relative;
+        z-index: 1;
+      }
+      /* 其余指标：两列小卡，图标芯片 + 标签 + 大数值 */
+      .mx-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .mx-card {
+        background: var(--card);
+        border-radius: var(--card-radius);
+        padding: 14px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+      }
+      .mx-card .mx-ic {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        background: var(--primary-weak);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+      }
+      .mx-card .mx-t {
+        margin-top: 10px;
+        font-size: 12px;
+        color: var(--sub);
+        font-weight: 500;
+      }
+      .mx-card .mx-v {
+        margin-top: 4px;
+        font-size: 26px;
+        font-weight: 700;
+        line-height: 1;
+        color: var(--text);
+        font-variant-numeric: tabular-nums;
+      }
+      .mx-card .mx-v small {
+        font-size: 13px;
+        font-weight: 400;
+        color: var(--sub);
+        margin-left: 3px;
+      }
       /* 幸福指数：左大环 + 右维度进度条（苹果健康「摘要」卡） */
       .dash-hero {
         display: flex;
@@ -4272,16 +4689,16 @@
         margin-top: 8px;
         padding-top: 8px;
         position: relative;
-      .love-timer-card .lt-start::before {
-        content: "";
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 0;
-        height: 1px;
-        background: var(--line);
-        transform: scaleY(0.5);
-      }
+        .love-timer-card .lt-start::before {
+          content: "";
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 0;
+          height: 1px;
+          background: var(--line);
+          transform: scaleY(0.5);
+        }
       }
 
       /* ============ 通用设置项滚动（即时定位，避免平滑跳转） ============ */
@@ -4322,17 +4739,19 @@
         gap: 10px;
         padding: 9px 0;
         position: relative;
-      .ob-step::after {
-        content: "";
-        position: absolute;
-        left: 44px;
-        right: 0px;
-        bottom: 0;
-        height: 1px;
-        background: var(--line);
-        transform: scaleY(0.5);
-      }
-      .ob-step:last-child::after { display: none; }
+        .ob-step::after {
+          content: "";
+          position: absolute;
+          left: 44px;
+          right: 0px;
+          bottom: 0;
+          height: 1px;
+          background: var(--line);
+          transform: scaleY(0.5);
+        }
+        .ob-step:last-child::after {
+          display: none;
+        }
       }
       .ob-step:last-child {
         border-bottom: 0;
@@ -4508,7 +4927,6 @@
       /* 数值之间用细竖线分隔，读数更清楚 */
       .hero-card .hero-love-time .lt-i + .lt-i {
         padding-left: 8px;
-        border-left: 1px solid var(--line);
       }
       .hero-card .hero-love.off .hero-love-time {
         font-size: 18px;
@@ -4530,77 +4948,150 @@
         background: var(--primary-weak-d);
       }
       .hero-card .hero-progress {
-        margin-top: 16px;
+        margin-top: 14px;
+      }
+      .hero-card .hp-top {
         display: flex;
-        align-items: center;
-        gap: 10px;
+        align-items: baseline;
+        justify-content: space-between;
+        margin-bottom: 8px;
       }
-      .hero-card .hero-progress-bar {
-        flex: 1;
-        height: 5px;
-        background: var(--line);
-        border-radius: 3px;
-        overflow: hidden;
-      }
-      .hero-card .hero-progress-bar .fill {
-        height: 100%;
-        background: var(--primary);
-        border-radius: 3px;
-        transition: width 0.3s;
-      }
-      .hero-card .hero-progress-label {
+      .hero-card .hp-year {
         font-size: 12px;
         color: var(--sub);
+      }
+      .hero-card .hp-pct {
+        font-size: 17px;
+        font-weight: 800;
+        color: var(--primary);
+        font-variant-numeric: tabular-nums;
+        letter-spacing: 0.2px;
+        line-height: 1;
+      }
+      .hero-card .hp-pct i {
+        font-style: normal;
+        font-size: 11px;
+        font-weight: 700;
+        margin-left: 1px;
+      }
+      .hero-card .hp-months {
+        display: flex;
+        gap: 3px;
+      }
+      .hero-card .hp-col {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+      }
+      .hero-card .hp-m {
+        width: 100%;
+        height: 6px;
+        border-radius: 99px;
+        background: var(--line);
+        position: relative;
+        overflow: hidden;
+      }
+      .hero-card .hp-m.full {
+        background: var(--primary);
+      }
+      .hero-card .hp-m.cur::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        width: var(--w, 0%);
+        background: var(--primary);
+        border-radius: 99px;
+      }
+      .hero-card .hp-mp {
+        font-size: 10.5px;
+        line-height: 1;
+        color: var(--sub);
+        font-variant-numeric: tabular-nums;
         white-space: nowrap;
       }
+      .hero-card .hp-col.past .hp-mp {
+        color: var(--primary);
+        font-weight: 600;
+      }
 
-      /* ============ 时间胶囊卡片 ============ */
+      /* ============ 时间胶囊卡片（重设计） ============
+         左：圆角底色图标 · 中：名称 + 日期副行 · 右：天数大字 + 箭头。
+         与全 App 的入口卡同一套语言，但用主色浅底图标和数字做记忆点 */
       .capsule-card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        text-align: left;
         background: var(--card);
         border-radius: var(--card-radius, var(--r));
-        padding: 16px 18px;
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        padding: 14px 14px 14px 16px;
+        box-shadow:
+          0 2px 14px rgba(0, 0, 0, 0.05),
+          0 0 1px rgba(0, 0, 0, 0.03);
         margin-bottom: 12px;
         cursor: pointer;
-        transition: transform 0.1s;
+        transition: transform 0.12s;
+        position: relative;
       }
       .capsule-card:active {
         transform: scale(0.98);
       }
-      .capsule-card .cc-header {
+      .capsule-card .cc-ic {
+        width: 44px;
+        height: 44px;
+        flex: none;
+        border-radius: 12px;
+        background: var(--primary-weak);
         display: flex;
-        justify-content: space-between;
         align-items: center;
+        justify-content: center;
+        font-size: 22px;
+      }
+      .capsule-card .cc-main {
+        flex: 1;
+        min-width: 0;
       }
       .capsule-card .cc-name {
-        font-size: 16px;
+        font-size: 15px;
         font-weight: 600;
-        color: var(--primary);
+        color: var(--text);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
-      .capsule-card .cc-date {
-        font-size: 12px;
+      .capsule-card .cc-sub {
+        font-size: 12.5px;
         color: var(--sub);
+        margin-top: 3px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
       .capsule-card .cc-days {
-        margin-top: 6px;
+        flex: none;
         display: flex;
         align-items: baseline;
-        gap: 6px;
+        gap: 3px;
       }
       .capsule-card .cc-days .num {
-        font-size: 34px;
+        font-size: 24px;
         font-weight: 800;
         color: var(--primary);
         line-height: 1;
       }
       .capsule-card .cc-days .unit {
-        font-size: 14px;
+        font-size: 12px;
         color: var(--sub);
       }
-      .capsule-card .cc-sub {
-        font-size: 13px;
-        color: var(--sub);
-        margin-top: 4px;
+      .capsule-card .cc-arr {
+        flex: none;
+        color: #c6c9cf;
+        font-size: 16px;
+        margin-left: 2px;
       }
 
       /* ============ 年龄计算器卡片（新布局） ============ */
@@ -4631,17 +5122,19 @@
         gap: 14px;
         padding: 12px 0;
         position: relative;
-      .age-card .ac-person::after {
-        content: "";
-        position: absolute;
-        left: 62px;
-        right: 0px;
-        bottom: 0;
-        height: 1px;
-        background: var(--line);
-        transform: scaleY(0.5);
-      }
-      .age-card .ac-person:last-child::after { display: none; }
+        .age-card .ac-person::after {
+          content: "";
+          position: absolute;
+          left: 62px;
+          right: 0px;
+          bottom: 0;
+          height: 1px;
+          background: var(--line);
+          transform: scaleY(0.5);
+        }
+        .age-card .ac-person:last-child::after {
+          display: none;
+        }
       }
       .age-card .ac-person:last-child {
         border-bottom: 0;
@@ -4987,16 +5480,16 @@
         margin-top: 14px;
         padding-top: 12px;
         position: relative;
-      .tree-card .tc-links::before {
-        content: "";
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 0;
-        height: 1px;
-        background: var(--line);
-        transform: scaleY(0.5);
-      }
+        .tree-card .tc-links::before {
+          content: "";
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 0;
+          height: 1px;
+          background: var(--line);
+          transform: scaleY(0.5);
+        }
       }
       .tree-card .tc-detail-link,
       .tree-card .tc-reset-link {
@@ -5021,17 +5514,19 @@
         padding: 11px 0;
         position: relative;
         font-size: 14px;
-      .tree-src::after {
-        content: "";
-        position: absolute;
-        left: 0px;
-        right: 0px;
-        bottom: 0;
-        height: 1px;
-        background: var(--line);
-        transform: scaleY(0.5);
-      }
-      .tree-src:last-child::after { display: none; }
+        .tree-src::after {
+          content: "";
+          position: absolute;
+          left: 0px;
+          right: 0px;
+          bottom: 0;
+          height: 1px;
+          background: var(--line);
+          transform: scaleY(0.5);
+        }
+        .tree-src:last-child::after {
+          display: none;
+        }
       }
       .tree-src:last-child {
         border-bottom: 0;
@@ -5105,17 +5600,21 @@
         justify-content: space-between;
         padding: 12px 0;
         position: relative;
+      }
+      /* 分割线与全局统一：::after 半像素细线（原来的嵌套写法在旧 Safari 上
+         会整段失效，且 1px 实线偏重） */
       .capsule-detail .cd-row::after {
         content: "";
         position: absolute;
-        left: 0px;
-        right: 0px;
+        left: 0;
+        right: 0;
         bottom: 0;
         height: 1px;
         background: var(--line);
         transform: scaleY(0.5);
       }
-      .capsule-detail .cd-row:last-child::after { display: none; }
+      .capsule-detail .cd-row:last-child::after {
+        display: none;
       }
       .capsule-detail .cd-row:last-child {
         border-bottom: 0;
@@ -5483,19 +5982,44 @@
       .wish-add .input {
         flex: 1;
       }
+      /* 愿望行：外层 wish-wrap 负责圆角裁切，底层是红色删除面板，
+         行本体左滑露出删除按钮（右上的 🗑 已废弃——误触率高还难看） */
+      .wish-wrap {
+        position: relative;
+        margin-bottom: 10px;
+        border-radius: var(--card-radius);
+        overflow: hidden;
+      }
+      .wish-del-bg {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 76px;
+        background: #ff3b30;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 2px;
+      }
       .wish-row {
+        position: relative;
         display: flex;
         align-items: center;
         gap: 12px;
-        padding: 12px 14px;
+        padding: 14px 16px;
         background: var(--card);
         border-radius: var(--card-radius);
         box-shadow: var(--shadow);
-        margin-bottom: 10px;
+        transition: transform 0.2s ease;
+        will-change: transform;
       }
       .wish-ck {
-        width: 22px;
-        height: 22px;
+        width: 23px;
+        height: 23px;
         flex: none;
         border-radius: 50%;
         border: 2px solid var(--line);
@@ -5515,6 +6039,7 @@
         flex: 1;
         font-size: 15px;
         color: var(--text);
+        word-break: break-all;
       }
       .wish-t.done {
         text-decoration: line-through;
@@ -5557,7 +6082,6 @@
       .card .mini-row,
       .sec.card .mini-row {
         box-shadow: none;
-        border: 0.5px solid var(--line);
       }
       .mini-row {
         display: flex;
@@ -5712,7 +6236,7 @@
         padding: 12px 0;
       }
       .age-detail-row + .age-detail-row {
-        border-top: 1px solid var(--line);
+        border-top: 0.5px solid var(--line);
       }
       .age-detail-row .ad-av {
         width: 44px;
@@ -5805,16 +6329,16 @@
          随机只能随机在情绪和陪伴感上。 -->
     <nav id="tabBar">
       <button class="tab on" data-tab="home">
-        <span class="ti"></span><span class="tl">首页</span><span class="tq"></span>
+        <span class="ti">🏠</span>首页
       </button>
       <button class="tab" data-tab="records">
-        <span class="ti"></span><span class="tl">记录</span><span class="tq"></span>
+        <span class="ti">💖</span>记录
       </button>
       <button class="tab" data-tab="overview">
-        <span class="ti"></span><span class="tl">总览</span><span class="tq"></span>
+        <span class="ti">📊</span>总览
       </button>
       <button class="tab" data-tab="mine">
-        <span class="ti"></span><span class="tl">我的</span><span class="tq"></span>
+        <span class="ti">👫</span>我的
       </button>
     </nav>
 
@@ -17653,7 +18177,7 @@
             bg: "#F2F3F5",
             card: "#FFFFFF",
             text: "#22242A",
-            lineColor: "#E5E5EA",
+            lineColor: "#ECECF0",
             shadowIntensity: 0.06,
             cardRadius: 12,
             font: "m",
@@ -17727,6 +18251,9 @@
             groupOrder: [],
           },
           timeCapsules: [],
+          // 「我的」页固定展示的常用工具（工具 id 数组）。
+          // 未固定的工具收进「更多工具」，用户可在工具页里自由增删。
+          toolsPinned: ["calendar", "memo", "checkin"],
           milestones: [], // 自定义纪念日：{id,title,icon,date:'YYYY-MM-DD',repeat:'year'|'once',note}
           wishes: [], // 愿望清单：{id,text,done:false,createdAt}
           ageData: {
@@ -17822,7 +18349,8 @@
         if (Array.isArray(def)) return Array.isArray(src) ? src : def;
         if (def && typeof def === "object") {
           const out = src && typeof src === "object" ? { ...src } : {};
-          for (const k in def) out[k] = k in out ? deepDef(def[k], out[k]) : def[k];
+          for (const k in def)
+            out[k] = k in out ? deepDef(def[k], out[k]) : def[k];
           return out;
         }
         return src === undefined || src === null ? def : src;
@@ -17903,8 +18431,7 @@
       // 清除 DB 中所有 base64 图片：数组里的图片项整条移除，独立字段置空
       function clearAllImages() {
         let n = 0;
-        const isImg = (v) =>
-          typeof v === "string" && /^data:image\//.test(v);
+        const isImg = (v) => typeof v === "string" && /^data:image\//.test(v);
         const walk = (o) => {
           if (!o || typeof o !== "object") return;
           if (Array.isArray(o)) {
@@ -18029,7 +18556,7 @@
           r.setProperty("--card", u.card);
           r.setProperty("--text", u.text);
           r.setProperty("--sub", "#86868b");
-          r.setProperty("--line", u.lineColor || "#E5E5EA");
+          r.setProperty("--line", u.lineColor || "#ECECF0");
           r.setProperty("--tab-inactive", "#55555d");
           const wk = hexA(u.primary, 0.12);
           r.setProperty("--primary-weak", wk);
@@ -18046,7 +18573,7 @@
         );
         // 顶栏毛玻璃底色跟随主题卡片/背景色
         const hdBase = isDark ? "#1C1C1E" : u.card || "#FFFFFF";
-        const hdBd = isDark ? "#3A3A3C" : u.lineColor || "#E5E5EA";
+        const hdBd = isDark ? "#3A3A3C" : u.lineColor || "#ECECF0";
         r.setProperty("--hd-bg", hexA(hdBase, 0.72));
         r.setProperty("--hd-bd", hexA(hdBd, 0.5));
         document.documentElement.dataset.density = u.density;
@@ -18388,7 +18915,13 @@
                     const cv = document.createElement("canvas");
                     cv.width = Math.max(1, Math.round(w * sc));
                     cv.height = Math.max(1, Math.round(h * sc));
-                    cv.getContext("2d").drawImage(img, 0, 0, cv.width, cv.height);
+                    cv.getContext("2d").drawImage(
+                      img,
+                      0,
+                      0,
+                      cv.width,
+                      cv.height,
+                    );
                     const out = cv.toDataURL("image/jpeg", q);
                     finish(out && out.length > 64 ? out : null);
                   } catch (e) {
@@ -18719,72 +19252,56 @@
         }
       }
 
-      /* ---------- 右滑返回 ---------- */
+      /* ---------- 右滑返回（已移除） ----------
+         旧的 document 级边缘监听（滑过 50px 就瞬间 closeSub）与下方
+         bindSwipeBack 的跟手手势是两套并行逻辑：跟手到一半页面被瞬间关掉，
+         内联样式被 clearMainFx 抹掉，动画互相打架 —— 就是「左滑返回不流畅、
+         状态错乱」的元凶。统一只保留 #sub 上的跟手手势。 */
       let touchStartX = 0,
         touchStartY = 0,
         isEdgeSwipe = false;
-      document.addEventListener(
-        "touchstart",
-        (e) => {
-          const touch = e.touches[0];
-          touchStartX = touch.clientX;
-          touchStartY = touch.clientY;
-          isEdgeSwipe = touchStartX < 30;
-        },
-        { passive: true },
-      );
-      document.addEventListener(
-        "touchmove",
-        (e) => {
-          if (!isEdgeSwipe) return;
-          const touch = e.touches[0];
-          const deltaX = touch.clientX - touchStartX;
-          const deltaY = touch.clientY - touchStartY;
-          if (
-            Math.abs(deltaX) > 20 &&
-            Math.abs(deltaX) > Math.abs(deltaY) * 1.2
-          ) {
-            e.preventDefault();
-            if (deltaX > 50) {
-              isEdgeSwipe = false;
-              if (subStack.length > 0) {
-                if (subStack.length === 1) {
-                  closeSub(true);
-                } else {
-                  const cur = subStack[subStack.length - 1];
-                  cur.scrollTop = $("#sub").scrollTop;
-                  subStack.pop();
-                  paintSub();
-                }
-              }
-            }
-          }
-        },
-        { passive: false },
-      );
-      document.addEventListener("touchend", () => {
-        isEdgeSwipe = false;
-      });
 
       /* ---------- 导航栈 ---------- */
       let subStack = [];
       let closeSeq = 0; // 关闭动画序号：openSub 时自增，使过期的关闭收尾不再清空新页面
       // 清除 #main 上由「跟手左滑返回」写入的内联样式。
-      // 若不清除，残留的 opacity / transform 会让主页在返回后一直「灰蒙蒙」。
+      // 若不清除，残留的 transform / --veil 会让主页在返回后一直「灰蒙蒙」。
       function clearMainFx() {
         const m = document.getElementById("main");
         if (!m) return;
         m.style.transition = "";
         m.style.transform = "";
         m.style.opacity = "";
+        m.style.removeProperty("--veil");
       }
 
       /* ---------- 空状态 ---------- */
+      /* 空状态占位。按钮动作不再走内联 onclick —— 内联写法里
+         onclick="switchTab("records")" 的引号会互相截断，浏览器把
+         属性解析成 switchTab( 就结束了，点下去自然是「没反应」。
+         现在把动作登记到 EMPTY_ACTS，由统一的事件委托触发，
+         动作既可以是字符串代码，也可以直接传函数。 */
+      const EMPTY_ACTS = {};
+      let emptyActN = 0;
       function empty(emoji, title, desc, btn, onBtn) {
+        let btnHtml = "";
+        if (btn) {
+          const key = "ea" + ++emptyActN;
+          EMPTY_ACTS[key] = onBtn || "";
+          btnHtml = `<button class="btn" data-eact="${key}">${btn}</button>`;
+        }
         return `<div class="empty"><div class="e-ic">${emoji}</div>
         <div class="e-t">${title}</div><div class="e-d">${desc}</div>
-        ${btn ? `<button class="btn" onclick="${onBtn}">${btn}</button>` : ""}</div>`;
+        ${btnHtml}</div>`;
       }
+      document.addEventListener("click", (e) => {
+        const b = e.target.closest("[data-eact]");
+        if (!b) return;
+        const act = EMPTY_ACTS[b.dataset.eact];
+        if (!act) return;
+        if (typeof act === "function") act();
+        else new Function(act)();
+      });
 
       /* ================================================================
        * 业务逻辑
@@ -19323,10 +19840,46 @@
         mine: ["👫", "🧸", "🎒", "🏡", "🐰", "🎈", "🍩", "🪴"],
       };
       const TAB_QUOTES = {
-        home: ["今天也要开心", "早安呀", "想你了", "又是好天气", "今天也很好", "抱一下", "慢慢来", "在呢"],
-        records: ["记一笔吧", "写下小事", "别忘记呀", "攒点回忆", "今天发生了啥", "留个纪念", "随手写", "都记下来"],
-        overview: ["看看我们", "走了多远", "一起多久了", "数数日子", "回顾一下", "攒了多少", "瞧一瞧", "有惊喜"],
-        mine: ["就差你了", "你的地盘", "看看自己", "这里归你", "收拾一下", "都在这里", "专属角落", "来逛逛"],
+        home: [
+          "今天也要开心",
+          "早安呀",
+          "想你了",
+          "又是好天气",
+          "今天也很好",
+          "抱一下",
+          "慢慢来",
+          "在呢",
+        ],
+        records: [
+          "记一笔吧",
+          "写下小事",
+          "别忘记呀",
+          "攒点回忆",
+          "今天发生了啥",
+          "留个纪念",
+          "随手写",
+          "都记下来",
+        ],
+        overview: [
+          "看看我们",
+          "走了多远",
+          "一起多久了",
+          "数数日子",
+          "回顾一下",
+          "攒了多少",
+          "瞧一瞧",
+          "有惊喜",
+        ],
+        mine: [
+          "就差你了",
+          "你的地盘",
+          "看看自己",
+          "这里归你",
+          "收拾一下",
+          "都在这里",
+          "专属角落",
+          "来逛逛",
+        ],
       };
       function pickOne(arr) {
         return arr[Math.floor(Math.random() * arr.length)];
@@ -19443,10 +19996,11 @@
         setTimeout(syncHeaderMetrics, 350);
       }
 
-      // 页面顶部留白 --page-pt = 顶栏实际高度 + 16px。
-      // 以前写死 126px：tab 页顶栏实测只有 93px（其中还含一行空导航），
-      // 于是标题下沿到内容之间凭空多出 33px 的空洞，看起来就是「导航栏很厚、内容很低」。
-      // 现在按真实高度算，tab 页收起空行后留白会更紧凑，子页面只有一行标题时同理。
+      // 页面顶部留白 --page-pt = 顶栏实际高度 + 16px（由 .page/#sub 的 ::before
+      // 占位元素消费）。以前写死 126px：tab 页顶栏实测只有 93px（其中还含一行
+      // 空导航），标题下沿到内容之间凭空多出一段空洞；而且旧写法在 padding 里
+      // 又叠加了一次 safe-area，iPhone 上二级页顶栏下沿到内容差出 60px+。
+      // 现在按真实高度算，tab 页与子页都紧凑且一致。
       let lastHdH = -1;
       function syncHeaderMetrics() {
         const hd = document.getElementById("hd");
@@ -19480,21 +20034,16 @@
       window.addEventListener("load", initHeaderMetrics);
       setTimeout(initHeaderMetrics, 300);
 
-      // 把吸顶偏移同步为顶栏下沿：钉住时标题正接在顶栏下方，上方不留内容窗口
+      // 把吸顶偏移同步为顶栏实际高度：钉住时标题正接在顶栏下方。
+      // .page/#sub 已不带顶部 padding（改由 ::before 占位），滚动容器没有
+      // padding 干扰，Chrome / Safari(WKWebView) 对 sticky 基准边的解释
+      // 差异不再影响结果 —— top 值就是「钉在可视区顶边下方多少像素」。
       function syncStickyTop() {
         const hd = document.getElementById("hd");
         if (!hd) return;
-        // 见 :root 里 --sticky-top 的注释：钉住位置 = --sticky-top + --page-pt，
-        // 要等于顶栏高度就得把 sticker-top 设成「负的间隙」。这里的负值不是笔误，
-        // 改成 0 会让标题停在顶栏下方 16px 处、露出一条内容滚动的缝；
-        // 改成正的（如 109px）又会把它往下压到自己的内容上，造成「遮盖」。
-        const gap =
-          parseFloat(
-            getComputedStyle(document.documentElement).getPropertyValue(
-              "--hd-gap",
-            ),
-          ) || 16;
-        document.documentElement.style.setProperty("--sticky-top", -gap + "px");
+        const h = Math.round(hd.getBoundingClientRect().height);
+        if (!h) return;
+        document.documentElement.style.setProperty("--sticky-top", h + "px");
       }
       window.addEventListener("resize", syncStickyTop);
       window.addEventListener("orientationchange", syncStickyTop);
@@ -19565,7 +20114,10 @@
 
       function closeSub(render = true) {
         const sub = $("#sub");
-        if (sub.classList.contains("on") && !sub.classList.contains("closing")) {
+        if (
+          sub.classList.contains("on") &&
+          !sub.classList.contains("closing")
+        ) {
           sub.classList.remove("anim-fwd", "anim-back");
           sub.classList.add("closing");
           sub.classList.remove("on");
@@ -19602,12 +20154,18 @@
       }
 
       // 边缘手势左滑返回（仅移动端，跟手）
+      // 编排（iOS 同款）：子页盖在已「压暗缩小」的主页上，起手时主页就是
+      // scale(0.96) + 薄纱 0.12 的静止态；往右拖时子页滑走、主页逐渐放大
+      // 并揭开薄纱；松手后按阈值提交（滑走并收尾）或回弹（回到压暗态）。
+      // 旧实现起手先把主页「点亮」、全程用 opacity 渐隐 —— 方向反了导致
+      // 跳变，半透明又露出灰底，看起来就是「灰蒙蒙 + 不流畅」。
       (function bindSwipeBack() {
         const sub = $("#sub"),
           main = $("#main");
         if (!sub || !main) return;
         let sd = null;
         const isMobile = () => window.matchMedia("(max-width: 600px)").matches;
+        const CURVE = "cubic-bezier(0.32,0.72,0,1)";
         sub.addEventListener(
           "touchstart",
           (e) => {
@@ -19616,7 +20174,9 @@
               sd = { x0: e.touches[0].clientX, active: true };
               sub.style.transition = "none";
               main.style.transition = "none";
-              main.classList.remove("dim");
+              // 起点就是压暗静止态，避免先跳「亮」再跟手的抖动
+              main.style.transform = "scale(0.96)";
+              main.style.setProperty("--veil", "0.12");
             }
           },
           { passive: true },
@@ -19632,8 +20192,10 @@
             }
             sub.style.transform = `translateX(${dx}px)`;
             const p = Math.min(dx / 320, 1);
-            if (isMobile()) main.style.transform = `scale(${1 - 0.05 * p})`;
-            main.style.opacity = String(1 - 0.4 * p);
+            // 主页随进度放大回原位、薄纱随进度揭开（只动 transform/透明纱层）
+            if (isMobile())
+              main.style.transform = `scale(${(0.96 + 0.04 * p).toFixed(4)})`;
+            main.style.setProperty("--veil", (0.12 * (1 - p)).toFixed(3));
           },
           { passive: true },
         );
@@ -19644,21 +20206,20 @@
             const dx = e.changedTouches[0].clientX - sd.x0;
             sd.active = false;
             const isBack = dx > 90; // 是否达到「返回上一级」的阈值
-            sub.style.transition = "transform 0.3s cubic-bezier(0.32,0.72,0,1)";
-            main.style.transition =
-              "transform 0.3s cubic-bezier(0.32,0.72,0,1), opacity 0.3s";
+            sub.style.transition = `transform 0.3s ${CURVE}`;
+            main.style.transition = `transform 0.3s ${CURVE}`;
             if (isBack) {
               sub.style.transform = "translateX(100%)";
-              if (isMobile()) main.style.transform = "scale(0.96)";
-              main.style.opacity = "0.55";
+              main.style.transform = "scale(1)";
+              main.style.setProperty("--veil", "0");
             } else {
               sub.style.transform = "translateX(0)";
-              main.style.transform = "";
-              main.style.opacity = "";
+              main.style.transform = "scale(0.96)";
+              main.style.setProperty("--veil", "0.12");
             }
             // 收尾：动画结束后统一清理内联样式。
             // 不能只依赖 transitionend（某些机型/快速滑动时会漏触发），
-            // 否则残留的 opacity:0.55 会让主页一直「灰蒙蒙」——必须加定时兜底。
+            // 否则残留的内联样式会让主页状态错乱——必须加定时兜底。
             let settled = false;
             const settle = () => {
               if (settled) return;
@@ -19667,7 +20228,7 @@
               clearTimeout(timer);
               sub.style.transition = "";
               sub.style.transform = "";
-              clearMainFx(); // 抹掉 main 上的内联 transform / opacity / transition
+              clearMainFx(); // 抹掉 main 上的内联 transform / --veil / transition
               if (isBack) {
                 // 达到阈值：关闭子页，回到父页面（与点返回一致）
                 closeSeq++; // 让仍在进行中的关闭动画收尾失效
@@ -19683,7 +20244,8 @@
               }
             };
             const onEnd = (ev) => {
-              if (ev.target === sub && ev.propertyName === "transform") settle();
+              if (ev.target === sub && ev.propertyName === "transform")
+                settle();
             };
             sub.addEventListener("transitionend", onEnd);
             const timer = setTimeout(settle, 420);
@@ -19957,8 +20519,19 @@
           </div>
           ${heroLove}
           <div class="hero-progress">
-            <div class="hero-progress-bar"><div class="fill" style="width:${progress}%"></div></div>
-            <span class="hero-progress-label">${year} 已过 ${progress}%</span>
+            <div class="hp-top">
+              <span class="hp-year">${year} 年进度</span>
+              <span class="hp-pct">${progress}<i>%</i></span>
+            </div>
+            <div class="hp-months">${Array.from({ length: 12 }, (_, i) => {
+              const m = i + 1;
+              const dim = new Date(year, m, 0).getDate();
+              const cls = m < month ? "full" : m === month ? "cur" : "";
+              const w =
+                m === month ? Math.min(100, Math.round((day / dim) * 100)) : 0;
+              const mp = m < month ? 100 : m === month ? w : 0;
+              return `<span class="hp-col ${m <= month ? "past" : ""}"><span class="hp-m ${cls}" style="--w:${w}%"></span><span class="hp-mp">${mp}%</span></span>`;
+            }).join("")}</div>
           </div>
         </div>
 
@@ -20165,8 +20738,18 @@
             const A = DB.ageData;
             const has = A.saved && (A.me.birthDate || A.partner.birthDate);
             const persons = [
-              { key: "me", label: DB.couple.me.name || "我", emoji: "🧑", weak: "var(--primary-weak)" },
-              { key: "partner", label: DB.couple.partner.name || "TA", emoji: "👧", weak: "var(--accent-weak)" },
+              {
+                key: "me",
+                label: DB.couple.me.name || "我",
+                emoji: "🧑",
+                weak: "var(--primary-weak)",
+              },
+              {
+                key: "partner",
+                label: DB.couple.partner.name || "TA",
+                emoji: "👧",
+                weak: "var(--accent-weak)",
+              },
             ];
             const rows = persons
               .map((pr) => {
@@ -20710,7 +21293,11 @@
         // 只改文字，保留里面的 ▾ 箭头节点（否则点一次箭头就没了）
         setBtnLabel("#recSortBtn", recSortLabel());
         drawRecList();
-        toast(DB.settings.recordSort === "asc" ? "已切换为时间正序" : "已切换为时间倒序");
+        toast(
+          DB.settings.recordSort === "asc"
+            ? "已切换为时间正序"
+            : "已切换为时间倒序",
+        );
       }
       function recClearFilter() {
         recYear = "";
@@ -20926,10 +21513,7 @@
         // 经期表单那一屏不渲染 #recList，所以 listBox 为空即代表「不在列表视图」
         const listBox = document.querySelector("#recList");
         const isEmpty = !!(listBox && listBox.querySelector(".empty"));
-        fab.classList.toggle(
-          "on",
-          !!(onRecords && listBox && !isEmpty),
-        );
+        fab.classList.toggle("on", !!(onRecords && listBox && !isEmpty));
       }
 
       function drawRecList() {
@@ -20974,7 +21558,9 @@
           box.innerHTML = keys
             .map((k) => {
               const [y, mo] = k.split("-");
-              return `<div class="sec"><div class="sec-hd"><span class="sec-t">${y}年${+mo}月</span><span class="sec-more">${groups[k].length} 件</span></div>${groups[k]
+              return `<div class="sec"><div class="sec-hd"><span class="sec-t">${y}年${+mo}月</span><span class="sec-more">${groups[k].length} 件</span></div>${groups[
+                k
+              ]
                 .map((r) => momCard(r, recTab))
                 .join("")}</div>`;
             })
@@ -20996,7 +21582,9 @@
               `<div class="tl-d">${y}年${+mo}月</div>` +
               groups[k]
                 .map(
-                  (r) => `<div class="tl-it"><div style="font-size:12px;color:var(--sub)">${fmtShort(r.date)} ${weekday(r.date)}</div>
+                  (
+                    r,
+                  ) => `<div class="tl-it"><div style="font-size:12px;color:var(--sub)">${fmtShort(r.date)} ${weekday(r.date)}</div>
             <div class="swipe-wrap"><div class="swipe-c">${momInner(r, recTab)}</div>
             <div class="swipe-act"><button class="ed">编辑</button><button class="de">删除</button></div></div></div>`,
                 )
@@ -21228,7 +21816,13 @@
         // 开屏位置：优先落在「刚加的这张」，否则落在第一张真实图片上
         const startAt = () => {
           const f = pendingImgFocus;
-          if (f && cfg.type && cfg.id && f.type === cfg.type && f.id === cfg.id) {
+          if (
+            f &&
+            cfg.type &&
+            cfg.id &&
+            f.type === cfg.type &&
+            f.id === cfg.id
+          ) {
             if (focusReal(f.i)) {
               markOn();
               return;
@@ -21557,7 +22151,8 @@
           // 长按未成立就先滑动了：当作页面滚动，取消候选
           if (
             cand &&
-            (Math.abs(e.clientX - cand.x) > 8 || Math.abs(e.clientY - cand.y) > 8)
+            (Math.abs(e.clientX - cand.x) > 8 ||
+              Math.abs(e.clientY - cand.y) > 8)
           )
             clearCand();
         });
@@ -21749,38 +22344,74 @@
         return head + (ks.length > 2 ? ` · 共 ${ks.length} 项` : "");
       }
 
-      // 「全部指标」详情页：幸福指数环 + 四维进度条 + 全部统计卡
+      // 「全部指标」详情页：既然是独立页面，就按完整页面的层次来做——
+      // 首个指标做英雄卡（大数字视觉锚点），其余指标两列小卡，底部统一入口编辑看板。
       function dashDetailPage() {
         openSub("全部指标", (el) => {
           const D = DB.dash;
           const mods = {
-            loveDays: { t: "💞 恋爱天数", v: loveDays() || "—", u: "天" },
-            happyN: { t: "💖 快乐事件", v: DB.happy.length, u: "件" },
-            travelN: { t: "🧳 旅行次数", v: DB.travel.length, u: "次" },
-            cityN: { t: "🏙️ 到访城市", v: cityCount(), u: "座" },
+            loveDays: {
+              t: "恋爱天数",
+              ic: "💞",
+              v: loveDays() || "—",
+              u: "天",
+            },
+            happyN: { t: "快乐事件", ic: "💖", v: DB.happy.length, u: "件" },
+            travelN: { t: "旅行次数", ic: "🧳", v: DB.travel.length, u: "次" },
+            cityN: { t: "到访城市", ic: "🏙️", v: cityCount(), u: "座" },
             checkN: {
-              t: "✅ 打卡天数",
+              t: "打卡天数",
+              ic: "✅",
               v: new Set(DB.checkin.map((c) => c.date)).size,
               u: "天",
             },
           };
-          // 幸福指数（大环 + 四维达成度）已按需求移除，这里只保留全部统计
-          const cards = D.order
-            .filter((k) => !D.hidden.includes(k) && k !== "happiness" && k !== "trend" && k !== "map")
-            .map((k) => {
-              const m = mods[k];
-              if (!m) return "";
-              return `<div class="stat-card"><div class="st-t">${m.t}</div><div class="st-v">${m.v}<small>${m.u}</small></div></div>`;
-            })
-            .filter(Boolean);
-          let rows = "";
-          for (let i = 0; i < cards.length; i += 2)
-            rows += `<div class="stat-row">${cards.slice(i, i + 2).join("")}</div>`;
+          const list = D.order
+            .filter(
+              (k) =>
+                !D.hidden.includes(k) &&
+                k !== "happiness" &&
+                k !== "trend" &&
+                k !== "map" &&
+                mods[k],
+            )
+            .map((k) => ({ k, ...mods[k] }));
+          // 第一个（按用户在看板里排的顺序）做英雄卡，其余进两列网格
+          const [hero, ...rest] = list;
+          let heroHtml = "";
+          if (hero) {
+            // 副行文案：恋爱天数显示起始日；未设置恋爱日时干脆不显示副行，避免「共 — 天」
+            const desc =
+              hero.k === "loveDays"
+                ? DB.couple.loveStart
+                  ? `自 ${DB.couple.loveStart.replace(/-/g, ".")} 起`
+                  : ""
+                : `共 ${hero.v} ${hero.u}`;
+            heroHtml = `<div class="mx-hero">
+            <div class="mxh-t">${hero.ic} ${hero.t}</div>
+            <div class="mxh-v">${hero.v}<small>${hero.u}</small></div>
+            ${desc ? `<div class="mxh-d">${desc}</div>` : ""}
+          </div>`;
+          }
+          const gridHtml = rest
+            .map(
+              (m) => `<div class="mx-card">
+            <div class="mx-ic">${m.ic}</div>
+            <div class="mx-t">${m.t}</div>
+            <div class="mx-v">${m.v}<small>${m.u}</small></div>
+          </div>`,
+            )
+            .join("");
           el.innerHTML = `
-          <div class="sec-hd" style="margin:12px 2px 0"><span class="sec-t">📋 全部统计</span>
-            <button class="sec-more" onclick="dashEdit()">编辑看板</button></div>
-          <div class="stat-grid" style="margin-top:8px">${rows}</div>
-          <div style="font-size:12px;color:var(--sub);margin:14px 4px;line-height:1.7">
+          ${heroHtml}
+          ${rest.length ? `<div class="mx-grid">${gridHtml}</div>` : ""}
+          <div class="glist" style="margin-top:14px">
+            <button class="cell" style="width:100%;text-align:left" onclick="dashEdit()">
+              <span class="ic">🧩</span><span class="tt">编辑看板</span>
+              <span style="font-size:13px;color:var(--sub);margin-left:auto">显示与排序</span>
+              <span class="arr">›</span></button>
+          </div>
+          <div style="font-size:12px;color:var(--sub);margin:12px 4px;line-height:1.7">
             💡 在「编辑看板」里可以调整显示哪些指标与顺序。
           </div>`;
         });
@@ -22182,12 +22813,14 @@
           const lead = new Date(y, m, 1).getDay();
           const dim = new Date(y, m + 1, 0).getDate();
           let cells = "";
-          for (let b = 0; b < lead; b++) cells += '<span class="tl-cell empty"></span>';
+          for (let b = 0; b < lead; b++)
+            cells += '<span class="tl-cell empty"></span>';
           for (let day = 1; day <= dim; day++) {
             const ds = `${y}-${String(m + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
             const isP = !!(rec[ds] && rec[ds].f);
             const isToday = ds === today();
-            const cls = "tl-cell" + (isP ? " on" : "") + (isToday ? " today" : "");
+            const cls =
+              "tl-cell" + (isP ? " on" : "") + (isToday ? " today" : "");
             cells += `<span class="${cls}"${isP ? ` onclick="pdEditDay('${ds}')"` : ""}>${day}</span>`;
           }
           html += `<div class="tl-month"><div class="tl-mlabel">${y}年${m + 1}月</div><div class="tl-grid">${cells}</div></div>`;
@@ -22232,7 +22865,10 @@
             .map((d) => {
               const r = rec[d];
               const chips = [];
-              if (r.f) chips.push(`<span class="tag">${tagEmoji(r.f, "flow")} ${esc(r.f)}</span>`);
+              if (r.f)
+                chips.push(
+                  `<span class="tag">${tagEmoji(r.f, "flow")} ${esc(r.f)}</span>`,
+                );
               if (r.m) {
                 const mm = esc(r.m);
                 chips.push(
@@ -22265,8 +22901,7 @@
             counts[f] = (counts[f] || 0) + 1;
           });
           const topFlow =
-            Object.keys(counts).sort((a, b) => counts[b] - counts[a])[0] ||
-            "";
+            Object.keys(counts).sort((a, b) => counts[b] - counts[a])[0] || "";
           const isOngoing = ep.end >= today();
           const lastY = new Date(ep.start + "T00:00:00").getFullYear();
           const curY = new Date(today() + "T00:00:00").getFullYear();
@@ -22375,7 +23010,9 @@
             </button>`
                 : ""
             }
-            ${pdMode === "single" && pdRecOpen ? `
+            ${
+              pdMode === "single" && pdRecOpen
+                ? `
             ${
               DB.period.rec[today()]
                 ? `<div class="pd-today-done">✅ 今天已记录 · <a class="link" onclick="pdEditDay(today())">点此修改</a></div>`
@@ -22437,101 +23074,98 @@
       // 经期分析卡（已从经期页搬到总览页）
       function periodAnalysisHtml() {
         const A = periodAnalysis();
-          if (!A.last) return "";
-          const T = today();
-          // 平均经期时长
-          const durArr = A.eps
-            .map((e) => dayDiff(e.start, e.end) + 1)
-            .slice(-6);
-          const avgDur = durArr.length
-            ? Math.round(durArr.reduce((a, b) => a + b, 0) / durArr.length)
-            : dayDiff(A.last.start, A.last.end) + 1;
-          // 周期规律色带
-          const trendTotal = Math.max(1, A.trend.total);
-          const seg = (v, color) =>
-            v
-              ? `<i style="width:${Math.round((v / trendTotal) * 100)}%;background:${color}"></i>`
-              : "";
-          const primary = "var(--primary)";
-          const accent = "var(--accent)";
-          const green = "#34c759";
-          // 下次预测卡
-          let nextHtml = "";
-          if (A.next) {
-            const dd = dayDiff(T, A.next);
-            const live = A.ongoing;
-            const badge = live
-              ? `<span class="badge live">🩸 进行中</span>`
-              : dd > 0
-                ? `<span class="badge">${dd} 天后</span>`
-                : dd === 0
-                  ? `<span class="badge live">今日</span>`
-                  : `<span class="badge" style="background:var(--danger);color:#fff">已过 ${-dd} 天</span>`;
-            let dTitle, dSub;
-            if (live) {
-              dTitle =
-                "本次经期 · 第 " + (dayDiff(A.last.start, T) + 1) + " 天";
-              dSub = "预计 " + fmtShort(A.last.end) + " 结束";
-            } else if (dd >= 0) {
-              dTitle = "预计下次月经来潮";
-              dSub = fmtCN(A.next) + " " + weekday(A.next);
-            } else {
-              dTitle = "本次应来却未到";
-              dSub =
-                "上次 " + fmtShort(A.last.start) + " 后，已推迟 " + -dd + " 天";
-            }
-            nextHtml = `<div class="pa-next"><div class="ico">${live ? "🩸" : "⏳"}</div>
+        if (!A.last) return "";
+        const T = today();
+        // 平均经期时长
+        const durArr = A.eps.map((e) => dayDiff(e.start, e.end) + 1).slice(-6);
+        const avgDur = durArr.length
+          ? Math.round(durArr.reduce((a, b) => a + b, 0) / durArr.length)
+          : dayDiff(A.last.start, A.last.end) + 1;
+        // 周期规律色带
+        const trendTotal = Math.max(1, A.trend.total);
+        const seg = (v, color) =>
+          v
+            ? `<i style="width:${Math.round((v / trendTotal) * 100)}%;background:${color}"></i>`
+            : "";
+        const primary = "var(--primary)";
+        const accent = "var(--accent)";
+        const green = "#34c759";
+        // 下次预测卡
+        let nextHtml = "";
+        if (A.next) {
+          const dd = dayDiff(T, A.next);
+          const live = A.ongoing;
+          const badge = live
+            ? `<span class="badge live">🩸 进行中</span>`
+            : dd > 0
+              ? `<span class="badge">${dd} 天后</span>`
+              : dd === 0
+                ? `<span class="badge live">今日</span>`
+                : `<span class="badge" style="background:var(--danger);color:#fff">已过 ${-dd} 天</span>`;
+          let dTitle, dSub;
+          if (live) {
+            dTitle = "本次经期 · 第 " + (dayDiff(A.last.start, T) + 1) + " 天";
+            dSub = "预计 " + fmtShort(A.last.end) + " 结束";
+          } else if (dd >= 0) {
+            dTitle = "预计下次月经来潮";
+            dSub = fmtCN(A.next) + " " + weekday(A.next);
+          } else {
+            dTitle = "本次应来却未到";
+            dSub =
+              "上次 " + fmtShort(A.last.start) + " 后，已推迟 " + -dd + " 天";
+          }
+          nextHtml = `<div class="pa-next"><div class="ico">${live ? "🩸" : "⏳"}</div>
               <div class="mx">
                 <div class="d">${dTitle}</div>
                 <div class="s">${dSub}</div>
               </div>${badge}</div>`;
-          }
-          const durStr = (s, e) => Math.max(1, dayDiff(s, e) + 1) + "天";
-          // 预测窗口行：用彩色日期胶囊代替难以看懂的条形图
-          const windowRows = [];
-          if (A.last) {
-            const lastLabel = A.ongoing ? "本次经期" : "上次经期";
-            windowRows.push({
-              emo: "🩸",
-              k: lastLabel,
-              v: `${fmtCN(A.last.start)} ～ ${fmtCN(A.last.end)} · 共 ${durStr(A.last.start, A.last.end)}`,
-              pill: `${fmtShort(A.last.start)} – ${fmtShort(A.last.end)} · ${durStr(A.last.start, A.last.end)}`,
-              color: "var(--primary-weak)",
-              text: "var(--primary)",
-            });
-          }
-          if (A.ovulation) {
-            windowRows.push({
-              emo: "🥚",
-              k: "预测排卵日",
-              v: `${fmtCN(A.ovulation)} ${weekday(A.ovulation)}`,
-              pill: `${fmtShort(A.ovulation)} ${weekday(A.ovulation)}`,
-              color: "var(--accent-weak)",
-              text: "var(--accent)",
-            });
-          }
-          if (A.fertile) {
-            windowRows.push({
-              emo: "🔥",
-              k: "排卵期",
-              v: `${fmtCN(A.fertile.start)} ～ ${fmtCN(A.fertile.end)}`,
-              pill: `${fmtShort(A.fertile.start)} – ${fmtShort(A.fertile.end)} · ${durStr(A.fertile.start, A.fertile.end)}`,
-              color: "#ffe5ec",
-              text: "#e0203f",
-            });
-          }
-          if (A.safe && A.safe[1]) {
-            windowRows.push({
-              emo: "🛡️",
-              k: "安全期",
-              v: `${fmtCN(A.safe[1].start)} ～ ${fmtCN(A.safe[1].end)}`,
-              pill: `${fmtShort(A.safe[1].start)} – ${fmtShort(A.safe[1].end)} · ${durStr(A.safe[1].start, A.safe[1].end)}`,
-              color: "#e6f9ec",
-              text: "#34c759",
-            });
-          }
-          const windowsHtml = windowRows.length
-            ? `<div class="pa-blk">
+        }
+        const durStr = (s, e) => Math.max(1, dayDiff(s, e) + 1) + "天";
+        // 预测窗口行：用彩色日期胶囊代替难以看懂的条形图
+        const windowRows = [];
+        if (A.last) {
+          const lastLabel = A.ongoing ? "本次经期" : "上次经期";
+          windowRows.push({
+            emo: "🩸",
+            k: lastLabel,
+            v: `${fmtCN(A.last.start)} ～ ${fmtCN(A.last.end)} · 共 ${durStr(A.last.start, A.last.end)}`,
+            pill: `${fmtShort(A.last.start)} – ${fmtShort(A.last.end)} · ${durStr(A.last.start, A.last.end)}`,
+            color: "var(--primary-weak)",
+            text: "var(--primary)",
+          });
+        }
+        if (A.ovulation) {
+          windowRows.push({
+            emo: "🥚",
+            k: "预测排卵日",
+            v: `${fmtCN(A.ovulation)} ${weekday(A.ovulation)}`,
+            pill: `${fmtShort(A.ovulation)} ${weekday(A.ovulation)}`,
+            color: "var(--accent-weak)",
+            text: "var(--accent)",
+          });
+        }
+        if (A.fertile) {
+          windowRows.push({
+            emo: "🔥",
+            k: "排卵期",
+            v: `${fmtCN(A.fertile.start)} ～ ${fmtCN(A.fertile.end)}`,
+            pill: `${fmtShort(A.fertile.start)} – ${fmtShort(A.fertile.end)} · ${durStr(A.fertile.start, A.fertile.end)}`,
+            color: "#ffe5ec",
+            text: "#e0203f",
+          });
+        }
+        if (A.safe && A.safe[1]) {
+          windowRows.push({
+            emo: "🛡️",
+            k: "安全期",
+            v: `${fmtCN(A.safe[1].start)} ～ ${fmtCN(A.safe[1].end)}`,
+            pill: `${fmtShort(A.safe[1].start)} – ${fmtShort(A.safe[1].end)} · ${durStr(A.safe[1].start, A.safe[1].end)}`,
+            color: "#e6f9ec",
+            text: "#34c759",
+          });
+        }
+        const windowsHtml = windowRows.length
+          ? `<div class="pa-blk">
                 <div class="pa-blk-t">🗓️ 预测窗口（基于平均周期 ${A.avg} 天）</div>
                 ${windowRows
                   .map(
@@ -22542,16 +23176,16 @@
                   )
                   .join("")}
               </div>`
-            : "";
-          const regHtml = A.trend.total
-            ? `<div class="pa-reg"><div class="pa-blk-t" style="margin-bottom:0">📈 周期规律 · 近 ${A.trend.total} 个周期</div>
+          : "";
+        const regHtml = A.trend.total
+          ? `<div class="pa-reg"><div class="pa-blk-t" style="margin-bottom:0">📈 周期规律 · 近 ${A.trend.total} 个周期</div>
               <div class="segrow"><span>准时</span><div class="track">${seg(A.trend.ontime, green)}</div><span class="cnt">${A.trend.ontime}</span></div>
               <div class="segrow"><span>提前</span><div class="track">${seg(A.trend.early, "#ff9500")}</div><span class="cnt">${A.trend.early}</span></div>
               <div class="segrow"><span>推迟</span><div class="track">${seg(A.trend.late, "#ff3b30")}</div><span class="cnt">${A.trend.late}</span></div>
             </div>`
-            : "";
-          const hasDetail = windowsHtml || regHtml;
-          return `<div class="pa-card">
+          : "";
+        const hasDetail = windowsHtml || regHtml;
+        return `<div class="pa-card">
             <div class="pa-hd"><span class="t">📊 经期分析</span>${A.ongoing ? '<span class="badge live">🩸 进行中</span>' : ""}</div>
             <div class="pa-stats">
               <div class="pa-stat"><div class="n">${A.avg}<small>天</small></div><div class="k">平均周期</div></div>
@@ -22755,9 +23389,9 @@
             const b = e.target.closest("[data-f]");
             if (!b) return;
             pdSel.f = b.dataset.f;
-            scope.querySelectorAll("#flowOpt button").forEach((x) =>
-              x.classList.toggle("on", x === b),
-            );
+            scope
+              .querySelectorAll("#flowOpt button")
+              .forEach((x) => x.classList.toggle("on", x === b));
           });
           scope.querySelector("#symGrid").addEventListener("click", (e) => {
             const b = e.target.closest("[data-s]");
@@ -22771,17 +23405,19 @@
                 ? (pdSel.s = pdSel.s.filter((x) => x !== s))
                 : pdSel.s.push(s);
             }
-            scope.querySelectorAll("#symGrid button[data-s]").forEach((x) =>
-              x.classList.toggle("on", pdSel.s.includes(x.dataset.s)),
-            );
+            scope
+              .querySelectorAll("#symGrid button[data-s]")
+              .forEach((x) =>
+                x.classList.toggle("on", pdSel.s.includes(x.dataset.s)),
+              );
           });
           scope.querySelector("#moodGrid").addEventListener("click", (e) => {
             const b = e.target.closest("[data-m]");
             if (!b) return;
             pdSel.m = b.dataset.m;
-            scope.querySelectorAll("#moodGrid button").forEach((x) =>
-              x.classList.toggle("on", x === b),
-            );
+            scope
+              .querySelectorAll("#moodGrid button")
+              .forEach((x) => x.classList.toggle("on", x === b));
           });
           scope.querySelector("#pdSave").onclick = () => {
             const rec = {
@@ -22810,7 +23446,12 @@
                 const ds = pbRangeDays()[pbState.cur];
                 const cfg =
                   pbState.days[ds] ||
-                  (pbState.days[ds] = { flow: "", syms: [], mood: "", note: "" });
+                  (pbState.days[ds] = {
+                    flow: "",
+                    syms: [],
+                    mood: "",
+                    note: "",
+                  });
                 if (b.dataset.f !== undefined) {
                   cfg.flow = b.dataset.f;
                   wiz
@@ -22819,7 +23460,9 @@
                 } else if (b.dataset.s !== undefined) {
                   const s = b.dataset.s;
                   if (s === "__none__") {
-                    cfg.syms = cfg.syms.includes("__none__") ? [] : ["__none__"];
+                    cfg.syms = cfg.syms.includes("__none__")
+                      ? []
+                      : ["__none__"];
                   } else {
                     cfg.syms = cfg.syms.filter((x) => x !== "__none__");
                     cfg.syms.includes(s)
@@ -22848,13 +23491,15 @@
               if (note)
                 note.addEventListener("input", () => {
                   const ds = pbRangeDays()[pbState.cur];
-                  (pbState.days[ds] ||
+                  (
+                    pbState.days[ds] ||
                     (pbState.days[ds] = {
                       flow: "",
                       syms: [],
                       mood: "",
                       note: "",
-                    })).note = note.value;
+                    })
+                  ).note = note.value;
                 });
             }
           }
@@ -22961,9 +23606,11 @@
             </div>
             <div class="pb-wiz-nav">
               ${cur > 0 ? `<button class="btn ghost" id="pbPrev" onclick="pbPrev()">← 上一天</button>` : ""}
-              ${cur < N - 1
-                ? `<button class="btn blk" id="pbNext" onclick="pbNext()">下一天 →</button>`
-                : `<button class="btn blk" id="pbFinish" onclick="pbFinish()">✅ 完成并保存</button>`}
+              ${
+                cur < N - 1
+                  ? `<button class="btn blk" id="pbNext" onclick="pbNext()">下一天 →</button>`
+                  : `<button class="btn blk" id="pbFinish" onclick="pbFinish()">✅ 完成并保存</button>`
+              }
             </div>
             <div class="pb-wiz-foot">
               <button class="sec-more" onclick="pbExitWizard()">↩ 退出向导（保留已填）</button>
@@ -23345,31 +23992,254 @@
         );
       }
 
-      // 常用工具列表（我的页只显示一个入口，完整列表放 toolsPage）
-      // 常用工具列表：[图标, 标题, 右侧状态文案, 打开函数]
-      // 第三项改成「状态」而不是「功能说明」：图标 + 标题已经说清这是什么，
-      // 再补一句"纪念日与经期一览"只是把标题换个说法。右边放真实数字才有信息量。
+      // 常用工具注册表：我的页展示「已固定」的几个，其余收进「更多工具」。
+      // 用户可在 toolsEdit() 里自由勾选固定哪些（存 DB.toolsPinned）。
+      // id 用于持久化，改名/换图标不影响用户已固定的配置。
       const FEAT_CELLS = [
-        ["📅", "情侣日历", () => `${DB.timeCapsules.length} 个纪念日`, "calendarPage()"],
-        ["📔", "情侣备忘录", () => `${DB.memo.length} 条`, "memoPage()"],
-        ["✅", "情侣打卡", () => `${DB.checkin.length} 天`, "checkinPage()"],
+        {
+          id: "calendar",
+          ic: "📅",
+          t: "情侣日历",
+          st: () => `${DB.timeCapsules.length} 个纪念日`,
+          fn: "calendarPage()",
+        },
+        {
+          id: "memo",
+          ic: "📔",
+          t: "情侣备忘录",
+          st: () => `${DB.memo.length} 条`,
+          fn: "memoPage()",
+        },
+        {
+          id: "checkin",
+          ic: "✅",
+          t: "情侣打卡",
+          st: () => `${DB.checkin.length} 天`,
+          fn: "checkinPage()",
+        },
         // 直接复用 emotionPage 的判定函数，免得列表上写一个词、点进去是另一个词
-        ["💕", "情感状态", () => emotionNow(), "emotionPage()"],
-        ["🏞️", "相册管理", () => `${DB.albums.length} 张`, "albumsPage()"],
+        {
+          id: "emotion",
+          ic: "💕",
+          t: "情感状态",
+          st: () => emotionNow(),
+          fn: "emotionPage()",
+        },
+        {
+          id: "albums",
+          ic: "🏞️",
+          t: "相册管理",
+          st: () => `${DB.albums.length} 张`,
+          fn: "albumsPage()",
+        },
+        // 原「设置 → 🔔 通知」组里的两项：提醒是日常高频功能，
+        // 收在设置二级页太深，改挂到常用工具（默认在「更多工具」，可固定）
+        {
+          id: "remind",
+          ic: "🔔",
+          t: "提醒设置",
+          st: () =>
+            `${(DB.remind.on.birthday ? 1 : 0) + (DB.remind.on.period ? 1 : 0)} 项开启`,
+          fn: "remindPage()",
+        },
+        {
+          id: "achNotify",
+          ic: "🏅",
+          t: "成就通知",
+          st: () => (DB.settings.showAchNotify !== false ? "已开启" : "已关闭"),
+          fn: "achNotifyPage()",
+        },
       ];
+      const toolById = (id) => FEAT_CELLS.find((c) => c.id === id);
+      // 当前固定的工具（过滤掉注册表里已不存在的 id，保持顺序）
+      function pinnedTools() {
+        return (DB.toolsPinned || []).map(toolById).filter(Boolean);
+      }
+      function unpinnedTools() {
+        const pin = new Set(DB.toolsPinned || []);
+        return FEAT_CELLS.filter((c) => !pin.has(c.id));
+      }
+      // 统一的工具行模板（我的页 / 工具页共用，保证两处样式一致）
+      function toolCellHtml(c) {
+        return `<button class="cell" style="width:100%;text-align:left" onclick="${c.fn}">
+          <span class="ic">${c.ic}</span><span class="tt">${c.t}</span>
+          <span style="font-size:13px;color:var(--sub);margin-left:auto">${c.st()}</span>
+          <span class="arr">›</span></button>`;
+      }
 
-      // 常用工具完整列表（我的页入口点进来）
+      // 常用工具完整列表（我的页「更多工具」点进来）：固定在上、其余在下，可进编辑
       function toolsPage() {
         openSub("常用工具", (el) => {
-          el.innerHTML = `<div class="glist" style="margin-top:12px">
-            ${FEAT_CELLS.map(
-              ([i, t, st, fn]) =>
-                `<button class="cell" style="width:100%;text-align:left" onclick="${fn}">
-              <span class="ic">${i}</span><span class="tt">${t}</span>
-              <span style="font-size:13px;color:var(--sub);margin-left:auto">${st()}</span>
-              <span class="arr">›</span></button>`,
-            ).join("")}
+          const pin = pinnedTools();
+          const rest = unpinnedTools();
+          el.innerHTML = `
+          ${
+            pin.length
+              ? `<div class="sec-hd" style="margin:12px 2px 0"><span class="sec-t">📌 已固定到我的页</span>
+            <button class="sec-more" onclick="toolsEdit()">编辑</button></div>
+          <div class="glist" style="margin-top:8px">${pin.map(toolCellHtml).join("")}</div>`
+              : ""
+          }
+          ${
+            rest.length
+              ? `<div class="sec-hd" style="margin:${pin.length ? 18 : 12}px 2px 0"><span class="sec-t">🧩 更多工具</span>
+            ${pin.length ? "" : `<button class="sec-more" onclick="toolsEdit()">编辑</button>`}</div>
+          <div class="glist" style="margin-top:8px">${rest.map(toolCellHtml).join("")}</div>`
+              : ""
+          }
+          <div style="font-size:12px;color:var(--sub);margin:14px 4px;line-height:1.7">
+            💡 在「编辑」里可以勾选哪些工具固定到「我的」页。
           </div>`;
+        });
+      }
+
+      // 列表拖拽排序（触摸）：长按某行 250ms 进入拖拽态，之后上下拖动实时换位；
+      // 松手后从 DOM 顺序读出最终排列交给 onDrop 回调持久化。
+      // 关键点：touchmove 必须是 passive:false 并在拖拽态里 preventDefault()，
+      // 否则 iOS 会把竖向移动交给页面滚动，行永远拖不动（之前失效就是这个原因）。
+      // 原理：被拖行整体 translateY 跟手，中心越过相邻行中线时交换 DOM 位置，
+      // 同时把基准 startY 平移一个行高，保证视觉位置连续不跳。
+      function bindListDrag(list, onDrop) {
+        if (!list) return;
+        let drag = null; // 进入拖拽态：{row, startY}
+        let press = null; // 长按判定中：{row, y, timer}
+        const rowsOf = () => [...list.querySelectorAll(".db-row")];
+        const HOLD = 250; // 长按阈值 ms
+        list.addEventListener(
+          "touchstart",
+          (e) => {
+            if (drag || press) return;
+            // 开关上的触摸不算，不干扰正常点击
+            if (e.target.closest(".switch")) return;
+            const row = e.target.closest(".db-row");
+            if (!row) return;
+            const y = e.touches[0].clientY;
+            press = {
+              row,
+              y,
+              timer: setTimeout(() => {
+                // 长按成立 → 进入拖拽态，轻微震动给个反馈（若可用）
+                drag = { row: press.row, startY: press.y };
+                row.classList.add("dragging");
+                row.style.transition = "none";
+                if (navigator.vibrate) navigator.vibrate(10);
+                press = null;
+              }, HOLD),
+            };
+          },
+          { passive: true },
+        );
+        list.addEventListener(
+          "touchmove",
+          (e) => {
+            const y = e.touches[0].clientY;
+            // 还没长按成立就移动超过 10px：视为想滚动页面，取消长按
+            if (!drag && press) {
+              if (Math.abs(y - press.y) > 10) {
+                clearTimeout(press.timer);
+                press = null;
+              }
+              return;
+            }
+            if (!drag) return;
+            // 拖拽态：拦截浏览器滚动/橡皮筋，移动全给排序用
+            e.preventDefault();
+            const dy = y - drag.startY;
+            drag.row.style.transform = `translateY(${dy}px)`;
+            const rows = rowsOf();
+            const idx = rows.indexOf(drag.row);
+            if (idx < 0) return;
+            const gap =
+              rows.length > 1
+                ? Math.max(
+                    0,
+                    rows[1].getBoundingClientRect().top -
+                      rows[0].getBoundingClientRect().bottom,
+                  )
+                : 0;
+            const step = drag.row.offsetHeight + gap;
+            const r = drag.row.getBoundingClientRect();
+            // 越过下一行的中线 → 交换到它后面；基准 startY 平移一个步长，视觉连续不跳
+            if (dy > 0 && idx < rows.length - 1) {
+              const n = rows[idx + 1].getBoundingClientRect();
+              if (r.bottom > n.top + n.height / 2) {
+                rows[idx + 1].after(drag.row);
+                drag.startY -= step;
+                drag.row.style.transform = `translateY(${y - drag.startY}px)`;
+              }
+            } else if (dy < 0 && idx > 0) {
+              const p = rows[idx - 1].getBoundingClientRect();
+              if (r.top < p.top + p.height / 2) {
+                rows[idx - 1].before(drag.row);
+                drag.startY += step;
+                drag.row.style.transform = `translateY(${y - drag.startY}px)`;
+              }
+            }
+          },
+          { passive: false },
+        );
+        const finish = (persist) => {
+          if (press) {
+            clearTimeout(press.timer);
+            press = null;
+          }
+          if (!drag) return;
+          const row = drag.row;
+          drag = null;
+          row.style.transition = "transform 0.2s";
+          row.style.transform = "";
+          setTimeout(() => (row.style.transition = ""), 220);
+          if (persist && onDrop) onDrop();
+        };
+        list.addEventListener("touchend", () => finish(true));
+        list.addEventListener("touchcancel", () => finish(false));
+      }
+
+      // 编辑常用工具：开关 = 是否固定到「我的」页；长按已固定的行上下拖动排序
+      function toolsEdit() {
+        openSub("编辑常用工具", (el) => {
+          const draw = () => {
+            const pin = pinnedTools();
+            const rest = unpinnedTools();
+            const row = (
+              c,
+              draggable,
+            ) => `<div class="db-row" data-id="${c.id}">
+            <span class="db-ic">${c.ic}</span><span class="db-nm">${c.t}</span>
+            <button class="switch ${draggable ? "on" : ""}" data-tg="${c.id}"></button></div>`;
+            el.innerHTML = `<div class="db-hd first">已固定到「我的」页</div>
+            <div class="db-tip">长按工具行上下拖动可调整顺序；开关关掉即移回「更多工具」</div>
+            <div class="db-card" id="pinList">
+            ${pin.map((c) => row(c, true)).join("") || '<div class="db-row" style="justify-content:center;color:var(--sub);font-size:13px">还没有固定的工具，从下面打开开关</div>'}
+            </div>
+            <div class="db-hd">更多工具</div>
+            <div class="db-tip">打开开关即可固定到「我的」页</div>
+            <div class="db-card">
+            ${rest.map((c) => row(c, false)).join("") || '<div class="db-row" style="justify-content:center;color:var(--sub);font-size:13px">所有工具都已固定</div>'}
+            </div>`;
+            el.querySelectorAll("[data-tg]").forEach(
+              (s) =>
+                (s.onclick = () => {
+                  const k = s.dataset.tg;
+                  const arr = DB.toolsPinned || [];
+                  const i = arr.indexOf(k);
+                  // 固定追加到队尾（顺序由用户拖动决定），取消固定直接移除
+                  if (i >= 0) arr.splice(i, 1);
+                  else arr.push(k);
+                  DB.toolsPinned = arr;
+                  save();
+                  draw();
+                }),
+            );
+            bindListDrag($("#pinList"), () => {
+              // 松手即按 DOM 顺序持久化
+              DB.toolsPinned = [
+                ...document.querySelectorAll("#pinList .db-row"),
+              ].map((r) => r.dataset.id);
+              save();
+            });
+          };
+          draw();
         });
       }
 
@@ -23524,14 +24394,18 @@
           </button>
         </div>
 
-        <!-- ============ 分区 ③：常用工具（收成一行的入口，点开才是完整列表） ============ -->
-        <button class="mini-row" style="margin-top:12px" onclick="toolsPage()">
-          <span class="mr-ic">🧰</span>
-          <span class="mr-main">
-            <span class="mr-t">常用工具</span>
-          </span>
-          <span class="mr-arr">›</span>
-        </button>
+        <!-- ============ 分区 ③：常用工具（固定的直接平铺，其余收进「更多工具」，可在工具页自定义） ============ -->
+        <div class="mz">
+          <div class="mz-hd"><span class="mz-t">🧰 常用工具</span>
+            <button class="sec-more" onclick="toolsEdit()">编辑</button></div>
+          <div class="glist">
+            ${pinnedTools().map(toolCellHtml).join("")}
+            <button class="cell" style="width:100%;text-align:left" onclick="toolsPage()">
+              <span class="ic">🧩</span><span class="tt">更多工具</span>
+              <span style="font-size:13px;color:var(--sub);margin-left:auto">${unpinnedTools().length} 个</span>
+              <span class="arr">›</span></button>
+          </div>
+        </div>
 
         <!-- ============ 分区 ④：系统 ============ -->
         <div class="mz">
@@ -23562,11 +24436,14 @@
             const capRows = capsules
               .map((c) => {
                 const days = dayDiff(c.date, today());
-                return `<button class="cell" style="width:100%;text-align:left" onclick="capsuleDetail('${c.id}')">
-                  <span class="ic">⏳</span>
-                  <span class="tt">${esc(c.name)}
-                    <div class="desc">${fmtCN(c.date)} · 已经 ${Math.max(0, days)} 天 · 距下次还有 ${Math.max(0, 365 - (days % 365))} 天</div>
-                  </span><span class="arr">›</span></button>`;
+                return `<button class="capsule-card" onclick="capsuleDetail('${c.id}')">
+                  <span class="cc-ic">⏳</span>
+                  <span class="cc-main">
+                    <span class="cc-name">${esc(c.name)}</span>
+                    <span class="cc-sub">${fmtCN(c.date)} · 距下次还有 ${Math.max(0, 365 - (days % 365))} 天</span>
+                  </span>
+                  <span class="cc-days"><span class="num">${Math.max(0, days)}</span><span class="unit">天</span></span>
+                  <span class="cc-arr">›</span></button>`;
               })
               .join("");
             el.innerHTML = `
@@ -23610,7 +24487,7 @@
               <button class="btn ghost" style="width:100%;" id="capDateBtn">${today()} ▾</button>
               <input type="hidden" id="capDate" value="${today()}">
             </div>
-            <div style="padding:14px 0;text-align:center;color:var(--sub);font-size:14px;border-top:1px solid var(--line);margin-top:6px;">
+            <div style="padding:14px 0;text-align:center;color:var(--sub);font-size:14px;border-top:0.5px solid var(--line);margin-top:6px;">
               <div style="font-size:12px;">这段时光</div>
               <div style="font-size:28px;font-weight:800;color:var(--primary);margin:4px 0;">已经 <span id="capPreviewDays">0</span> 天</div>
               <div style="font-size:13px;">刚刚开始的故事</div>
@@ -23731,18 +24608,8 @@
             {
               title: "🎨 外观",
               items: [
-                [
-                  "🎨",
-                  "外观设置",
-                  "",
-                  "appearancePage()",
-                ],
-                [
-                  "🖌️",
-                  "默认卡片颜色",
-                  "",
-                  "defaultCardColorPage()",
-                ],
+                ["🎨", "外观设置", "", "appearancePage()"],
+                ["🖌️", "默认卡片颜色", "", "defaultCardColorPage()"],
                 ["💬", "每日情话", "", "quotePage()"],
                 ["✨", "自定义开屏图文", "", "splashPage()"],
               ],
@@ -23754,37 +24621,20 @@
                 // 默认记录类型 / 成就管理），副标题全是一句话功能说明，
                 // 五行走完要滑一屏还看不出重点。按「记什么内容」和
                 // 「怎么记」收敛成两组入口。
-                [
-                  "🗂️",
-                  "内容与分类",
-                  "",
-                  "contentSettingsPage()",
-                ],
-                [
-                  "🐣",
-                  "新建与成就",
-                  "",
-                  "createSettingsPage()",
-                ],
+                ["🗂️", "内容与分类", "", "contentSettingsPage()"],
+                ["🐣", "新建与成就", "", "createSettingsPage()"],
               ],
             },
-            {
-              title: "🔔 通知",
-              items: [
-                ["🔔", "提醒设置", "", "remindPage()"],
-                ["🏅", "成就通知", "", "achNotifyPage()"],
-              ],
-            },
+            // 「🔔 通知」整组（提醒设置 / 成就通知）已移到「我的 → 常用工具」，
+            // 提醒是日常会用的功能，收在设置二级页太深了。
             {
               title: "💾 数据",
               items: [
                 // 自动备份本来就是数据的事，从「高级设置」搬进来，和导出/导入放一起
                 ["💾", "数据管理", "", "dataPage()"],
+                // 情侣绑定管的是两个人的档案数据，单独一组太占地方，并进「数据」
+                ["🔗", "情侣绑定", "", "bindPage()"],
               ],
-            },
-            {
-              title: "🔗 情侣",
-              items: [["🔗", "情侣绑定", "", "bindPage()"]],
             },
             {
               title: "ℹ️ 关于",
@@ -23939,12 +24789,17 @@
                 const finishDrag = (e) => {
                   const el = dragEl;
                   if (!el) return;
-                  if (e && e.pointerId !== undefined && e.pointerId !== activeId)
+                  if (
+                    e &&
+                    e.pointerId !== undefined &&
+                    e.pointerId !== activeId
+                  )
                     return;
                   dragEl = null; // 防重入（释放指针捕获会再次触发 pointercancel）
                   const moved = curIdx !== startIdx;
                   try {
-                    el.releasePointerCapture && el.releasePointerCapture(activeId);
+                    el.releasePointerCapture &&
+                      el.releasePointerCapture(activeId);
                   } catch (_) {}
                   // 先关闭过渡并清空位移，再重排 DOM（FLIP），避免回弹
                   box.classList.remove("drag-active");
@@ -23957,7 +24812,9 @@
                     const item = list.splice(startIdx, 1)[0];
                     list.splice(curIdx, 0, item);
                   }
-                  const byTitle = new Map(order.map((r) => [r.dataset.title, r]));
+                  const byTitle = new Map(
+                    order.map((r) => [r.dataset.title, r]),
+                  );
                   list.forEach((t) => {
                     const node = byTitle.get(t);
                     if (node) box.appendChild(node);
@@ -24046,19 +24903,23 @@
               );
             });
           };
-          window.achNotifyPage = () => {
-            openSub("成就通知", (el2) => {
-              const val = DB.settings.showAchNotify !== false;
-              el2.innerHTML = `<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;">
-                  <span style="font-size:14px;font-weight:500;">解锁成就时弹出提示</span>
-                  <button class="switch ${val ? "on" : ""}" id="achNotifySw"></button></div></div>`;
-              $("#achNotifySw").onclick = function () {
-                DB.settings.showAchNotify = !DB.settings.showAchNotify;
-                save();
-                this.classList.toggle("on");
-                toast(DB.settings.showAchNotify ? "已开启" : "已关闭");
-              };
-            });
+          window.achNotifyPage = achNotifyPage;
+        });
+      }
+
+      // 成就通知开关（原先是 settingsPage 闭包里的 window.xxx，
+      // 现在「成就通知」也是常用工具之一，必须提到全局才能从工具页直达）
+      function achNotifyPage() {
+        openSub("成就通知", (el2) => {
+          const val = DB.settings.showAchNotify !== false;
+          el2.innerHTML = `<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;">
+              <span style="font-size:14px;font-weight:500;">解锁成就时弹出提示</span>
+              <button class="switch ${val ? "on" : ""}" id="achNotifySw"></button></div></div>`;
+          $("#achNotifySw").onclick = function () {
+            DB.settings.showAchNotify = !DB.settings.showAchNotify;
+            save();
+            this.classList.toggle("on");
+            toast(DB.settings.showAchNotify ? "已开启" : "已关闭");
           };
         });
       }
@@ -24594,15 +25455,15 @@
               value: fmtCN(r.date) + " " + weekday(r.date),
             },
             {
+              // 「持续」拆成两行：天数是大字，起止区间是副行小字，
+              // 避免区间太长换行后被分割线从中间穿过
               icon: "⏳",
               label: "持续",
-              value:
-                (r.days || 1) +
-                " 天 (" +
+              value: (r.days || 1) + " 天",
+              sub:
                 fmtCN(r.startDate || r.date) +
                 " → " +
-                fmtCN(r.endDate || r.date) +
-                ")",
+                fmtCN(r.endDate || r.date),
             },
             { icon: "🖼️", label: "图片", value: (r.imgs || []).length + " 张" },
             {
@@ -24622,7 +25483,7 @@
                 `<div class="detail-info-row" style="${idx === 0 ? "padding-top:0" : ""}">
             <span class="di-icon">${row.icon}</span>
             <span class="di-label">${row.label}</span>
-            <span class="di-value">${row.value}</span>
+            <span class="di-value">${row.value}${row.sub ? `<div class="di-sub">${row.sub}</div>` : ""}</span>
           </div>`,
             )
             .join("");
@@ -24827,7 +25688,7 @@
             if (d >= y + "-01-01" && d <= y + "-12-31")
               (evs[d] = evs[d] || []).push({
                 i: "💊",
-                c: "var(--primary)",
+                c: "#AF52DE",
                 t: a.name,
                 cat: "capsule",
               });
@@ -24840,7 +25701,7 @@
               const d = y + "-" + pp.birthday.slice(5);
               (evs[d] = evs[d] || []).push({
                 i: "🎂",
-                c: "var(--primary)",
+                c: "#FF2D55",
                 t: (pp.name || "TA") + "的生日",
                 cat: "anniv",
               });
@@ -24850,7 +25711,7 @@
             const d = y + "-" + C.loveStart.slice(5);
             (evs[d] = evs[d] || []).push({
               i: "💞",
-              c: "var(--primary)",
+              c: "#FF2D55",
               t: "恋爱纪念日",
               cat: "anniv",
             });
@@ -24863,7 +25724,7 @@
                 periodSet.add(d);
                 (evs[d] = evs[d] || []).push({
                   i: "🩸",
-                  c: "var(--ok)",
+                  c: "#34C759",
                   t: "经期",
                   cat: "period",
                 });
@@ -24880,7 +25741,7 @@
                 if (!periodSet.has(d))
                   (evs[d] = evs[d] || []).push({
                     i: "🕊️",
-                    c: "var(--ok)",
+                    c: "#7FD89A",
                     t: "预测经期",
                     cat: "pred",
                   });
@@ -24897,7 +25758,7 @@
                 if (!periodSet.has(d) && !predSet.has(d))
                   (evs[d] = evs[d] || []).push({
                     i: "🔥",
-                    c: "var(--primary)",
+                    c: "#FF9500",
                     t: "排卵期",
                     cat: "fertile",
                   });
@@ -24909,7 +25770,7 @@
           if (A.ovulation && !A.ongoing && A.ovulation.startsWith(calMonth)) {
             (evs[A.ovulation] = evs[A.ovulation] || []).push({
               i: "🥚",
-              c: "var(--primary-d)",
+              c: "#E0620D",
               t: "排卵日",
               cat: "ovulation",
             });
@@ -24923,7 +25784,7 @@
                 if (!periodSet.has(d) && !predSet.has(d) && !fertileSet.has(d))
                   (evs[d] = evs[d] || []).push({
                     i: "🛡️",
-                    c: "var(--accent)",
+                    c: "#3478F6",
                     t: "安全期",
                     cat: "safe",
                   });
@@ -24936,7 +25797,7 @@
             if (r.date.startsWith(calMonth))
               (evs[r.date] = evs[r.date] || []).push({
                 i: "💖",
-                c: "var(--primary)",
+                c: "#F7B500",
                 t: r.place || r.text?.slice(0, 14) || "快乐日常",
                 cat: "happy",
                 rid: r.id,
@@ -24946,7 +25807,7 @@
             if (r.date.startsWith(calMonth))
               (evs[r.date] = evs[r.date] || []).push({
                 i: "🧳",
-                c: "var(--accent)",
+                c: "#30B0C7",
                 t: `${r.from || ""}→${r.to || ""}` || "旅行足迹",
                 cat: "travel",
                 rid: r.id,
@@ -24956,7 +25817,7 @@
             if (d.startsWith(calMonth))
               (evs[d] = evs[d] || []).push({
                 i: "✅",
-                c: "var(--accent)",
+                c: "#30B0C7",
                 t: "打卡",
                 cat: "checkin",
               });
@@ -24997,14 +25858,39 @@
           }
           html += `</div>
           <div class="cal-legend">
-            <span><i style="background:var(--ok)"></i>经期/预测</span>
-            <span><i style="background:var(--primary)"></i>排卵期</span>
-            <span><i style="background:var(--accent)"></i>安全期</span>
-            <span><i style="background:var(--primary)"></i>纪念日/生日</span>
-            <span><i style="background:var(--accent)"></i>旅行/打卡</span>
-            <span><i style="background:var(--primary-weak)"></i>时间胶囊</span>
+            <span><i style="background:#34C759"></i>经期/预测</span>
+            <span><i style="background:#FF9500"></i>排卵期</span>
+            <span><i style="background:#3478F6"></i>安全期</span>
+            <span><i style="background:#FF2D55"></i>纪念日/生日</span>
+            <span><i style="background:#30B0C7"></i>旅行/打卡</span>
+            <span><i style="background:#AF52DE"></i>时间胶囊</span>
           </div></div>
           <div class="sec" id="calDay" style="margin-top:14px"></div>`;
+          // 本月概览：把当月所有事件按类计数，垫在日历下面，
+          // 不然选中日没事件时整页就一张日历、下面大片空白。
+          const CAT_META = [
+            ["anniv", "💝", "纪念/生日"],
+            ["checkin", "✅", "打卡"],
+            ["happy", "💖", "快乐"],
+            ["travel", "🧳", "旅行"],
+            ["capsule", "💊", "时间胶囊"],
+            ["period", "🩸", "经期"],
+            ["pred", "🕊️", "预测经期"],
+            ["fertile", "🔥", "排卵期"],
+            ["ovulation", "🥚", "排卵日"],
+            ["safe", "🛡️", "安全期"],
+          ];
+          const catCnt = {};
+          for (const arr of Object.values(evs))
+            for (const e of arr) catCnt[e.cat] = (catCnt[e.cat] || 0) + 1;
+          const chips = CAT_META.filter(([c]) => catCnt[c])
+            .map(
+              ([c, ic, nm]) =>
+                `<span class="cal-sum-chip">${ic} ${nm} <b>${catCnt[c]}</b></span>`,
+            )
+            .join("");
+          html += `<div class="sec-hd" style="margin:18px 2px 0"><span class="sec-t">📊 ${m} 月概览</span></div>
+          <div class="card" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:8px">${chips || '<span style="font-size:13px;color:var(--sub)">这个月还没有任何记录</span>'}</div>`;
           el.innerHTML = html;
           const showDay = (ds) => {
             const de = (evs[ds] || []).slice();
@@ -25212,8 +26098,10 @@
                   "📅",
                   "还没有打卡记录",
                   "每天打卡积累恋爱分，连续打卡解锁成就",
-                  "立即打卡",
-                  "ckNow()",
+                  // 顶部卡片在未打卡时已经有「立即打卡」按钮，
+                  // 这里再放一个一模一样的，一屏两个按钮纯属重复 —— 留空不渲染。
+                  "",
+                  "",
                 )
           }
           </div>`;
@@ -25253,8 +26141,18 @@
           </div>
           <div class="sec card">
             <div class="sec-hd"><span class="sec-t">模式</span></div>
-            <div class="seg"><button class="${E.mode === "auto" ? "on" : ""}" data-md="auto">🤖 自动切换</button>
-            <button class="${E.mode === "manual" ? "on" : ""}" data-md="manual">✍️ 手动选择</button></div>
+            <div class="emo-opts">
+              <button class="emo-opt ${E.mode === "auto" ? "on" : ""}" data-md="auto">
+                <span class="eo-ic">🤖</span>
+                <span class="eo-main"><span class="eo-t">自动判定</span><span class="eo-d">根据最近一次记录智能判断</span></span>
+                <span class="eo-radio"></span>
+              </button>
+              <button class="emo-opt ${E.mode === "manual" ? "on" : ""}" data-md="manual">
+                <span class="eo-ic">✍️</span>
+                <span class="eo-main"><span class="eo-t">手动选择</span><span class="eo-d">自己定当前的状态</span></span>
+                <span class="eo-radio"></span>
+              </button>
+            </div>
             <div id="emoManual" style="${E.mode === "manual" ? "" : "display:none;margin-top:14px"}">
               <div class="sym-grid">${["热恋期", "甜蜜期", "平稳期"].map((v) => `<button class="chip ${E.manual === v ? "on" : ""}" data-em="${v}">${v}</button>`).join("")}</div></div>
           </div>`;
@@ -25612,6 +26510,7 @@
       function remindPage() {
         openSub("提醒设置", (el) => {
           const R = DB.remind;
+          const C = DB.couple;
           const draw = () => {
             el.innerHTML = `<div class="glist" style="margin-top:8px">
             ${[
@@ -25642,12 +26541,20 @@
               )
               .join("")}</div>
           <div class="card" style="margin-top:12px">
-            <div class="sec-t" style="font-size:14px">自定义提醒文案</div>
-            <div class="field" style="margin-top:10px"><div class="field-l">生日（{name} 为昵称）</div>
-              <input class="input" id="rtB" value="${esc(R.text.birthday)}"></div>
-            <div class="field"><div class="field-l">经期（{date} 为日期）</div>
-              <input class="input" id="rtP" value="${esc(R.text.period)}"></div>
-            <button class="btn blk" id="rtSave">保存文案</button></div>
+            <div class="sec-t" style="font-size:14px">提醒文案</div>
+            <div style="font-size:12px;color:var(--sub);margin-top:6px">改动即时生效，无需保存</div>
+            ${[
+              ["birthday", "🎂 生日", "打个比方：老王 的生日"],
+              ["period", "🩸 经期", "打个比方：3月14日"],
+            ]
+              .map(
+                ([k, n, eg]) =>
+                  `<div class="field" style="margin-top:10px"><div class="field-l">${n}</div>
+              <input class="input" id="rt${k}" value="${esc(R.text[k])}"></div>
+            <div style="font-size:12px;color:var(--sub);margin:-2px 2px 0" id="rtPrev${k}"></div>`,
+              )
+              .join("")}
+            <button class="btn sm ghost" style="margin-top:12px" id="rtReset">恢复默认文案</button></div>
           <div style="font-size:12px;color:var(--sub);margin:12px 4px;line-height:1.7">
             💡 已绑定情侣后，提醒将同步展示在双方首页，实现双向通知。<br>
             经期预警基于智能周期预测自动生成。</div>`;
@@ -25672,11 +26579,36 @@
                   draw();
                 }),
             );
-            $("#rtSave").onclick = () => {
-              R.text.birthday = $("#rtB").value;
-              R.text.period = $("#rtP").value;
+            // 文案：输入即存 + 实时预览（用真实昵称/日期渲染，所见即所得），
+            // 不再需要单独的「保存」按钮——少一步操作，也不会忘存。
+            const prevText = {
+              birthday: (esc(C.me.name || "我") || "我") + "的生日",
+              period: fmtCN(today()),
+            };
+            const renderPrev = (k) => {
+              const raw = $("#rt" + k).value || "";
+              const out = raw
+                .replaceAll("{name}", esc(C.me.name || "我"))
+                .replaceAll("{date}", fmtCN(today()));
+              $("#rtPrev" + k).textContent = out
+                ? "预览：" + out
+                : "预览：（空）";
+            };
+            ["birthday", "period"].forEach((k) => {
+              $("#rt" + k).addEventListener("input", () => {
+                R.text[k] = $("#rt" + k).value;
+                save();
+                renderPrev(k);
+              });
+              renderPrev(k);
+            });
+            $("#rtReset").onclick = () => {
+              const def = DEF().remind.text;
+              R.text.birthday = def.birthday;
+              R.text.period = def.period;
               save();
-              toast("已保存");
+              draw();
+              toast("已恢复默认");
             };
           };
           draw();
@@ -26021,7 +26953,7 @@
                 .join("")}
             </div>
             <div style="margin-top:14px;"><button class="btn" id="uiReset" style="width:100%">恢复默认配色</button></div>
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:12px;border-top:0.5px solid var(--line)">
               <span style="font-size:14px;font-weight:500">🌙 深色模式</span>
               <button class="switch ${U.darkMode ? "on" : ""}" id="darkModeSw"></button>
             </div>
@@ -26126,7 +27058,7 @@
               U.bg = "#F5F5F7";
               U.card = "#FFFFFF";
               U.text = "#22242A";
-              U.lineColor = "#E5E5EA";
+              U.lineColor = "#ECECF0";
               U.shadowIntensity = 0.06;
               U.radius = 12;
               U.darkMode = false;
@@ -26271,7 +27203,9 @@
             const imgKB = (imgChars * 2) / 1024;
             const recKB = Math.max(0, totalKB - imgKB);
             const pct =
-              totalKB > 0 ? Math.max(2, Math.round((imgKB / totalKB) * 100)) : 0;
+              totalKB > 0
+                ? Math.max(2, Math.round((imgKB / totalKB) * 100))
+                : 0;
             el.innerHTML = `<div class="card" style="margin-top:8px">
           <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:500">
             <span style="color:var(--sub)">本地存储占用</span><b style="font-weight:600">${totalKB.toFixed(1)} KB</b></div>
@@ -26300,100 +27234,102 @@
         </div>
         <div style="font-size:12px;color:var(--sub);margin:14px 4px;line-height:1.7;font-weight:500">
           ⚠️ 清除浏览器缓存、无痕模式或更换设备会导致本地数据丢失，请定期导出备份。</div>`;
-          $("#dExp").onclick = () => {
-            const blob = new Blob([JSON.stringify(DB)], {
-              type: "application/json",
-            });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "love_backup_" + today() + ".json";
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            setTimeout(() => URL.revokeObjectURL(url), 500);
-            toast("已导出备份文件");
-          };
-          $("#dImp").onclick = () => {
-            const inp = document.createElement("input");
-            inp.type = "file";
-            inp.accept = ".json,application/json";
-            inp.onchange = () => {
-              const f = inp.files[0];
-              if (!f) return;
-              const r = new FileReader();
-              r.onload = () => {
-                try {
-                  const src = JSON.parse(r.result);
-                  modal({
-                    title: "选择导入方式",
-                    body: "合并：保留现有数据并去重合并<br>覆盖：用备份数据完全替换",
-                    ok: "合并导入",
-                    onOk: () => {
-                      const n = mergeDB(src);
-                      toast("合并完成，新增 " + n + " 条");
-                    },
-                    cancel: "覆盖导入",
-                    okCls: "btn",
-                  }).querySelector("[data-x]").onclick = () => {
-                    try {
-                      localStorage.setItem(KEY, JSON.stringify(src));
-                      DB = load();
-                      applyTheme();
-                      toast("已覆盖导入");
-                      closeSub();
-                    } catch (e) {
-                      toast("导入失败：" + e.message);
-                    }
-                  };
-                } catch (e) {
-                  toast("文件解析失败");
-                }
-              };
-              r.readAsText(f);
+            $("#dExp").onclick = () => {
+              const blob = new Blob([JSON.stringify(DB)], {
+                type: "application/json",
+              });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = "love_backup_" + today() + ".json";
+              document.body.appendChild(a);
+              a.click();
+              a.remove();
+              setTimeout(() => URL.revokeObjectURL(url), 500);
+              toast("已导出备份文件");
             };
-            inp.click();
-          };
-          $("#dImg").onclick = () =>
-            confirmBox(
-              `将删除全部 ${imgCount} 张图片（文字记录会保留），确定继续？`,
-              () => {
-                const n = clearAllImages();
-                save();
-                applyTheme();
-                toast(`已清理 ${n} 张图片`);
-                draw();
-              },
-            );
-          $("#autoBk").onclick = function () {
-            DB.settings.autoBackup = !DB.settings.autoBackup;
-            save();
-            this.classList.toggle("on");
-            toast(DB.settings.autoBackup ? "已开启自动备份" : "已关闭自动备份");
-          };
-          $("#bkInterval").onchange = function () {
-            DB.settings.backupInterval = Math.max(1, +this.value || 7);
-            this.value = DB.settings.backupInterval;
-            save();
-            toast("已保存备份间隔");
-          };
-          $("#dClr").onclick = () =>
-            confirmBox("将清空所有本地数据且不可恢复，确定继续？", () => {
-              modal({
-                title: "再次确认",
-                body: "这是最后一次确认，清空后无法找回。",
-                ok: "彻底清空",
-                okCls: "btn danger",
-                onOk: () => {
-                  localStorage.removeItem(KEY);
-                  DB = DEF();
+            $("#dImp").onclick = () => {
+              const inp = document.createElement("input");
+              inp.type = "file";
+              inp.accept = ".json,application/json";
+              inp.onchange = () => {
+                const f = inp.files[0];
+                if (!f) return;
+                const r = new FileReader();
+                r.onload = () => {
+                  try {
+                    const src = JSON.parse(r.result);
+                    modal({
+                      title: "选择导入方式",
+                      body: "合并：保留现有数据并去重合并<br>覆盖：用备份数据完全替换",
+                      ok: "合并导入",
+                      onOk: () => {
+                        const n = mergeDB(src);
+                        toast("合并完成，新增 " + n + " 条");
+                      },
+                      cancel: "覆盖导入",
+                      okCls: "btn",
+                    }).querySelector("[data-x]").onclick = () => {
+                      try {
+                        localStorage.setItem(KEY, JSON.stringify(src));
+                        DB = load();
+                        applyTheme();
+                        toast("已覆盖导入");
+                        closeSub();
+                      } catch (e) {
+                        toast("导入失败：" + e.message);
+                      }
+                    };
+                  } catch (e) {
+                    toast("文件解析失败");
+                  }
+                };
+                r.readAsText(f);
+              };
+              inp.click();
+            };
+            $("#dImg").onclick = () =>
+              confirmBox(
+                `将删除全部 ${imgCount} 张图片（文字记录会保留），确定继续？`,
+                () => {
+                  const n = clearAllImages();
                   save();
                   applyTheme();
-                  switchTab("home");
-                  toast("已清空");
+                  toast(`已清理 ${n} 张图片`);
+                  draw();
                 },
+              );
+            $("#autoBk").onclick = function () {
+              DB.settings.autoBackup = !DB.settings.autoBackup;
+              save();
+              this.classList.toggle("on");
+              toast(
+                DB.settings.autoBackup ? "已开启自动备份" : "已关闭自动备份",
+              );
+            };
+            $("#bkInterval").onchange = function () {
+              DB.settings.backupInterval = Math.max(1, +this.value || 7);
+              this.value = DB.settings.backupInterval;
+              save();
+              toast("已保存备份间隔");
+            };
+            $("#dClr").onclick = () =>
+              confirmBox("将清空所有本地数据且不可恢复，确定继续？", () => {
+                modal({
+                  title: "再次确认",
+                  body: "这是最后一次确认，清空后无法找回。",
+                  ok: "彻底清空",
+                  okCls: "btn danger",
+                  onOk: () => {
+                    localStorage.removeItem(KEY);
+                    DB = DEF();
+                    save();
+                    applyTheme();
+                    switchTab("home");
+                    toast("已清空");
+                  },
+                });
               });
-            });
           };
           draw();
         });
@@ -26401,29 +27337,120 @@
 
       function aboutPage() {
         openSub("关于本产品", (el) => {
-          const features = [
-            "纯离线运行，无后端、无联网依赖",
-            "全量数据 localStorage 本地存储，隐私独立",
-            "快乐记录 · 旅行足迹 · 经期智能分析 · 数据看板",
-            "成就墙 · 情侣日历 · 备忘录 · 打卡 · 相册 · 时间胶囊",
-            "年龄计算器 · 恋爱计时 · 早上好卡片",
-            "全站自定义：主题、模板、标签、提醒、看板",
-            "JSON 导入导出合并，自动去重",
-            "深色模式 · 高级设置 · 自动备份预留",
-            "左滑编辑删除 · 右滑返回 · 图片滑动切换",
+          // 版本记录（新版本在上），点条目展开当次更新内容
+          const VERSIONS = [
+            {
+              v: "2.0 完整版",
+              date: "2026-09-12",
+              cur: true,
+              items: [
+                "全新视觉：吸顶导航、左滑返回、深色模式",
+                "常用工具自定义固定与长按拖拽排序",
+                "情侣日历：纪念日、经期智能分析与预测",
+                "时间胶囊、成就墙与恋爱分体系",
+              ],
+            },
+            {
+              v: "1.4",
+              date: "2026-07-02",
+              items: [
+                "回忆珍藏页：时间胶囊与纪念日聚合展示",
+                "外观自定义：主题色、分割线、卡片圆角",
+              ],
+            },
+            {
+              v: "1.3",
+              date: "2026-05-18",
+              items: ["相册管理与图片滑动切换", "自定义记录类型与标签体系"],
+            },
+            {
+              v: "1.2",
+              date: "2026-03-30",
+              items: [
+                "数据看板与幸福指数，指标可编辑看板",
+                "JSON 导入导出合并，自动去重",
+              ],
+            },
+            {
+              v: "1.0",
+              date: "2026-02-14",
+              items: [
+                "首个版本：快乐记录、旅行足迹、备忘录、打卡",
+                "纯离线运行，全量数据本地存储",
+              ],
+            },
+          ];
+          // 功能亮点：每组一个专属色，颜色即分类
+          const groups = [
+            {
+              c: "#FF2D55",
+              t: "💝 记录我们的日子",
+              items: [
+                "快乐记录、旅行足迹、相册、时间胶囊",
+                "情侣日历：纪念日、生日、经期一目了然",
+                "备忘录、打卡、成就墙，每天一点点",
+              ],
+            },
+            {
+              c: "#3478F6",
+              t: "📊 懂你们的数字",
+              items: [
+                "恋爱计时、年龄计算器、早上好卡片",
+                "数据看板与幸福指数，自定义显示哪些指标",
+                "经期智能分析与预测",
+              ],
+            },
+            {
+              c: "#34C759",
+              t: "🔒 数据只属于你们",
+              items: [
+                "纯离线运行，无后端、无联网依赖",
+                "全量数据本地存储，隐私独立",
+                "JSON 导入导出合并，自动去重",
+              ],
+            },
           ];
           el.innerHTML = `
-          <div class="card" style="text-align:center;padding:24px 16px">
-            <div style="font-size:48px">💞</div>
-            <div style="font-size:22px;font-weight:700;margin-top:8px">情侣全记录</div>
-            <div style="font-size:13px;color:var(--sub);margin-top:4px;font-weight:500">极简大厂风 H5 · V2.0 完整版</div>
+          <div class="ab-head">
+            <div class="ab-badge">💞</div>
+            <div class="ab-name">情侣全记录</div>
+            <div class="ab-sub">V2.0 完整版 · 纯本地运行 · 无需网络</div>
           </div>
-          <div class="card" style="margin-top:12px">
-            <div class="about-list">${features.map((f) => `<div class="item"><span class="icon">✅</span><span class="text" style="font-weight:500">${f}</span></div>`).join("")}</div>
+          <div class="about-sec-t">🗓️ 版本记录</div>
+          <div class="card" style="padding:4px 16px">
+            <div class="vtl">
+            ${VERSIONS.map(
+              (r) => `<div class="vtl-item ${r.cur ? "cur" : ""}">
+              <span class="vtl-dot"></span>
+              <div class="vtl-row"><span class="vtl-v">V${r.v}</span>
+              ${r.cur ? '<span class="vtl-tag">当前版本</span>' : ""}
+              <span class="vtl-date">${r.date}</span><span class="vtl-arrow">›</span></div>
+              <div class="vtl-body">${r.items.map((i) => `<div>${i}</div>`).join("")}</div>
+            </div>`,
+            ).join("")}
+            </div>
           </div>
-          <div style="font-size:13px;color:var(--sub);text-align:center;margin-top:16px;line-height:1.8;font-weight:500">
+          ${groups
+            .map(
+              (g) =>
+                `<div class="about-sec-t" style="color:${g.c}">${g.t}</div>
+          <div class="card">${g.items
+            .map(
+              (f) =>
+                `<div class="about-item"><span class="ai-ck" style="background:${g.c}1A;color:${g.c}">✓</span><span>${f}</span></div>`,
+            )
+            .join("")}</div>`,
+            )
+            .join("")}
+          <div style="font-size:13px;color:var(--sub);text-align:center;margin:20px 0 8px;line-height:1.8">
             把每一个平凡日子，都过成值得纪念的样子。
           </div>`;
+          // 点版本条目展开 / 收起更新内容
+          el.querySelectorAll(".vtl-item .vtl-row").forEach(
+            (r) =>
+              (r.onclick = () =>
+                r.closest(".vtl-item").classList.toggle("open")),
+          );
         });
       }
 
@@ -26736,17 +27763,32 @@
           ctx.fillStyle = pri;
           if (ctx.roundRect) {
             ctx.beginPath();
-            ctx.roundRect(bx + i * 47, mbase - Math.max(h, 6), bw, Math.max(h, 6), 6);
+            ctx.roundRect(
+              bx + i * 47,
+              mbase - Math.max(h, 6),
+              bw,
+              Math.max(h, 6),
+              6,
+            );
             ctx.fill();
           } else {
-            ctx.fillRect(bx + i * 47, mbase - Math.max(h, 6), bw, Math.max(h, 6));
+            ctx.fillRect(
+              bx + i * 47,
+              mbase - Math.max(h, 6),
+              bw,
+              Math.max(h, 6),
+            );
           }
         });
         // 没数据时给一句说明，别只留一片空白
         if (!hasData) {
           ctx.fillStyle = "#C7CAD0";
           ctx.font = "20px PingFang SC";
-          ctx.fillText("这一年还没有记录，去写下第一件小事吧", W / 2, mbase - 60);
+          ctx.fillText(
+            "这一年还没有记录，去写下第一件小事吧",
+            W / 2,
+            mbase - 60,
+          );
         }
         ctx.fillStyle = sub;
         ctx.font = "18px PingFang SC";
@@ -26794,8 +27836,22 @@
       const genId = () =>
         Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
       const MS_ICONS = [
-        "💍", "❤️", "🎂", "🌹", "✈️", "🏠", "🎓", "💐", "🥂", "🎉",
-        "💑", "🌟", "📅", "🔔", "🎁", "🌈",
+        "💍",
+        "❤️",
+        "🎂",
+        "🌹",
+        "✈️",
+        "🏠",
+        "🎓",
+        "💐",
+        "🥂",
+        "🎉",
+        "💑",
+        "🌟",
+        "📅",
+        "🔔",
+        "🎁",
+        "🌈",
       ];
 
       /* ---------- 纪念日 ---------- */
@@ -26832,21 +27888,23 @@
         </div>`;
       }
       function milestonePage() {
-        openSub("纪念日", (el) => {
-          const draw = () => {
-            const list = DB.milestones
-              .map((m) => {
-                const d =
-                  m.repeat === "once"
-                    ? m.date >= today()
-                      ? m.date
-                      : null
-                    : nextYearDate(m.date.slice(5));
-                return { m, date: d, dd: d ? dayDiff(today(), d) : null };
-              })
-              .filter((x) => x.dd !== null)
-              .sort((a, b) => a.dd - b.dd);
-            el.innerHTML = `
+        openSub(
+          "纪念日",
+          (el) => {
+            const draw = () => {
+              const list = DB.milestones
+                .map((m) => {
+                  const d =
+                    m.repeat === "once"
+                      ? m.date >= today()
+                        ? m.date
+                        : null
+                      : nextYearDate(m.date.slice(5));
+                  return { m, date: d, dd: d ? dayDiff(today(), d) : null };
+                })
+                .filter((x) => x.dd !== null)
+                .sort((a, b) => a.dd - b.dd);
+              el.innerHTML = `
             <div class="card" style="margin-bottom:14px;font-size:12.5px;color:var(--sub);line-height:1.6">
               📌 纪念日会在「首页」和「温馨提醒」里自动倒数，值得记住的一天都记在这里。
             </div>
@@ -26882,16 +27940,26 @@
                   })()
                 : `<div class="card hairline" style="text-align:center;padding:26px;color:var(--sub);font-size:13px">还没有纪念日<br>点右上角「＋」添加第一个</div>`
             }`;
-          };
-          draw();
-        }, "＋ 新增", () => milestoneEdit());
+            };
+            draw();
+          },
+          "＋ 新增",
+          () => milestoneEdit(),
+        );
       }
       function milestoneEdit(id) {
         const m = id ? DB.milestones.find((x) => x.id === id) : null;
         openSub(m ? "编辑纪念日" : "新增纪念日", (el) => {
           const draft = m
             ? { ...m }
-            : { id: genId(), title: "", icon: "💍", date: today(), repeat: "year", note: "" };
+            : {
+                id: genId(),
+                title: "",
+                icon: "💍",
+                date: today(),
+                repeat: "year",
+                note: "",
+              };
           const draw = () => {
             el.innerHTML = `
             <div class="card">
@@ -26926,7 +27994,11 @@
               <button class="btn blk" id="msSave">保存</button>
             </div>`;
             el.querySelectorAll("#msIcons button").forEach(
-              (b) => (b.onclick = () => { draft.icon = b.dataset.ic; draw(); }),
+              (b) =>
+                (b.onclick = () => {
+                  draft.icon = b.dataset.ic;
+                  draw();
+                }),
             );
             $("#msRepeat").onclick = () => {
               draft.repeat = draft.repeat === "year" ? "once" : "year";
@@ -26991,11 +28063,17 @@
             date: r.date,
             icon: "✈️",
             title: r.to ? "去了 " + r.to : "旅行",
-            sub: (r.days ? r.days + " 天" : "") + (r.title ? " · " + r.title : ""),
+            sub:
+              (r.days ? r.days + " 天" : "") + (r.title ? " · " + r.title : ""),
           }),
         );
         DB.checkin.forEach((r) =>
-          arr.push({ date: r.date, icon: "📅", title: "打卡", sub: r.note || "" }),
+          arr.push({
+            date: r.date,
+            icon: "📅",
+            title: "打卡",
+            sub: r.note || "",
+          }),
         );
         periodEpisodes().forEach((e) =>
           arr.push({
@@ -27014,7 +28092,12 @@
           }),
         );
         DB.timeCapsules.forEach((c) =>
-          arr.push({ date: c.date, icon: "💊", title: "封存时光：" + (c.name || ""), sub: "" }),
+          arr.push({
+            date: c.date,
+            icon: "💊",
+            title: "封存时光：" + (c.name || ""),
+            sub: "",
+          }),
         );
         (DB.couple.relEvents || []).forEach((ev) =>
           arr.push({
@@ -27071,7 +28154,7 @@
       }
 
       /* ---------- 年度恋爱报告 ---------- */
-      
+
       /* 这里原本还有一套 yearReportPage()：红色渐变卡片版的年度报告。
          它和「生成年度报告」(reportPick + drawReport，白底图片版) 做的是同一件事，
          两套并存导致数据看板顶部一个「🎁 报告」、页面底部又一个「年度恋爱报告」，
@@ -27086,7 +28169,6 @@
         x.arcTo(X, Y, X + w, Y, r);
         x.closePath();
       }
-      
 
       /* ---------- 愿望清单 ---------- */
       function doneWishes() {
@@ -27108,27 +28190,30 @@
               ${
                 DB.wishes.length
                   ? (() => {
-                    const todo = DB.wishes.filter((w) => !w.done);
-                    const done = DB.wishes.filter((w) => w.done);
-                    const block = (arr, title, ic) =>
-                      arr.length
-                        ? `<div class="sec"><div class="sec-hd"><span class="sec-t">${ic} ${title}</span><span class="sec-more">${arr.length} 项</span></div>${arr
-                            .map(
-                              (w) => `<div class="wish-row" data-id="${w.id}">
+                      const todo = DB.wishes.filter((w) => !w.done);
+                      const done = DB.wishes.filter((w) => w.done);
+                      const block = (arr, title, ic) =>
+                        arr.length
+                          ? `<div class="sec"><div class="sec-hd"><span class="sec-t">${ic} ${title}</span><span class="sec-more">${arr.length} 项</span></div>${arr
+                              .map(
+                                (w) => `<div class="wish-wrap">
+                  <div class="wish-del-bg" data-id="${w.id}">删除</div>
+                  <div class="wish-row" data-id="${w.id}">
                   <div class="wish-ck ${w.done ? "on" : ""}">${w.done ? "✓" : ""}</div>
                   <div class="wish-t ${w.done ? "done" : ""}">${esc(w.text)}</div>
-                  <div class="wish-del">🗑</div>
-                </div>`,
-                            )
-                            .join("")}</div>`
-                        : "";
-                    return (
-                      block(todo, "想做的事", "🌟") + block(done, "已完成", "✅")
-                    );
-                  })()
+                </div></div>`,
+                              )
+                              .join("")}</div>`
+                          : "";
+                      return (
+                        block(todo, "想做的事", "🌟") +
+                        block(done, "已完成", "✅")
+                      );
+                    })()
                   : `<div class="card hairline" style="text-align:center;padding:26px;color:var(--sub);font-size:13px">还没有愿望<br>写下想一起做的事吧</div>`
               }
-            </div>`;
+            </div>
+            ${DB.wishes.length ? `<div style="font-size:12px;color:var(--sub);margin:6px 4px;line-height:1.7">💡 左滑愿望卡片可以删除</div>` : ""}`;
             const add = () => {
               const v = $("#wishInput").value.trim();
               if (!v) return toast("写点什么吧");
@@ -27145,6 +28230,15 @@
             $("#wishInput").addEventListener("keydown", (e) => {
               if (e.key === "Enter") add();
             });
+            // 左滑删除：拖动行体露出底层红色「删除」，松手超过阈值停在打开态，
+            // 点红色区域才真正删除；点击行体或另一行时先收回已打开的行。
+            let openRow = null;
+            const closeOpenRow = () => {
+              if (openRow) {
+                openRow.style.transform = "";
+                openRow = null;
+              }
+            };
             el.querySelectorAll(".wish-row").forEach((row) => {
               const id = row.dataset.id;
               row.querySelector(".wish-ck").onclick = () => {
@@ -27154,8 +28248,45 @@
                 if (curTab === "home") rHome();
                 draw();
               };
-              row.querySelector(".wish-del").onclick = () => {
-                DB.wishes = DB.wishes.filter((x) => x.id !== id);
+              let sx = 0,
+                base = 0,
+                cur = 0;
+              row.addEventListener(
+                "touchstart",
+                (e) => {
+                  sx = e.touches[0].clientX;
+                  base = openRow === row ? -76 : 0;
+                  if (openRow && openRow !== row) closeOpenRow();
+                  row.style.transition = "none";
+                },
+                { passive: true },
+              );
+              row.addEventListener(
+                "touchmove",
+                (e) => {
+                  cur = Math.max(
+                    -80,
+                    Math.min(0, base + e.touches[0].clientX - sx),
+                  );
+                  row.style.transform = `translateX(${cur}px)`;
+                },
+                { passive: true },
+              );
+              row.addEventListener("touchend", () => {
+                row.style.transition = "";
+                if (cur < -40) {
+                  row.style.transform = "translateX(-76px)";
+                  openRow = row;
+                } else {
+                  row.style.transform = "";
+                  if (openRow === row) openRow = null;
+                }
+                cur = 0;
+              });
+            });
+            el.querySelectorAll(".wish-del-bg").forEach((d) => {
+              d.onclick = () => {
+                DB.wishes = DB.wishes.filter((x) => x.id !== d.dataset.id);
                 save();
                 if (curTab === "home") rHome();
                 draw();
