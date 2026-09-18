@@ -35,6 +35,9 @@
         --fs-c: 13px; /* 注释级 */
         --gap: 16px;
         --sec: 22px;
+        /* 长按手势：CSS 侧只用来让「按压态」的过渡时长 = JS 的 LONG_PRESS_MS，
+           两者必须一致，否则按够了没有的视觉提示会和真实阈值对不上 */
+        --lp-ms: 300ms;
         --safe-b: env(safe-area-inset-bottom, 0px);
         --tab-h: 50px;
         --hd-h: 60px;
@@ -285,6 +288,29 @@
         display: none;
       }
 
+      /* ============ 顶部导航 · 极简一行（headerStyle = "slim"） ============
+         四个主页面只留「居中的页面名」一行：去掉副标题那行灰字，
+         顶栏压到标准导航条高度（44px + 安全区），内容整体上移，
+         整屏只剩「页面名 → 内容 → 底栏」三段，干净到极致。 */
+      #hd.slim {
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: 0;
+        border-bottom: 0.5px solid var(--hd-bd);
+      }
+      #hd.slim #hdSub {
+        display: none;
+      }
+      #hd.slim #hdBig {
+        justify-content: center;
+        text-align: center;
+        font-size: 17px;
+        font-weight: 600;
+        letter-spacing: -0.2px;
+        margin-top: 0;
+        height: 44px;
+        color: var(--text);
+      }
+
       /* ============ 主区域 & 底部 Tab ============ */
       #main {
         position: fixed;
@@ -306,7 +332,9 @@
            对 sticky 基准边的解释不同，iPhone 上吸顶会钉错位置；
            同时旧写法「safe-area + page-pt」把安全区算了两次，
            二级页顶栏只有一行标题，多出来的空档特别显眼。 */
-        padding: 0 16px calc(var(--tab-bottom) + 84px);
+        /* 底部只留「能滚到底 + 不被胶囊 Tab 压住」的最小余量：
+           Tab 胶囊高约 54px，再留 8px 呼吸，别再堆出一大片空白。 */
+        padding: 0 16px calc(var(--tab-bottom) + 68px);
         display: none;
         background: var(--bg);
       }
@@ -438,6 +466,52 @@
       .tab.on .ti {
         opacity: 1;
         transform: scale(1.06);
+      }
+
+      /* ============ 底部导航 · 极简版（tabStyle = "plain"） ============
+         去掉玻璃描边、高光层、投影与选中胶囊，只留一条细分割线 + 主题色选中态。
+         想要「安静」一点的主界面时用它。 */
+      #tabBar.plain {
+        background: var(--card);
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+        border: 0;
+        border-top: 1px solid var(--line);
+        border-radius: 0;
+        box-shadow: none;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
+      }
+      #tabBar.plain::before,
+      #tabBar.plain::after {
+        display: none;
+      }
+      #tabBar.plain .tab {
+        border-radius: 10px;
+        gap: 3px;
+      }
+      #tabBar.plain .tab.on {
+        background: transparent;
+        box-shadow: none;
+      }
+      #tabBar.plain .tab.on .ti {
+        transform: none;
+      }
+      /* 选中态只在图标下方给一小截主题色短线，比整格高亮更克制 */
+      #tabBar.plain .tab.on::after {
+        content: "";
+        position: absolute;
+        bottom: 1px;
+        width: 16px;
+        height: 2.5px;
+        border-radius: 2px;
+        background: var(--primary);
+      }
+      /* 极简版下页面底部留白相应减少（不再是悬浮胶囊，占位更矮） */
+      #tabBar.plain ~ #main .page {
+        padding-bottom: calc(66px + env(safe-area-inset-bottom, 0px));
       }
 
       /* ============ 通用组件 ============ */
@@ -1199,9 +1273,184 @@
         pointer-events: auto;
         display: inline-flex;
         align-items: center;
-        gap: 10px;
+        gap: 8px;
         padding: 8px 10px 8px 18px;
         text-align: left;
+        flex-wrap: nowrap;
+        max-width: 90vw;
+      }
+      /* ============ 总览页指标格（从「全部指标」二级页提上来） ============
+         首项指标用一条横向「英雄行」承载大数字，其余拍成两列小格。
+         整体比二级页压扁一档，避免在总览页里抢掉月度趋势的重心。 */
+      .ov-stats {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .ov-hero {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        background: var(--card);
+        border-radius: var(--card-radius, var(--r));
+        padding: 16px 18px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, var(--shadow-intensity, 0.05));
+      }
+      .ov-ic {
+        width: 46px;
+        height: 46px;
+        flex: none;
+        border-radius: 14px;
+        background: var(--primary-weak);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+      }
+      .ov-hero .ov-main {
+        flex: 1;
+        min-width: 0;
+      }
+      .ov-v {
+        font-size: 28px;
+        font-weight: 800;
+        line-height: 1;
+        color: var(--primary);
+        letter-spacing: -0.5px;
+        font-variant-numeric: tabular-nums;
+      }
+      .ov-v i,
+      .ov-cv i {
+        font-style: normal;
+        font-size: 12px;
+        font-weight: 600;
+        margin-left: 2px;
+        opacity: 0.8;
+      }
+      .ov-t {
+        font-size: 12.5px;
+        color: var(--sub);
+        margin-top: 5px;
+      }
+      .ov-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      .ov-cell {
+        background: var(--card);
+        border-radius: var(--card-radius, var(--r));
+        padding: 14px 14px 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, var(--shadow-intensity, 0.05));
+      }
+      .ov-cell .ov-ic.sm {
+        width: 30px;
+        height: 30px;
+        border-radius: 10px;
+        font-size: 15px;
+        background: var(--bg);
+      }
+      .ov-cv {
+        font-size: 20px;
+        font-weight: 800;
+        line-height: 1.1;
+        margin-top: 9px;
+        color: var(--text);
+        font-variant-numeric: tabular-nums;
+      }
+      .ov-ct {
+        font-size: 11.5px;
+        color: var(--sub);
+        margin-top: 3px;
+      }
+
+      /* ============ 保存失败警示条 ============
+         写入 localStorage 失败时必须常驻到「用户处理完 + 写入恢复」为止。
+         一次性 toast 2 秒就消失，而此时新数据还在内存里 —— 用户一刷新就没了，
+         且完全不知情。这条红色横幅就是为了防止「静默丢数据」。 */
+      .save-alert {
+        position: fixed;
+        top: calc(env(safe-area-inset-top, 0px) + 8px);
+        left: 12px;
+        right: 12px;
+        z-index: 190;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: var(--card-radius, var(--r));
+        background: #fff1f0;
+        border: 1px solid rgba(255, 59, 48, 0.28);
+        box-shadow: 0 6px 20px rgba(255, 59, 48, 0.14);
+        opacity: 0;
+        transform: translateY(-10px);
+        transition:
+          opacity 0.25s,
+          transform 0.25s;
+        pointer-events: none;
+      }
+      .save-alert.on {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+      }
+      .save-alert .sa-ic {
+        font-size: 16px;
+        flex: none;
+        line-height: 1;
+      }
+      .save-alert .sa-main {
+        flex: 1;
+        min-width: 0;
+      }
+      .save-alert .sa-t {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--danger);
+        line-height: 1.35;
+      }
+      .save-alert .sa-d {
+        font-size: 11.5px;
+        color: #8a6a68;
+        margin-top: 2px;
+        line-height: 1.45;
+      }
+      .save-alert .sa-act {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        flex: none;
+      }
+      .save-alert .sa-btn {
+        height: 26px;
+        padding: 0 10px;
+        border: 0;
+        border-radius: 99px;
+        font-size: 11.5px;
+        font-weight: 600;
+        background: var(--danger);
+        color: #fff;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .save-alert .sa-btn:active {
+        background: #d32f2a;
+      }
+      .save-alert .sa-btn.ghost {
+        background: rgba(255, 59, 48, 0.1);
+        color: var(--danger);
+      }
+      .save-alert .sa-btn.ghost:active {
+        background: rgba(255, 59, 48, 0.2);
+      }
+
+      /* 带操作按钮时给文案留收缩空间：宁可文案末尾省略，
+         也不能让按钮被挤出屏幕（随手记那条 toast 有两个按钮） */
+      #toast.undo > span {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
       .toast-act {
         flex: none;
@@ -1540,8 +1789,9 @@
         overflow-x: auto;
         scroll-snap-type: x mandatory;
         -webkit-overflow-scrolling: touch;
-        /* 上下留 6px：正好容纳当前卡放大/加阴影后的溢出，不会被裁掉 */
-        padding: 6px 0;
+        /* 上下留 10px：当前图会放大到 1.04 + 加阴影，
+           余量不够时放大的那张上下会被裁掉一条 */
+        padding: 10px 0;
         scrollbar-width: none;
       }
       .imggrid.carousel::-webkit-scrollbar {
@@ -1556,22 +1806,31 @@
         padding: 0;
         border-radius: 10px;
         scroll-snap-align: center;
-        /* 未选中：无阴影，缩小一点，让当前图「凸」出来 */
+        /* 未选中：缩小 + 压暗，把视觉重心让给当前图。
+           原来只缩到 0.94 / 85% 不透明度，两者差距太小，
+           在一屏两三张图的情况下几乎看不出来哪张是当前的。 */
         box-shadow: none;
-        transform: scale(0.94);
-        opacity: 0.85;
+        transform: scale(0.88);
+        opacity: 0.62;
+        filter: saturate(0.75);
         transition:
           transform 0.24s ease,
           opacity 0.24s ease,
-          box-shadow 0.24s ease;
+          box-shadow 0.24s ease,
+          filter 0.24s ease;
         overflow: hidden;
         cursor: pointer;
         -webkit-tap-highlight-color: transparent;
       }
+      /* 当前图：放大到 1.04 + 明显的投影 + 主题色描边，三重视觉差叠加 */
       .imggrid.carousel .im.on {
-        transform: scale(1);
+        transform: scale(1.04);
         opacity: 1;
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.13);
+        filter: none;
+        box-shadow:
+          0 8px 22px rgba(0, 0, 0, 0.18),
+          0 0 0 2px var(--primary);
+        z-index: 2;
       }
       .imggrid.n1 .im,
       .imggrid.n2 .im,
@@ -1989,7 +2248,8 @@
       .pa-stat .n {
         font-size: 17px;
         font-weight: 700;
-        color: var(--text);
+        /* 四项统计数值统一用主题色，跟整页主色一致 */
+        color: var(--primary);
         line-height: 1.1;
       }
       .pa-stat .n small {
@@ -2009,8 +2269,9 @@
         margin: 12px 0 0;
         padding: 12px 14px;
         border-radius: 14px;
-        background: linear-gradient(135deg, var(--accent-weak), #f0f7ff);
-        border: 1px solid rgba(0, 122, 255, 0.15);
+        /* 纯色浅底，不再用渐变 */
+        background: var(--primary-weak);
+        border: 1px solid var(--primary-weak-d);
       }
       .pa-next .ico {
         font-size: 22px;
@@ -2057,8 +2318,8 @@
         padding: 5px 10px;
         border-radius: 20px;
         background: var(--card);
-        color: var(--accent);
-        border: 1px solid rgba(0, 122, 255, 0.2);
+        color: var(--primary);
+        border: 1px solid var(--primary-weak-d);
         flex: none;
       }
       .pa-next .badge.live {
@@ -2095,8 +2356,10 @@
       .pa-pillrow .pa-v {
         flex: 1;
         text-align: right;
-        font-size: 11px;
-        color: var(--sub);
+        /* 日期是本段的主信息，别再用淡灰，提到正文色才看得清 */
+        font-size: 12px;
+        color: var(--text);
+        font-weight: 500;
         line-height: 1.35;
         display: flex;
         flex-direction: column;
@@ -2499,6 +2762,13 @@
         border-radius: 999px;
         padding: 6px 12px;
       }
+      .cal-sum-chip i {
+        display: inline-block;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        flex: none;
+      }
       .cal-sum-chip b {
         color: var(--primary);
         font-weight: 700;
@@ -2718,6 +2988,16 @@
         font-size: 15px;
         font-weight: 500;
         color: var(--text);
+      }
+      /* 长按「起手反馈」：按下即加 .pressing，元素在 LONG_PRESS_MS 内
+         缓缓缩小 + 压暗，按满那一刻正好变到最深 —— 用户一眼看得出还要按多久，
+         不用再猜阈值。任何支持长按的元素都复用这一条。 */
+      .pressing {
+        transform: scale(0.965);
+        box-shadow: inset 0 0 0 999px rgba(0, 0, 0, 0.06);
+        transition:
+          transform var(--lp-ms) cubic-bezier(0.2, 0.7, 0.3, 1),
+          box-shadow var(--lp-ms) cubic-bezier(0.2, 0.7, 0.3, 1);
       }
       /* 拖拽排序：长按整行进入拖拽态，浮起的行加投影 */
       .db-row.dragging {
@@ -3524,13 +3804,75 @@
         display: flex;
         align-items: center;
         gap: 6px;
-        margin-bottom: 12px;
+        margin-bottom: 8px;
         flex-wrap: nowrap;
         background: var(--card);
         /* 左右各 4px：按钮自己已经够宽，再留 10px 会显得空 */
         padding: 10px 10px;
         border-radius: 999px;
         box-shadow: var(--shadow-sm);
+      }
+      /* 记录搜索：和上面的筛选条同一套胶囊语言，上下叠成一整块 */
+      .rec-search {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--card);
+        padding: 0 14px;
+        height: 40px;
+        border-radius: 999px;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 10px;
+      }
+      .rec-search .rs-ic {
+        font-size: 13px;
+        opacity: 0.45;
+        flex: none;
+        line-height: 1;
+      }
+      .rec-search .rs-input {
+        flex: 1;
+        min-width: 0;
+        border: 0;
+        outline: 0;
+        background: transparent;
+        font-size: 14px;
+        color: var(--text);
+        font-family: inherit;
+        /* iOS 上 <input type=search> 默认带内阴影和圆角，统一抹掉 */
+        -webkit-appearance: none;
+        appearance: none;
+      }
+      .rec-search .rs-input::placeholder {
+        color: var(--sub);
+        opacity: 0.75;
+      }
+      .rec-search .rs-input::-webkit-search-cancel-button {
+        display: none; /* 用右侧自己的 ✕，样式才和整体一致 */
+      }
+      .rec-search .rs-clear {
+        flex: none;
+        width: 20px;
+        height: 20px;
+        border: 0;
+        border-radius: 50%;
+        background: rgba(120, 120, 128, 0.16);
+        color: var(--card);
+        font-size: 10px;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        padding: 0;
+      }
+      /* 搜索命中高亮：主色浅底 + 主色字，比默认的荧光黄更符合整体配色 */
+      .rq-hit {
+        background: var(--primary-weak);
+        color: var(--primary-d);
+        border-radius: 3px;
+        padding: 0 2px;
+        font-weight: 600;
       }
       .filter-row .chip,
       .filter-row .btn.sm {
@@ -3797,7 +4139,142 @@
         color: var(--sub);
         margin: 16px 4px 8px;
       }
-      /* 版本记录：时间轴（细线 + 圆点），点条目展开详情 */
+      /* 版本记录：列表卡只放「版本号 + 更新日期」，点进去看详情 */
+      .vcard {
+        margin-top: 10px;
+        padding: 14px 16px 15px;
+      }
+      .vcard.cur {
+        border: 1px solid var(--primary-weak-d);
+      }
+      /* 列表态（可点击的一行）：左侧版本号、右侧日期、最右箭头 */
+      .vcard.slim {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        text-align: left;
+        padding: 15px 16px;
+        border: 1px solid transparent;
+        cursor: pointer;
+        font: inherit;
+        color: inherit;
+        transition:
+          transform 0.16s,
+          background 0.16s;
+      }
+      .vcard.slim:active {
+        transform: scale(0.985);
+        background: var(--bg);
+      }
+      .vcard.slim .vc-arr {
+        flex: none;
+        font-size: 17px;
+        color: var(--sub);
+        opacity: 0.6;
+        margin-left: 2px;
+      }
+      .vcard .vc-v {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .vcard.cur .vc-v {
+        color: var(--primary);
+      }
+      .vcard .vc-tag {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--primary);
+        background: var(--primary-weak);
+        border-radius: 20px;
+        padding: 3px 9px;
+      }
+      .vcard .vc-date {
+        margin-left: auto;
+        font-size: 12px;
+        color: var(--sub);
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* 版本详情页：单个版本的更新内容 */
+      .vdetail {
+        padding: 18px 18px 8px;
+      }
+      .vdetail .vd-hd {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .vdetail .vd-v {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--primary);
+        letter-spacing: -0.3px;
+      }
+      .vdetail .vd-date {
+        font-size: 12.5px;
+        color: var(--sub);
+        margin-top: 6px;
+        font-variant-numeric: tabular-nums;
+      }
+      .vdetail .vd-list {
+        margin-top: 16px;
+        border-top: 1px solid var(--line);
+        padding-top: 14px;
+      }
+      .vdetail .vd-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        font-size: 13.5px;
+        color: var(--text);
+        line-height: 1.6;
+        padding: 9px 0;
+      }
+      .vdetail .vd-item + .vd-item {
+        border-top: 0.5px solid var(--line);
+      }
+      .vdetail .vd-item i {
+        flex: none;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--primary);
+        margin-top: 8px;
+      }
+      .vcard .vc-hd {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+      .vcard .vc-body {
+        border-top: 1px solid var(--line);
+        padding-top: 10px;
+      }
+      .vcard .vc-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        font-size: 13px;
+        color: var(--text);
+        line-height: 1.55;
+        margin-top: 5px;
+      }
+      .vcard .vc-item:first-child {
+        margin-top: 0;
+      }
+      .vcard .vc-item i {
+        flex: none;
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--primary);
+        margin-top: 7px;
+        opacity: 0.5;
+      }
+      /* 旧时间轴样式（已改为独立卡片，保留兜底） */
       .vtl {
         position: relative;
         padding-left: 20px;
@@ -3948,16 +4425,60 @@
         color: var(--text);
       }
 
+      /* ============ 首页快速记录条 ============
+         一条常驻输入：「想到就写一句」。整条是页面级的轻量入口，
+         不做成卡片是为了不跟下面内容抢层级 —— 它应该是「顺手」的。 */
+      .quick-note {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 10px;
+        padding: 8px 8px 8px 14px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.04));
+      }
+      .quick-note .qn-input {
+        flex: 1;
+        min-width: 0;
+        border: 0;
+        background: transparent;
+        font-size: 14px;
+        color: var(--text);
+        outline: none;
+        padding: 4px 0;
+        font-family: inherit;
+      }
+      .quick-note .qn-input::placeholder {
+        color: var(--sub);
+      }
+      .quick-note .qn-send {
+        flex: none;
+        border: 0;
+        background: var(--primary);
+        color: #fff;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 7px 14px;
+        border-radius: 999px;
+        transition: transform 0.12s, opacity 0.12s;
+      }
+      .quick-note .qn-send:active {
+        transform: scale(0.94);
+        opacity: 0.85;
+      }
+
       /* ============ 我的页面情侣卡片（新版） ============ */
       .couple-profile {
-        padding: 18px 16px 16px;
+        padding: 16px 18px 14px;
         overflow: hidden;
       }
       .couple-profile .cp-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 18px;
+        margin-bottom: 10px;
       }
       .couple-profile .cp-title {
         font-size: 16px;
@@ -4016,8 +4537,8 @@
         text-overflow: ellipsis;
       }
       .couple-profile .cp-hero {
-        margin-bottom: 14px;
-        padding: 4px 0;
+        margin-bottom: 4px;
+        padding: 0;
       }
       .couple-profile .cp-heart {
         flex: none;
@@ -4087,6 +4608,51 @@
         padding: 4px 0 2px;
       }
       /* —— 底部：三个统计 —— */
+      /* —— 底部：关键数据（2 × 2 信息块） ——
+         历史包袱说明：早期这里是一个 cp-footer 三格并排（.cp-f-*），
+         每格仅 ~102px 宽，数字和标签只能硬塞，满屏都是「—」和连字。
+         现在换成两列自适应的 .cp-stat，数字和标签各占一行、左对齐。
+         旧类名全部保留，避免任何历史 DOM 掉样式。 */
+      .cp-stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        margin-top: 4px;
+        padding-top: 14px;
+        border-top: 1px solid var(--line);
+      }
+      .cp-stat {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        padding: 10px 12px;
+        border-radius: var(--card-radius, var(--r-s));
+        background: var(--bg);
+        min-width: 0;
+        transition: background 0.15s, transform 0.15s;
+      }
+      .cp-stat:active {
+        transform: scale(0.975);
+      }
+      .cp-s-num {
+        font-size: 17px;
+        font-weight: 800;
+        color: var(--primary);
+        line-height: 1.1;
+        letter-spacing: -0.3px;
+        font-variant-numeric: tabular-nums;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .cp-s-label {
+        font-size: 11.5px;
+        color: var(--sub);
+        line-height: 1.25;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
       .couple-profile .cp-footer {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -4120,12 +4686,26 @@
         text-overflow: ellipsis;
         white-space: nowrap;
       }
+      /* 长按反馈：按住时整格轻微下沉 + 底色，提示「这一格可以换」 */
+      .couple-profile .cp-f-item[data-slot] {
+        border-radius: var(--card-radius, var(--r));
+        padding: 6px 2px;
+        transition: background 0.15s, transform 0.15s;
+      }
+      .couple-profile .cp-f-item[data-slot]:active {
+        background: var(--bg);
+        transform: scale(0.97);
+      }
       /* 兜底：无论容器是否带 .couple-profile，统计格的「数值 / 标签」都必须上下两行，
          否则会退化成「—距离周年 —已在一起 —恋爱起始」这种连在一起的裸文本。 */
       .cp-footer {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 8px;
+        gap: 10px;
+        /* 三格与上方头像区之间加一道分隔线，卡片不再挤成一团 */
+        margin-top: 4px;
+        padding-top: 14px;
+        border-top: 1px solid var(--line);
       }
       .cp-f-item {
         text-align: center;
@@ -4947,75 +5527,189 @@
       .hero-card .hero-love.unset:active {
         background: var(--primary-weak-d);
       }
-      .hero-card .hero-progress {
-        margin-top: 14px;
+      /* ============ 备份提醒卡 ============
+         数据只在 localStorage，清缓存就没了。超过 30 天没导出就在首页顶部
+         插一张提醒卡，直接给「立即备份」按钮 —— 不用再让用户翻三层菜单。 */
+      .backup-tip {
+        margin-top: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 14px;
+        background: var(--primary-weak);
+        box-shadow: none;
       }
-      .hero-card .hp-top {
+      .backup-tip .bt-ic {
+        font-size: 18px;
+        flex: none;
+        line-height: 1;
+      }
+      .backup-tip .bt-main {
+        flex: 1;
+        min-width: 0;
+      }
+      .backup-tip .bt-t {
+        font-size: 13.5px;
+        font-weight: 700;
+        color: var(--primary-d);
+        line-height: 1.35;
+      }
+      .backup-tip .bt-d {
+        font-size: 11.5px;
+        color: var(--sub);
+        margin-top: 2px;
+        line-height: 1.45;
+      }
+      .backup-tip .bt-act {
+        display: flex;
+        gap: 6px;
+        flex: none;
+      }
+      .backup-tip .bt-btn {
+        height: 30px;
+        padding: 0 12px;
+        border-radius: 99px;
+        border: 0;
+        font-size: 12.5px;
+        font-weight: 600;
+        background: var(--primary);
+        color: #fff;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .backup-tip .bt-btn:active {
+        background: var(--primary-d);
+      }
+      .backup-tip .bt-btn.ghost {
+        background: rgba(120, 120, 128, 0.1);
+        color: var(--sub);
+      }
+      .backup-tip .bt-btn.ghost:active {
+        background: rgba(120, 120, 128, 0.18);
+      }
+
+      /* ============ 年度进度卡 ============
+         原来塞在首页 Hero 里，把「早安 + 恋爱计时」那张卡撑得又高又杂，
+         而年度进度其实不是每天都要看的东西。现在独立成一张卡放到「我的」页，
+         CSS 也彻底和 .hero-card 解耦（原来全是 .hero-card .hp-* 后代选择器）。 */
+      .year-card {
+        padding: 14px 16px 12px;
+        margin-top: 12px;
+      }
+      /* 兼容两版头部结构：拆成 .yp-top / .yp-months 之前，
+         头部是 .yp-hd + .yp-pct，.yp-left 曾是独立一行。
+         旧类名留着不删，避免历史 DOM 断样式。 */
+      .year-card .yp-hd {
         display: flex;
         align-items: baseline;
         justify-content: space-between;
-        margin-bottom: 8px;
+        margin-bottom: 10px;
       }
-      .hero-card .hp-year {
-        font-size: 12px;
+      .year-card .yp-top {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+      .year-card .yp-year {
+        font-size: 12.5px;
         color: var(--sub);
       }
-      .hero-card .hp-pct {
-        font-size: 17px;
+      .year-card .yp-pct {
+        font-size: 18px;
         font-weight: 800;
         color: var(--primary);
         font-variant-numeric: tabular-nums;
         letter-spacing: 0.2px;
         line-height: 1;
       }
-      .hero-card .hp-pct i {
+      .year-card .yp-pct i {
         font-style: normal;
         font-size: 11px;
         font-weight: 700;
         margin-left: 1px;
       }
-      .hero-card .hp-months {
-        display: flex;
-        gap: 3px;
+      /* 收进头部标签行（「2026 年进度 · 剩 104 天」）：
+         原来单独占右下角一行，会被 12 月的「0%」压住 ——
+         最右侧那个数字永远长在最后一行，右下角注定是危险区。 */
+      .year-card .yp-left {
+        font-weight: 400;
+        opacity: 0.85;
       }
-      .hero-card .hp-col {
-        flex: 1;
+      /* 固定高度：数字是绝对定位的，不占流内空间，
+         这里必须显式留出「条 + 数字」的位置，否则数字会溢到卡片外。
+         22px = 条 6px + 下方给数字的 16px（10.5px 字 + 上下呼吸）。 */
+      .year-card .yp-months {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 4px;
+        margin-top: 2px;
+      }
+      /* 每个月由「条 + 数字」两行组成。
+         数字必须留在流内（占一行），不能再绝对定位 ——
+         绝对定位时它不撑高容器，5 列之后的下一个 .yp-col 会绕到
+         数字上方继续排，视觉上直接断成两行（真实踩过）。 */
+      .year-card .yp-col {
         min-width: 0;
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 4px;
+        gap: 5px;
       }
-      .hero-card .hp-m {
+      .year-card .yp-m {
         width: 100%;
         height: 6px;
-        border-radius: 99px;
+        flex: none;
+        border-radius: var(--card-radius, var(--r-s));
         background: var(--line);
         position: relative;
         overflow: hidden;
       }
-      .hero-card .hp-m.full {
+      .year-card .yp-m.full {
         background: var(--primary);
       }
-      .hero-card .hp-m.cur::after {
+      .year-card .yp-m.cur::after {
         content: "";
         position: absolute;
         inset: 0;
         width: var(--w, 0%);
         background: var(--primary);
-        border-radius: 99px;
+        border-radius: var(--card-radius, var(--r-s));
       }
-      .hero-card .hp-mp {
+      /* 当前月的百分比：两行结构里它有自己的行高，
+         整行 12 个月都按同一基线对齐，不再需要 top 硬算偏移。 */
+      .year-card .yp-mp {
         font-size: 10.5px;
         line-height: 1;
+        height: 10.5px;
         color: var(--sub);
         font-variant-numeric: tabular-nums;
         white-space: nowrap;
       }
-      .hero-card .hp-col.past .hp-mp {
+      .year-card .yp-col.past .yp-mp {
         color: var(--primary);
-        font-weight: 600;
+        font-weight: 700;
       }
+      /* 当前月：数字 + 外圈一起标出来，一眼能找到「我在哪」 */
+      .year-card .yp-col.cur .yp-mp {
+        color: var(--primary);
+        font-weight: 700;
+      }
+      .year-card .yp-col.cur .yp-m {
+        box-shadow: 0 0 0 2px var(--primary-weak);
+      }
+      /* 底部说明行：把原来挤在头部标签里的「剩 N 天」挪到卡尾。
+         头部左边只留标题、右边只留年度百分比，两边都不再争宽度。 */
+      .year-card .yp-foot {
+        margin-top: 9px;
+        font-size: 11.5px;
+        color: var(--sub);
+        opacity: 0.9;
+      }
+      /* 月份轴已去掉：试过 1/6/12 三个刻度，10px 的数字和「当月百分比」
+         在纵向和横向上都会打架（9 和 60%、12 和 0% 全部撞在一起），
+         加一行反而更乱。现在只靠「红=已过 / 浅=未到 + 当月数字」表达，
+         信息量没少，视觉干净得多。 */
 
       /* ============ 时间胶囊卡片（重设计） ============
          左：圆角底色图标 · 中：名称 + 日期副行 · 右：天数大字 + 箭头。
@@ -6232,21 +6926,22 @@
       .age-detail-row {
         display: flex;
         align-items: center;
-        gap: 12px;
-        padding: 12px 0;
+        gap: 14px;
+        /* 每条信息之间留足呼吸：原来 12px 上下，两行文字贴在一起显拥挤 */
+        padding: 18px 0;
       }
       .age-detail-row + .age-detail-row {
         border-top: 0.5px solid var(--line);
       }
       .age-detail-row .ad-av {
-        width: 44px;
-        height: 44px;
+        width: 48px;
+        height: 48px;
         flex: none;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 22px;
+        font-size: 24px;
       }
       .age-detail-row .ad-main {
         flex: 1;
@@ -6255,6 +6950,7 @@
       .age-detail-row .ad-name {
         font-size: 15px;
         font-weight: 600;
+        margin-bottom: 5px;
       }
       .age-detail-row .ad-big {
         font-size: 20px;
@@ -6270,13 +6966,79 @@
       .age-detail-row .ad-line {
         font-size: 12.5px;
         color: var(--sub);
-        margin-top: 3px;
+        margin-top: 6px;
+      }
+      .age-detail-row .ad-line:first-of-type {
+        margin-top: 0;
       }
       .age-detail-row .ad-cd {
         font-size: 12.5px;
         color: var(--primary);
         font-weight: 600;
-        margin-top: 4px;
+        margin-top: 7px;
+      }
+
+      /* ================================================================
+       * 统一间距规范（全站卡片间距一致化）
+       * ================================================================
+       * 问题：卡片间距此前是「谁写那一页谁随手定」。
+       * 实测同一层级能同时出现 8 / 10 / 12 / 14 / 16 / 18 / 22 / 26px 八种值，
+       * 页面间更是差到 116px —— 东一块紧西一块松，完全读不出节奏。
+       *
+       * 规范：页面级容器（.page / #sub）的直接子元素只认三条
+       *   ① --card-gap  12px  卡片 ↔ 卡片（全站统一，最常用）
+       *   ② --block-gap 22px  区块 ↔ 区块（.sec/.mz/.mod 这类带小标题的分组，
+       *                             需要更大间隔来标明「换话题了」）
+       *   ③ 首元素归零（顶栏下方已有 --page-pt 留白，不能重复留）
+       *
+       * 做法：把间距收拢到「父容器的相邻兄弟规则」，而不是继续在各页面散写
+       * margin-top。好处是新增页面自动继承规范，不会再出现
+       * 「忘了写就贴死 / 随手写就对不上」。
+       *
+       * 用 !important 是因为历史上大量卡片把间距写成了内联 style
+       * （style="margin-top:8px" 之类有近两百处），内联优先级最高，
+       * 不用 !important 压不住，规范就落不了地。
+       * 但这只作用于「页面级容器的直接子元素」——卡片内部的小间距
+       * （图标与文字 4px、段落之间 8px 等）不受影响，不受误伤。
+       * ================================================================ */
+      :root {
+        --card-gap: 12px;
+        --block-gap: 22px;
+      }
+      [data-density="compact"] {
+        --card-gap: 8px;
+        --block-gap: 14px;
+      }
+
+      /* ① 卡片流：相邻一律 --card-gap */
+      .page > * + *,
+      #sub > * + * {
+        margin-top: var(--card-gap) !important;
+      }
+      /* ② 区块容器上方留 --block-gap：自带小标题，需要更大呼吸标出分组边界 */
+      .page > * + :is(.sec, .mz, .mod),
+      #sub > * + :is(.sec, .mz, .mod) {
+        margin-top: var(--block-gap) !important;
+      }
+      /* ③ 首元素不留白 */
+      .page > :first-child,
+      #sub > :first-child {
+        margin-top: 0 !important;
+      }
+      /* ④ 区块容器内部并列的卡片，同样走 --card-gap。
+         之前「页面级 12px、区块内 8px」内外不一，同一屏里能看出两种节奏。
+         例：打卡记录列表每张卡写死 margin-bottom:8px，比别处挤一截。 */
+      .sec > .card + .card,
+      .sec > .glist + .glist,
+      .mod > .card + .card,
+      .mz > .card + .card,
+      .mz > .glist + .glist {
+        margin-top: var(--card-gap) !important;
+      }
+      /* 逃生舱：确实需要例外时挂这个类名，而不是再写内联数值 */
+      .page > .gap-none,
+      #sub > .gap-none {
+        margin-top: 0 !important;
       }
     </style>
   </head>
@@ -6333,8 +7095,7 @@
       </button>
       <button class="tab" data-tab="records">
         <span class="ti">💖</span>记录
-      </button>
-      <button class="tab" data-tab="overview">
+      </button>      <button class="tab" data-tab="overview">
         <span class="ti">📊</span>总览
       </button>
       <button class="tab" data-tab="mine">
@@ -18243,6 +19004,11 @@
           settings: {
             autoBackup: false,
             backupInterval: 7,
+            // 上次导出备份的日期（YYYY-MM-DD）。空 = 从来没备份过。
+            // 老用户这两个字段是 undefined，读取处统一按 "" 处理。
+            lastBackup: "",
+            // 点了「稍后提醒」的日期，7 天内不再打扰
+            backupSnooze: "",
             language: "zh",
             defaultRecordType: "happy",
             defaultCardColor: "",
@@ -18294,7 +19060,35 @@
               for (const k in defS)
                 if (!(k in d.settings)) d.settings[k] = defS[k];
             }
+            /* 时间胶囊结构自愈：
+               该功能字段名前后改过三版 —— 最初 {name,date}，中间 {title,openAt}，
+               现在统一用 {name,date}。迁移只单向补了 annivs → timeCapsules，
+               却没把 openAt / title 归一化，导致：
+                 · 「时间线」里 c.date 为 undefined → it.date.slice 直接崩掉整页
+                 · 「回忆珍藏」里 dayDiff(undefined) → 倒计时显示 "NaN天"
+               这里把三套字段名统一收敛到 {name,date}。 */
             if (!d.timeCapsules) d.timeCapsules = [];
+            if (Array.isArray(d.timeCapsules)) {
+              d.timeCapsules = d.timeCapsules
+                .filter((c) => c && typeof c === "object")
+                .map((c) => {
+                  const toYmd = (v) => {
+                    if (!v) return "";
+                    if (typeof v === "string") return v.slice(0, 10);
+                    const t = new Date(v);
+                    return isNaN(t.getTime())
+                      ? ""
+                      : t.toISOString().slice(0, 10);
+                  };
+                  return {
+                    ...c,
+                    id: c.id || "cap_" + Math.random().toString(36).slice(2, 9),
+                    name: c.name || c.title || "未命名胶囊",
+                    date: toYmd(c.date) || toYmd(c.openAt) || toYmd(c.ts) || today(),
+                    createdAt: c.createdAt || new Date().toISOString(),
+                  };
+                });
+            }
             if (!d.ageData)
               d.ageData = {
                 me: { birthDate: "" },
@@ -18314,9 +19108,54 @@
               });
               d.couple.annivs = [];
             }
+            /* 相册结构自愈：
+               早期版本里相册存的是 {id,name,cover,imgs:[]}，后来改成
+               {id,name,items:[{img,rid}]}，但没有做数据迁移。
+               结果是老用户的相册一进「相册管理」就在 a.items[0] 处
+               抛 Cannot read properties of undefined —— 整个相册页白屏。
+              这里统一补齐 items / imgs，并把历史 imgs 字段并进 items。 */
+            if (Array.isArray(d.albums)) {
+              d.albums = d.albums.map((a) => {
+                const box = a && typeof a === "object" ? a : {};
+                let items = Array.isArray(box.items) ? box.items.slice() : [];
+                // 旧版可能用 imgs / images / photos 存图，且元素是裸 base64 串
+                const legacy = [box.imgs, box.images, box.photos].find((x) =>
+                  Array.isArray(x),
+                );
+                if (legacy && legacy.length) {
+                  const seen = new Set(
+                    items.map((it) => (it && it.img) || "").filter(Boolean),
+                  );
+                  legacy.forEach((im) => {
+                    const img = typeof im === "string" ? im : (im && im.img) || "";
+                    if (img && !seen.has(img)) {
+                      seen.add(img);
+                      items.push({ img, rid: (im && im.rid) || "" });
+                    }
+                  });
+                }
+                // 元素必须是 {img,rid}；容忍裸字符串与缺字段
+                items = items
+                  .map((it) =>
+                    typeof it === "string"
+                      ? { img: it, rid: "" }
+                      : it && typeof it === "object"
+                        ? { img: it.img || "", rid: it.rid || "" }
+                        : null,
+                  )
+                  .filter((it) => it && it.img);
+                return {
+                  ...box,
+                  id: box.id || "alb_" + Math.random().toString(36).slice(2, 9),
+                  name: box.name || "未命名相册",
+                  items,
+                  imgs: items.map((it) => it.img), // 兼容仍读 imgs 的历史代码
+                  cover: box.cover || "",
+                };
+              });
+            }
             // 迁移：清理旧版看板里被合并的 loveTimer 板块
-            if (d.dash) {
-              if (Array.isArray(d.dash.order))
+            if (d.dash) {              if (Array.isArray(d.dash.order))
                 d.dash.order = d.dash.order.filter((k) => k !== "loveTimer");
               if (Array.isArray(d.dash.hidden))
                 d.dash.hidden = d.dash.hidden.filter((k) => k !== "loveTimer");
@@ -18359,35 +19198,91 @@
       // 存储空间不足提示的频率控制：避免每次保存都反复弹提示
       let lastQuotaToast = 0;
 
+      // 最近一次写入是否失败。为 true 时页面顶部会常驻一条红色警示，
+      // 直到写入重新成功为止 —— 光靠一次性的 toast 是不够的：
+      // toast 2 秒就没了，用户根本不知道自己刚记的东西其实还在内存里、一刷新就没。
+      let saveFailed = false;
+
       function save(immediate) {
         clearTimeout(saveTimer);
         const flush = () => {
           try {
             localStorage.setItem(KEY, JSON.stringify(DB));
+            if (saveFailed) {
+              // 写入恢复成功 → 撤掉警示条，并明确告诉用户已经安全了
+              saveFailed = false;
+              hideSaveAlert();
+              toast("✅ 已恢复保存");
+            }
           } catch (e) {
-            // 保存失败：优先尝试自动压缩已有图片腾出空间后再重试一次
-            autoHealStorage()
-              .then((freed) => {
-                if (freed) {
-                  try {
-                    localStorage.setItem(KEY, JSON.stringify(DB));
-                    return;
-                  } catch (e2) {}
-                }
-                // 仍失败：限制提示频率，避免反复弹窗骚扰
-                const now = Date.now();
-                if (now - lastQuotaToast > 60000) {
-                  lastQuotaToast = now;
-                  toast(
-                    "⚠️ 本地存储已满：请到「设置→数据管理→导出备份」备份后删除部分旧图片，以腾出空间",
-                  );
-                }
-              })
-              .catch(() => {});
+            // 写入失败：不再静默自动压缩用户的照片（那等于未经同意就降质），
+            // 改成「挂一条持久警示 + 把选择权交还给用户」。
+            saveFailed = true;
+            showSaveAlert();
+            const now = Date.now();
+            if (now - lastQuotaToast > 60000) {
+              lastQuotaToast = now;
+              toast("⚠️ 本地存储已满，改动没能保存");
+            }
           }
         };
         if (immediate) flush();
         else saveTimer = setTimeout(flush, 120);
+      }
+
+      /* 保存失败警示条：常驻在顶栏下方，直到写入成功或用户处理完。
+         两个出口都指向「把数据弄出去」，因为此刻最重要的事是保住已有内容。 */
+      function showSaveAlert() {
+        let el = $("#saveAlert");
+        if (el) return;
+        el = document.createElement("div");
+        el.id = "saveAlert";
+        el.className = "save-alert";
+        el.innerHTML = `<span class="sa-ic">⚠️</span>
+          <div class="sa-main">
+            <div class="sa-t">本地存储已满，改动没能保存</div>
+            <div class="sa-d">关掉页面后新记的内容会丢失，请先导出备份</div>
+          </div>
+          <div class="sa-act">
+            <button class="sa-btn" data-a="export">导出备份</button>
+            <button class="sa-btn ghost" data-a="heal">压缩照片腾空间</button>
+          </div>`;
+        el.addEventListener("click", (e) => {
+          const a = e.target.closest("[data-a]");
+          if (!a) return;
+          if (a.dataset.a === "export") doExportBackup();
+          else healStorageAsk();
+        });
+        document.body.appendChild(el);
+        requestAnimationFrame(() => el.classList.add("on"));
+      }
+      function hideSaveAlert() {
+        const el = $("#saveAlert");
+        if (!el) return;
+        el.classList.remove("on");
+        setTimeout(() => el.remove(), 250);
+      }
+      // 压缩照片前必须先问一句：这会永久降低原图质量，不能替用户做主
+      function healStorageAsk() {
+        modal({
+          title: "压缩照片腾出空间？",
+          body: `会把体积最大的若干张照片压缩到 <b>720px</b> 以腾出空间，
+             <b>画质会降低且不可恢复</b>。<br><br>
+             建议先点「导出备份」保一份完整的，再来压缩。`,
+          ok: "仍要压缩",
+          cancel: "先去导出",
+          onOk: async () => {
+            toast("正在压缩…");
+            const freed = await autoHealStorage().catch(() => false);
+            if (!freed) {
+              toast("没能腾出空间，请手动删除部分旧图片");
+              return;
+            }
+            // 压缩完立刻再试一次写入；成功的话警示条会自动撤掉
+            save(true);
+            if (!saveFailed) toast("已腾出空间并恢复保存 ✅");
+          },
+        });
       }
 
       // 在 DB 中找出体积最大的一张 base64 图片，压缩到更小尺寸/更低质量后写回
@@ -19675,12 +20570,12 @@
                 t: "删除成就",
                 red: true,
                 fn: () =>
-                  confirmBox("删除自定义成就「" + c.title + "」？", () => {
-                    DB.ach.custom = DB.ach.custom.filter((y) => y.id !== c.id);
-                    save();
-                    paintSub();
-                    toast("已删除");
-                  }),
+                  delWithUndo(
+                    () => {
+                      DB.ach.custom = DB.ach.custom.filter((y) => y.id !== c.id);
+                    },
+                    () => paintSub(),
+                  ),
               },
             ],
           });
@@ -19825,6 +20720,7 @@
         recTag = "",
         recYear = "",
         recMonth = "",
+        recQuery = "", // 记录页搜索关键词（正文 / 地点 / 标签 / 日期全字段）
         ACH_VIEW = [];
       // 加图后的定位目标：{type,id,i} —— 编辑保存连续加了图时，列表/详情自动滑到最后一张
       let pendingImgFocus = null;
@@ -19980,7 +20876,14 @@
         hd.classList.toggle("sub", !!title);
         hd.classList.toggle("back", back || !!title);
         // 没有返回、没有居中标题、也没有右侧操作时，上面那行导航是空的，整行收起
-        hd.classList.toggle("compact", !title && !back && !act);
+        const isTabPage = !title && !back && !act;
+        hd.classList.toggle("compact", isTabPage);
+        // 四个主页面用「极简一行」顶栏：只留居中的页面名，副标题整行去掉。
+        // 二级页（有返回/标题/操作）不受影响，仍是标准导航条。
+        hd.classList.toggle(
+          "slim",
+          isTabPage && (DB.settings.headerStyle || "slim") === "slim",
+        );
         $("#hdBig").textContent = big;
         $("#hdSub").textContent = sub;
         $("#hdTitle").textContent = title;
@@ -20105,11 +21008,59 @@
         if (subStack.length === 1) {
           closeSub(true);
         } else {
-          const cur = subStack[subStack.length - 1];
-          cur.scrollTop = $("#sub").scrollTop;
-          subStack.pop();
-          paintSub("back");
+          // 多级返回：先把当前这层滑走，等它完全离开屏幕（约 300ms 动画）再把
+          // 顶栏标题切回上一级。以前是立刻切标题——当前页还在屏幕上滑，
+          // 标题已经变了，看起来像「滑完又跳一下」。
+          const from = subStack[subStack.length - 1];
+          from.scrollTop = $("#sub").scrollTop;
+          flyBackToParent(320);
         }
+      }
+
+      // 多级返回的滑动动画 + 收尾（动画结束后才切换顶栏标题）
+      function flyBackToParent(dur = 320) {
+        const sub = $("#sub"),
+          hd = $("#hd");
+        if (!sub || subStack.length < 2) return;
+        const CURVE = "cubic-bezier(0.32,0.72,0,1)";
+        let done = false;
+        const finish = () => {
+          if (done) return;
+          done = true;
+          sub.removeEventListener("transitionend", onEnd);
+          sub.style.transition = "";
+          sub.style.transform = "";
+          if (hd) {
+            // 内联位移必须抹掉再换内容，否则下一级顶栏会带着上一级的 translateX 出现，
+            // 表现为「按钮返回后导航栏偏在屏幕外」。
+            hd.style.transition = "";
+            hd.style.transform = "";
+          }
+          subGoBackNow();
+        };
+        const onEnd = (ev) => {
+          if (ev.target === sub && ev.propertyName === "transform") finish();
+        };
+        sub.style.transition = `transform ${dur}ms ${CURVE}`;
+        if (hd) hd.style.transition = `transform ${dur}ms ${CURVE}`;
+        void sub.offsetHeight;
+        sub.style.transform = "translateX(100%)";
+        if (hd) hd.style.transform = "translateX(100%)";
+        sub.addEventListener("transitionend", onEnd);
+        setTimeout(finish, dur + 120); // 兜底：个别机型漏触发 transitionend
+      }
+
+      // 真正的「退栈 + 换成上一级内容」（在动画结束后调用）
+      function subGoBackNow() {
+        if (subStack.length <= 1) return;
+        // 先把中间这一层的顶栏（标题 + 右上角动作）复原到干净状态，再换内容。
+        // 这一步是关键：被 pop() 掉的那一层，它的标题和动作是挂在全局 #hd 上的，
+        // 退栈本身不会把它们清掉 —— 于是下一级 paintSub 只覆盖「有值」的字段，
+        // 上一个页面的动作按钮（比如「编辑」「编辑看板」）就会一直粘在顶栏上。
+        // 左滑返回之所以没这个问题，是因为它的 settle() 里显式清了顶栏内联样式。
+        setHeader({ title: "", act: "", onAct: null, back: true });
+        subStack.pop();
+        paintSub("back");
       }
 
       function closeSub(render = true) {
@@ -20161,9 +21112,20 @@
       // 跳变，半透明又露出灰底，看起来就是「灰蒙蒙 + 不流畅」。
       (function bindSwipeBack() {
         const sub = $("#sub"),
-          main = $("#main");
+          main = $("#main"),
+          hd = $("#hd");
         if (!sub || !main) return;
         let sd = null;
+        // 顶栏（#hd）是 #sub 的兄弟节点，子页滑走时它得跟着一起滑，
+        // 否则标题和返回键会钉在原地，看起来像「页面动了、导航栏没动」。
+        const moveHd = (x) => {
+          if (hd) hd.style.transform = `translateX(${x}px)`;
+        };
+        const clearHd = () => {
+          if (!hd) return;
+          hd.style.transition = "";
+          hd.style.transform = "";
+        };
         const isMobile = () => window.matchMedia("(max-width: 600px)").matches;
         const CURVE = "cubic-bezier(0.32,0.72,0,1)";
         sub.addEventListener(
@@ -20174,6 +21136,7 @@
               sd = { x0: e.touches[0].clientX, active: true };
               sub.style.transition = "none";
               main.style.transition = "none";
+              if (hd) hd.style.transition = "none";
               // 起点就是压暗静止态，避免先跳「亮」再跟手的抖动
               main.style.transform = "scale(0.96)";
               main.style.setProperty("--veil", "0.12");
@@ -20188,9 +21151,11 @@
             const dx = e.touches[0].clientX - sd.x0;
             if (dx < 0) {
               sub.style.transform = "translateX(0)";
+              moveHd(0);
               return;
             }
             sub.style.transform = `translateX(${dx}px)`;
+            moveHd(dx);
             const p = Math.min(dx / 320, 1);
             // 主页随进度放大回原位、薄纱随进度揭开（只动 transform/透明纱层）
             if (isMobile())
@@ -20208,12 +21173,15 @@
             const isBack = dx > 90; // 是否达到「返回上一级」的阈值
             sub.style.transition = `transform 0.3s ${CURVE}`;
             main.style.transition = `transform 0.3s ${CURVE}`;
+            if (hd) hd.style.transition = `transform 0.3s ${CURVE}`;
             if (isBack) {
               sub.style.transform = "translateX(100%)";
+              if (hd) hd.style.transform = "translateX(100%)";
               main.style.transform = "scale(1)";
               main.style.setProperty("--veil", "0");
             } else {
               sub.style.transform = "translateX(0)";
+              if (hd) hd.style.transform = "translateX(0)";
               main.style.transform = "scale(0.96)";
               main.style.setProperty("--veil", "0.12");
             }
@@ -20229,15 +21197,22 @@
               sub.style.transition = "";
               sub.style.transform = "";
               clearMainFx(); // 抹掉 main 上的内联 transform / --veil / transition
+              clearHd(); // 抹掉顶栏的内联位移，避免下次打开时顶栏错位
               if (isBack) {
-                // 达到阈值：关闭子页，回到父页面（与点返回一致）
-                closeSeq++; // 让仍在进行中的关闭动画收尾失效
-                sub.classList.remove("on", "closing", "anim-fwd", "anim-back");
-                sub.innerHTML = "";
-                subStack = [];
-                main.classList.remove("dim");
-                renderTab && renderTab();
-                syncFab();
+                if (subStack.length > 1) {
+                  // 多级返回：子页已滑出屏幕，退回上一级
+                  // （标题在滑完之后才换，不会在滑动过程中跳字）
+                  subGoBackNow();
+                } else {
+                  // 达到阈值：关闭子页，回到父页面（与点返回一致）
+                  closeSeq++; // 让仍在进行中的关闭动画收尾失效
+                  sub.classList.remove("on", "closing", "anim-fwd", "anim-back");
+                  sub.innerHTML = "";
+                  subStack = [];
+                  main.classList.remove("dim");
+                  renderTab && renderTab();
+                  syncFab();
+                }
               } else {
                 // 未达阈值：回弹，子页继续打开，恢复「压暗」的静止样式
                 main.classList.add("dim");
@@ -20453,16 +21428,123 @@
       /* ================================================================
        * 页面：首页
        * ================================================================ */
+      /* ================================================================
+       * 备份提醒
+       * 数据全在浏览器 localStorage 里 —— 清一次缓存、换一台设备就没了，
+       * 而用户根本不会主动想起去点「设置 → 导出」。所以：
+       *   1) 每次导出都记下日期（DB.settings.lastBackup）
+       *   2) 超过 BACKUP_REMIND_DAYS 天没备份 + 库里确实有东西 → 首页给一张提醒卡
+       *   3) 卡上直接给「立即备份」按钮，一键下载，不用再翻三层菜单
+       *   4) 点「稍后」记一个 snooze 日期，7 天内不再打扰
+       * ================================================================ */
+      const BACKUP_REMIND_DAYS = 30;
+      const BACKUP_SNOOZE_DAYS = 7;
+
+      // 库里到底存了多少条东西（提醒只在真有内容时才出现）
+      function backupPayloadSize() {
+        return (
+          (DB.happy || []).length +
+          (DB.travel || []).length +
+          (DB.memo || []).length +
+          (DB.checkin || []).length +
+          (DB.albums || []).length +
+          (DB.timeCapsules || []).length
+        );
+      }
+      // 距离上次备份多少天；没备份过返回 null
+      function daysSinceBackup() {
+        const last = DB.settings && DB.settings.lastBackup;
+        if (!last) return null;
+        const d = Math.floor(
+          (new Date(today() + "T00:00:00") - new Date(last + "T00:00:00")) /
+            864e5,
+        );
+        return d >= 0 ? d : 0;
+      }
+      // 一键导出：设置页和首页提醒卡共用同一份实现，避免两处逻辑漂移
+      function doExportBackup() {
+        try {
+          const blob = new Blob([JSON.stringify(DB)], {
+            type: "application/json",
+          });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "love_backup_" + today() + ".json";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 500);
+          DB.settings.lastBackup = today();
+          DB.settings.backupSnooze = "";
+          save();
+          toast("已导出备份文件 🛡️");
+          return true;
+        } catch (e) {
+          toast("导出失败，请重试");
+          return false;
+        }
+      }
+      function backupSnooze() {
+        DB.settings.backupSnooze = today();
+        save();
+        const el = $("#backupTip");
+        if (el) {
+          el.style.transition = "opacity .2s, transform .2s";
+          el.style.opacity = "0";
+          el.style.transform = "translateY(-6px)";
+          setTimeout(() => {
+            el.remove();
+          }, 200);
+        }
+        toast(`${BACKUP_SNOOZE_DAYS} 天后再提醒`);
+      }
+      // 该不该提醒？返回 {days} 或 null
+      function backupReminder() {
+        if (!DB.settings) return null;
+        if (!backupPayloadSize()) return null; // 还没记东西，别急着让人备份
+        const sn = DB.settings.backupSnooze;
+        if (sn) {
+          const sd = Math.floor(
+            (new Date(today() + "T00:00:00") - new Date(sn + "T00:00:00")) /
+              864e5,
+          );
+          if (sd >= 0 && sd < BACKUP_SNOOZE_DAYS) return null;
+        }
+        const d = daysSinceBackup();
+        if (d === null) {
+          // 从没备份过：刚装上就弹「去备份」太吵，攒到 10 条以上再提示
+          return backupPayloadSize() >= 10 ? { days: null } : null;
+        }
+        return d >= BACKUP_REMIND_DAYS ? { days: d } : null;
+      }
+      function backupTipHtml() {
+        const r = backupReminder();
+        if (!r) return "";
+        const d = r.days;
+        const head =
+          d === null
+            ? "还没备份过"
+            : `已经 ${d} 天没备份了`;
+        return `<div class="card backup-tip" id="backupTip">
+          <span class="bt-ic">🛡️</span>
+          <div class="bt-main">
+            <div class="bt-t">${head}</div>
+            <div class="bt-d">数据只存在这台设备上，清缓存或换手机就会丢失</div>
+          </div>
+          <div class="bt-act">
+            <button class="bt-btn ghost" onclick="backupSnooze()">稍后</button>
+            <button class="bt-btn" onclick="doExportBackup();rHome()">立即备份</button>
+          </div>
+        </div>`;
+      }
+
       function rHome() {
         const p = $("#pg-home");
         const up = upcoming();
         const C = DB.couple;
-        const latest = [
-          ...DB.happy.map((r) => ({ ...r, _t: "happy" })),
-          ...DB.travel.map((r) => ({ ...r, _t: "travel" })),
-        ]
-          .sort((a, b) => (a.date < b.date ? 1 : -1))
-          .slice(0, 3);
+        // 「最近动态」已从首页移除：它和「记录」tab 是同一批内容，
+        // 首页再铺一遍只会把真正重要的提醒往下挤。要翻记录去记录页就好。
         const emoji = emotionNow();
         const relS = relNow();
 
@@ -20470,10 +21552,6 @@
         const year = now.getFullYear();
         const month = now.getMonth() + 1;
         const day = now.getDate();
-        const dayOfYear = Math.floor((now - new Date(year, 0, 0)) / 864e5);
-        const totalDays =
-          (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0 ? 366 : 365;
-        const progress = Math.round((dayOfYear / totalDays) * 100);
         // 农历日（简化显示）
         const lunarToday = solar2lunar(year, month, day);
         const lunarDateStr = lunarToday
@@ -20518,22 +21596,23 @@
             </div>
           </div>
           ${heroLove}
-          <div class="hero-progress">
-            <div class="hp-top">
-              <span class="hp-year">${year} 年进度</span>
-              <span class="hp-pct">${progress}<i>%</i></span>
-            </div>
-            <div class="hp-months">${Array.from({ length: 12 }, (_, i) => {
-              const m = i + 1;
-              const dim = new Date(year, m, 0).getDate();
-              const cls = m < month ? "full" : m === month ? "cur" : "";
-              const w =
-                m === month ? Math.min(100, Math.round((day / dim) * 100)) : 0;
-              const mp = m < month ? 100 : m === month ? w : 0;
-              return `<span class="hp-col ${m <= month ? "past" : ""}"><span class="hp-m ${cls}" style="--w:${w}%"></span><span class="hp-mp">${mp}%</span></span>`;
-            }).join("")}</div>
-          </div>
         </div>
+
+        <!-- 快速记录：想到就写一句，回车即存。
+             记下来比记得完整重要 —— 类型/日期自动填，详情以后再补。 -->
+        <div class="quick-note" id="quickNote">
+          <input
+            id="qnInput"
+            class="qn-input"
+            type="text"
+            placeholder="今天想记点什么…"
+            autocomplete="off"
+            enterkeyhint="done"
+          />
+          <button class="qn-send" id="qnSend" aria-label="记一笔">记下</button>
+        </div>
+
+        ${backupTipHtml()}
 
         ${
           isFresh
@@ -20589,12 +21668,9 @@
           </button>
         </div>
 
-        <!-- 次级信息：可折叠（渐进式披露，首屏减负） -->
-        <div class="more-toggle collapsed" onclick="toggleMore(this)">
-          <span><span class="mt-chev">▾</span> 更多信息</span>
-          <span class="mt-sub">温馨提醒 · 最近动态</span>
-        </div>
-        <div class="more-body">
+        <!-- 温馨提醒：从折叠区里提出来，紧跟纪念日之后常驻显示。
+             原来它藏在「更多信息」折页里，用户得先点开才看得到 ——
+             而「经期快到了/生日要到了」恰恰是唯一值得主动推给用户的内容。 -->
         <div class="sec">
           <div class="sec-hd"><span class="sec-t">🔔 温馨提醒</span></div>
           <div class="reminder-list">
@@ -20628,37 +21704,97 @@
               🕊️ 暂无即将到来的提醒<br><span style="font-size:12px">去「我的」添加时间胶囊或设置生日吧</span></div>`
             }
           </div>
-        </div>
-
-        <div class="sec">
-          <div class="sec-hd"><span class="sec-t">📋 最近动态</span>
-            <button class="sec-more" onclick="switchTab('records')">全部 ›</button></div>
-          ${
-            latest.length
-              ? latest.map((r) => momCard(r, r._t, true)).join("")
-              : `<div style="text-align:center;padding:24px 16px" class="empty">
-                  <div class="e-ic">🌱</div>
-                  <div class="e-t">还没有属于你们的记录</div>
-                  <div class="e-d">从第一条快乐或旅行开始，<br>往后这里会常驻你们最近的小美好</div>
-                  <div style="display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap">
-                    <button class="btn" onclick="switchTab('records');openRecNew()">＋ 记录第一条</button>
-                  </div>
-                </div>`
-          }
-        </div>
         </div>`;
 
-        p.querySelectorAll(".mom[data-id]").forEach((m) => {
-          m.addEventListener("click", (e) => {
-            if (e.target.classList.contains("im")) {
-              const r = DB[m.dataset.type].find((x) => x.id === m.dataset.id);
-              if (r) lightbox(r.imgs, +e.target.dataset.i);
-              return;
-            }
-            recDetail(m.dataset.type, m.dataset.id);
-          });
-        });
+        bindQuickNote(p);
         tickLoveTimer();
+      }
+
+      // 首页快速记录：一行输入 + 回车即存，不打断、不弹表单。
+      // 记下来比记得完整重要 —— 类型取默认（快乐），日期取今天，
+      // 地点/图片/标签这些「详情」留到以后在记录页补。
+      // 随手记只认两种类型；图标/名字要和记录页的 tab 保持一致
+      const QN_TYPES = {
+        happy: { icon: "💖", name: "快乐日常", short: "快乐" },
+        travel: { icon: "🧳", name: "旅行足迹", short: "旅行" },
+      };
+
+      // 把一条刚记下的记录在两类之间互转。
+      // 随手记默认按 defaultRecordType 归类，但用户在输入框旁边看不到任何提示，
+      // 想记旅行的人会误存进「快乐日常」—— 给一个一键改回来的出口。
+      function qnMove(id, from, to) {
+        const arr = DB[from] || [];
+        const i = arr.findIndex((x) => x.id === id);
+        if (i < 0) return;
+        const rec = arr[i];
+        arr.splice(i, 1);
+        (DB[to] = DB[to] || []).push(rec);
+        rec.updatedAt = new Date().toISOString();
+        save();
+        checkAchAll();
+        // 首页的「最近记录」要跟着变，否则转完列表还显示旧分类
+        if (curTab === "home") rHome();
+        else if (curTab === "records") drawRecList();
+        const m = QN_TYPES[to];
+        toastAct(`已转为 ${m.icon} ${m.name}`, [
+          { label: "补充", fn: () => recEditor(to, id) },
+          { label: "撤销", fn: () => qnMove(id, to, from) },
+        ]);
+      }
+
+      function bindQuickNote(p) {
+        const inp = p.querySelector("#qnInput");
+        const btn = p.querySelector("#qnSend");
+        if (!inp || !btn) return;
+        const submit = () => {
+          const text = inp.value.trim();
+          if (!text) {
+            inp.focus();
+            return;
+          }
+          const type = DB.settings.defaultRecordType || "happy";
+          const rec = {
+            id: uid(),
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            date: today(),
+            place: "",
+            from: "",
+            to: "",
+            days: 1,
+            text,
+            imgs: [],
+            tags: [],
+            color: DB.settings.defaultCardColor || "",
+            startDate: today(),
+            endDate: today(),
+          };
+          DB[type].push(rec);
+          save(true);
+          checkAchAll();
+          inp.value = "";
+          inp.blur();
+          // 记完立刻在本页看到：重绘「最近记录」区，顺便刷新成就/引导态
+          rHome();
+          // 光说「已记下」是不够的：用户看不到它进了哪一类，也不知道去哪补照片。
+          // 直接把这两个出口挂到 toast 上，省得回头去记录页翻。
+          const m = QN_TYPES[type] || QN_TYPES.happy;
+          const other = type === "happy" ? "travel" : "happy";
+          toastAct(`已记入 ${m.icon} ${m.name}`, [
+            { label: "补充", fn: () => recEditor(type, rec.id) },
+            {
+              label: `转为${QN_TYPES[other].short}`,
+              fn: () => qnMove(rec.id, type, other),
+            },
+          ]);
+        };
+        btn.onclick = submit;
+        inp.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            submit();
+          }
+        });
       }
 
       function toggleMore(el) {
@@ -20759,7 +21895,7 @@
                     <span class="ad-av" style="background:${pr.weak}">${pr.emoji}</span>
                     <div class="ad-main">
                       <div class="ad-name">${esc(pr.label)}</div>
-                      <div class="ad-line">未设置出生日期，点右上角「编辑」补充</div>
+                      <div class="ad-line">未设置出生日期，点这里补充</div>
                     </div></div>`;
                 const d = getAgeDetail(p.birthDate);
                 if (!d) return "";
@@ -20790,7 +21926,8 @@
                 has
                   ? rows
                   : `<div style="text-align:center;padding:22px 10px;color:var(--sub);font-size:13px;line-height:1.7">
-                      👶 还没有出生日期<br><span style="font-size:12px">点右上角「编辑」补上，就能看到年龄、星座、生肖和生日倒计时</span>
+                      👶 还没有出生日期<br><span style="font-size:12px">点右上角「＋ 添加」补上，就能看到年龄、星座、生肖和生日倒计时</span>
+                      <div style="margin-top:14px"><button class="btn sm" onclick="ageEdit()">现在就去添加</button></div>
                      </div>`
               }
             </div>
@@ -21084,7 +22221,7 @@
         <div style="text-align:center;margin-top:8px">${todayCare}</div>
         <div class="tc-links">
           <span style="font-size:11px;color:var(--sub)">💡 经验越多，爱情树长得越高</span>
-          <button class="tc-reset-link" onclick="confirmBox('确定要重置爱情树吗？将清空浇水/施肥积累的经验与今日次数。',()=>{DB.tree.xpExtra=0;DB.tree.days={};save();renderTreeCard();toast('已重置')},'重置爱情树','重置')">重置</button>
+          <button class="tc-reset-link" onclick="treeReset()">重置</button>
         </div>`;
       }
 
@@ -21126,6 +22263,18 @@
 
       // 原地重绘首页爱情树卡片（保持其它内容不动）
       // 树卡现在可能存在于「首页」或「爱情树详情子页」，两边都要刷新
+      // 爱情树重置：直接重置 + 撤销，不再用二次确认打断
+      function treeReset() {
+        delWithUndo(
+          () => {
+            DB.tree.xpExtra = 0;
+            DB.tree.days = {};
+          },
+          () => renderTreeCard(),
+          "已重置爱情树",
+        );
+      }
+
       function renderTreeCard() {
         const sel = "#treeCard";
         let hit = 0;
@@ -21303,7 +22452,43 @@
         recYear = "";
         recMonth = "";
         recTag = "";
+        recQuery = "";
         rRecords();
+      }
+
+      /* 记录搜索：以前只有「年月 + 标签」筛选，想找「去年在海边那次」
+         只能一个个点月份翻。现在按关键词全字段匹配，并且命中处高亮。
+         搜索是纯前端过滤，不改动 DB。 */
+      function recHasFilter() {
+        return !!(recYear || recMonth || recTag || recQuery.trim());
+      }
+      // 一条记录里所有可被搜到的文本，拼成一个小写串
+      function recSearchBlob(r) {
+        const bits = [
+          r.text,
+          r.place,
+          r.from,
+          r.to,
+          r.date,
+          r.note,
+          (r.tags || []).join(" "),
+        ];
+        return bits.filter(Boolean).join(" ").toLowerCase();
+      }
+      // 把命中片段用 <mark> 包起来（先 esc 再替换，避免 XSS）
+      function recHighlight(text, q) {
+        const s = esc(text == null ? "" : text);
+        const kw = q.trim();
+        if (!kw) return s;
+        const i = s.toLowerCase().indexOf(kw.toLowerCase());
+        if (i < 0) return s;
+        return (
+          s.slice(0, i) +
+          "<mark class='rq-hit'>" +
+          s.slice(i, i + kw.length) +
+          "</mark>" +
+          s.slice(i + kw.length)
+        );
       }
 
       function rRecords() {
@@ -21352,7 +22537,22 @@
           <button class="filter-date-btn" id="filterYmBtn">${recYmLabel()} <i class="fd-caret">▾</i></button>
           <button class="filter-date-btn" id="recSortBtn">${recSortLabel()} <i class="fd-caret">▾</i></button>
           <button class="chip" id="viewToggle">${DB.ui.viewMode === "moments" ? "🕐 时间轴" : "🖼 卡片流"}</button>
-          ${recYear || recMonth || recTag ? `<button class="chip chip-clear" id="recFilterClear">清除</button>` : ""}
+          <button class="chip chip-clear" id="recFilterClear" style="display:${recHasFilter() ? "" : "none"}">清除</button>
+        </div>
+        <!-- 搜索框：常驻 DOM。输入时只重绘列表而不整页重绘 ——
+             否则每次按键都会重建 input，焦点直接丢失，根本没法连续打字。 -->
+        <div class="rec-search" id="recSearch">
+          <span class="rs-ic">🔍</span>
+          <input
+            id="recQueryInput"
+            class="rs-input"
+            type="search"
+            value="${esc(recQuery)}"
+            placeholder="搜正文、地点、标签…"
+            autocomplete="off"
+            enterkeyhint="search"
+          />
+          <button class="rs-clear" id="recQueryClear" aria-label="清空搜索" style="display:${recQuery ? "" : "none"}">✕</button>
         </div>
         <div id="tagChips" style="display:flex;gap:6px;overflow-x:auto;margin-top:8px"></div>
         <div id="recList" style="margin-top:12px"></div>`;
@@ -21372,6 +22572,53 @@
           save();
           rRecords();
         };
+
+        // 搜索：只重绘列表 + 手动切换「清除」的显隐，绝不整页重绘。
+        // 整页重绘会把 input 连同焦点一起销毁，用户打第二个字就断了。
+        const syncFilterChip = () => {
+          const qc = $("#recFilterClear");
+          if (qc) qc.style.display = recHasFilter() ? "" : "none";
+          const x = $("#recQueryClear");
+          if (x) x.style.display = recQuery ? "" : "none";
+        };
+        const qi = $("#recQueryInput");
+        if (qi) {
+          qi.addEventListener("input", () => {
+            recQuery = qi.value;
+            syncFilterChip();
+            drawRecList();
+          });
+          // 输入法/浏览器原生的“清空”按钮走的不是 input 事件
+          qi.addEventListener("search", () => {
+            recQuery = qi.value;
+            syncFilterChip();
+            drawRecList();
+          });
+          qi.addEventListener("keydown", (e) => {
+            if (e.key === "Escape" && recQuery) {
+              e.preventDefault();
+              recQuery = "";
+              qi.value = "";
+              syncFilterChip();
+              drawRecList();
+            }
+          });
+          // 注意：这里刻意不做自动 focus。
+          // 一进记录页就 focus 会立刻弹起软键盘，把列表挡掉一大半。
+          // 输入过程中的焦点由「不整页重绘」天然保住，不需要额外补。
+        }
+        const qx = $("#recQueryClear");
+        if (qx)
+          qx.onclick = () => {
+            recQuery = "";
+            const i = $("#recQueryInput");
+            if (i) {
+              i.value = "";
+              i.focus();
+            }
+            syncFilterChip();
+            drawRecList();
+          };
 
         // 整块按钮都可点：▾ 是 <i>，用 closest 兜住，避免点箭头没反应
         $("#recSortBtn").onclick = (e) => {
@@ -21485,6 +22732,8 @@
               const ym = r.date.slice(0, 7);
               if (ym !== recYear + "-" + recMonth) return false;
             }
+            const q = recQuery.trim().toLowerCase();
+            if (q && !recSearchBlob(r).includes(q)) return false;
             return true;
           })
           .sort((a, b) => {
@@ -21521,11 +22770,21 @@
         if (!box) return;
         const list = filteredRecs();
         if (!list.length) {
-          if (recTag || recYear || recMonth) {
+          if (recTag || recYear || recMonth || recQuery.trim()) {
+            // 搜索无果时把「搜了什么」明确回显出来 ——
+            // 否则用户只看到"没有记录"，会以为自己的记录丢了
+            const cond = [
+              recQuery.trim() ? `关键词「${esc(recQuery.trim())}」` : "",
+              recTag ? (recTab === "happy" ? "#" : "📍") + esc(recTag) : "",
+              recYear ? recYear + "年" : "",
+              recMonth ? recMonth + "月" : "",
+            ]
+              .filter(Boolean)
+              .join(" · ");
             box.innerHTML = empty(
               "🔍",
-              "没有符合条件的记录",
-              `当前筛选：${recTag || "全部"} ${recYear ? recYear + "年" : ""} ${recMonth ? recMonth + "月" : ""}<br>点击「清除」重置筛选`,
+              recQuery.trim() ? `没搜到「${esc(recQuery.trim())}」` : "没有符合条件的记录",
+              `${cond}<br>换个词，或点击「清除」重置筛选`,
               "清除筛选",
               "recClearFilter()",
             );
@@ -21634,14 +22893,16 @@
               : imgs.length === 4
                 ? "n2"
                 : "n3";
+        // 搜索命中高亮：只在有关键词时才包 <mark>，平时渲染路径完全不变
+        const q = recQuery.trim();
         const tags = (r.tags || [])
-          .map((t) => `<span class="tag"># ${esc(t)}</span>`)
+          .map((t) => `<span class="tag"># ${recHighlight(t, q)}</span>`)
           .join("");
         let placeStr = "";
         if (type === "happy" && r.place) placeStr = r.place;
         let travelInfo = "";
         if (type === "travel") {
-          travelInfo = `${esc(r.from || "—")} → ${esc(r.to || "—")} · ${r.days || 1}天`;
+          travelInfo = `${recHighlight(r.from || "—", q)} → ${recHighlight(r.to || "—", q)} · ${r.days || 1}天`;
         }
         const color = r.color ? `style="background:${r.color}"` : "";
         const dateDisplay = fmtCN(r.date) + " " + weekday(r.date);
@@ -21653,9 +22914,9 @@
             <div class="mom-type-tag ${typeClass}">${typeLabel}</div>
           </div>
           <div class="mom-body">
-            ${placeStr ? `<div class="mom-place">📍 ${esc(placeStr)}</div>` : ""}
+            ${placeStr ? `<div class="mom-place">📍 ${recHighlight(placeStr, q)}</div>` : ""}
             ${travelInfo ? `<div class="mom-place">✈️ ${travelInfo}</div>` : ""}
-            ${r.text ? `<div class="mom-t">${esc(r.text)}</div>` : ""}
+            ${r.text ? `<div class="mom-t">${recHighlight(r.text, q)}</div>` : ""}
             ${tags ? `<div class="mom-tags">${tags}</div>` : ""}
             ${
               imgs.length === 1
@@ -22042,6 +23303,7 @@
             clearTimeout(candTimer);
             candTimer = null;
           }
+          if (cand) cand.el.classList.remove("pressing");
           cand = null;
         };
 
@@ -22136,12 +23398,15 @@
           if (!el) return;
           if (e.target.closest("[data-del], [data-cov]")) return;
           cand = { el, x: e.clientX, y: e.clientY, id: e.pointerId };
+          // 起手先给按压态，按够 LONG_PRESS_MS（全 App 统一 300ms）才真正拿起
+          cand.el.classList.add("pressing");
           candTimer = setTimeout(() => {
             if (cand) {
               begin(cand.el, cand.x, cand.y, cand.id);
+              cand.el.classList.remove("pressing");
               cand = null;
             }
-          }, 380);
+          }, LONG_PRESS_MS);
         });
         grid.addEventListener("pointermove", (e) => {
           if (dragging) {
@@ -22151,8 +23416,8 @@
           // 长按未成立就先滑动了：当作页面滚动，取消候选
           if (
             cand &&
-            (Math.abs(e.clientX - cand.x) > 8 ||
-              Math.abs(e.clientY - cand.y) > 8)
+            (Math.abs(e.clientX - cand.x) > 10 ||
+              Math.abs(e.clientY - cand.y) > 10)
           )
             clearCand();
         });
@@ -22163,45 +23428,84 @@
         });
       }
 
+      /* 全 App 统一的长按手势：
+         - 阈值统一 300ms（以前四套实现各写各的：500 / 400 / 250 / 按住即拖，
+           用户根本猜不到「到底要按多久」）
+         - 按住期间给 .pressing 按压态，并且过渡时长 = 阈值，
+           于是「按下去 → 元素慢慢变深 → 触发」，按够了没有一眼能看出来
+         - 移动超过 10px 视为想滚动，取消
+         - 触发后吞掉随后的 click（浏览器补发的那一下会穿透到新打开的页面） */
+      const LONG_PRESS_MS = 300;
       function longPress(el, fn) {
         let timer = null,
           moved = false;
-        el.addEventListener(
-          "touchstart",
-          () => {
-            moved = false;
-            timer = setTimeout(() => {
-              if (!moved) fn();
-              timer = null;
-            }, 500);
-          },
-          { passive: true },
-        );
+        const arm = (x, y) => {
+          moved = false;
+          el._lpX = x;
+          el._lpY = y;
+          el.classList.add("pressing");
+          timer = setTimeout(() => {
+            timer = null;
+            el.classList.remove("pressing");
+            if (moved) return;
+            if (navigator.vibrate) navigator.vibrate(10);
+            el._lpFired = true;
+            fn();
+          }, LONG_PRESS_MS);
+        };
         const clear = () => {
           if (timer) {
             clearTimeout(timer);
             timer = null;
           }
+          el.classList.remove("pressing");
         };
-        el.addEventListener("touchmove", () => {
-          moved = true;
-          clear();
-        });
+        el.addEventListener(
+          "touchstart",
+          (e) => arm(e.touches[0].clientX, e.touches[0].clientY),
+          { passive: true },
+        );
+        el.addEventListener(
+          "touchmove",
+          (e) => {
+            if (!timer) return;
+            const t = e.touches[0];
+            if (
+              Math.abs(t.clientX - el._lpX) > 10 ||
+              Math.abs(t.clientY - el._lpY) > 10
+            ) {
+              moved = true;
+              clear();
+            }
+          },
+          { passive: true },
+        );
         el.addEventListener("touchend", clear);
         el.addEventListener("touchcancel", clear);
-        el.addEventListener("mousedown", () => {
-          moved = false;
-          timer = setTimeout(() => {
-            if (!moved) fn();
-            timer = null;
-          }, 500);
-        });
-        el.addEventListener("mousemove", () => {
-          moved = true;
-          clear();
+        el.addEventListener("mousedown", (e) => arm(e.clientX, e.clientY));
+        el.addEventListener("mousemove", (e) => {
+          if (!timer) return;
+          if (
+            Math.abs(e.clientX - el._lpX) > 10 ||
+            Math.abs(e.clientY - el._lpY) > 10
+          ) {
+            moved = true;
+            clear();
+          }
         });
         el.addEventListener("mouseup", clear);
         el.addEventListener("mouseleave", clear);
+        // 长按已触发 → 掐掉随后那次 click，避免穿透到刚打开的内容
+        el.addEventListener(
+          "click",
+          (e) => {
+            if (!el._lpFired) return;
+            el._lpFired = false;
+            e.stopPropagation();
+            e.preventDefault();
+          },
+          true,
+        );
       }
 
       function pickColor(r) {
@@ -22259,14 +23563,9 @@
         <div class="sec">
         <div class="sec-hd"><span class="sec-t">📊 数据看板</span>
           <button class="sec-more" onclick="dashEdit()">编辑看板</button></div>
-        <button class="mini-row" onclick="dashDetailPage()">
-          <span class="mr-ic">📊</span>
-          <span class="mr-main">
-            <span class="mr-t">全部指标</span>
-            <span class="mr-d">${dashBrief()}</span>
-          </span>
-          <span class="mr-arr">›</span>
-        </button>
+        <!-- 全部指标：不再折成一行入口。它本来就是这一页最该看的东西，
+             点进去才能看到数字属于多绕一步。现在直接平铺成指标格。 -->
+        ${dashStatsHtml()}
         <button class="mini-row" style="margin-top:12px" onclick="reportPick()">
           <span class="mr-ic">🎁</span>
           <span class="mr-main">
@@ -22278,6 +23577,9 @@
         ${periodAnalysisHtml()}
         ${storyEntryHtml()}
         ${monthSummaryHtml()}
+        <!-- 旅行足迹提到「月度趋势」上方：它是可点击的入口、也是内容，
+             排在图表下面总被当成图表的一部分被划过去 -->
+        ${D.hidden.includes("map") ? "" : travelMapEntryHtml()}
         ${
           D.hidden.includes("trend")
             ? ""
@@ -22291,7 +23593,6 @@
             </div>
           </div>`
         }
-        ${D.hidden.includes("map") ? "" : travelMapEntryHtml()}
         </div>`;
         const cv = $("#trendCv");
         if (cv) drawTrend(cv);
@@ -22314,6 +23615,54 @@
             }
           });
         }
+      }
+
+      // 总览页直接平铺的指标格（原来这组数据藏在「全部指标」二级页里）。
+      // 沿用详情页的「首项英雄卡 + 其余两列小卡」层次，但压扁一档，
+      // 免得在总览页里抢了月度趋势的视觉重心。
+      function dashStatsHtml() {
+        const D = DB.dash;
+        const mods = {
+          loveDays: { t: "恋爱天数", ic: "💞", v: loveDays() || "—", u: "天" },
+          happyN: { t: "快乐事件", ic: "💖", v: DB.happy.length, u: "件" },
+          travelN: { t: "旅行次数", ic: "🧳", v: DB.travel.length, u: "次" },
+          cityN: { t: "到访城市", ic: "🏙️", v: cityCount(), u: "座" },
+          checkN: {
+            t: "打卡天数",
+            ic: "✅",
+            v: new Set(DB.checkin.map((c) => c.date)).size,
+            u: "天",
+          },
+        };
+        const list = D.order.filter(
+          (k) => !D.hidden.includes(k) && mods[k],
+        );
+        if (!list.length)
+          return `<div class="card hairline" style="text-align:center;padding:20px;font-size:13px;color:var(--sub)">还没有可展示的指标，点右上角「编辑看板」添加</div>`;
+        const hero = mods[list[0]];
+        const rest = list.slice(1);
+        // 达成度环所在的 happiness 也需要保留入口，但不占指标格的位置
+        return `<div class="ov-stats">
+          <div class="ov-hero">
+            <span class="ov-ic">${hero.ic}</span>
+            <div class="ov-main">
+              <div class="ov-v">${hero.v}<i>${hero.u}</i></div>
+              <div class="ov-t">${hero.t}</div>
+            </div>
+          </div>
+          ${
+            rest.length
+              ? `<div class="ov-grid">${rest
+                  .map(
+                    (k) =>
+                      `<div class="ov-cell"><span class="ov-ic sm">${mods[k].ic}</span>
+                        <div class="ov-cv">${mods[k].v}<i>${mods[k].u}</i></div>
+                        <div class="ov-ct">${mods[k].t}</div></div>`,
+                  )
+                  .join("")}</div>`
+              : ""
+          }
+        </div>`;
       }
 
       // 看板精简：首屏只留进度环，四维达成度 + 统计格移进「全部指标」详情页
@@ -23522,24 +24871,22 @@
       }
 
       function pdDeleteDay(d) {
-        confirmBox(`删除 ${fmtCN(d)} 的经期记录？`, () => {
-          if (DB.period.rec[d]) {
-            delete DB.period.rec[d];
-            save();
-            pdRerender();
-            toast("已删除");
-          }
-        });
+        delWithUndo(
+          () => {
+            if (DB.period.rec[d]) delete DB.period.rec[d];
+          },
+          () => pdRerender(),
+        );
       }
 
       // 供滑动卡片二次确认后直接调用（不再弹 confirmBox）
       function pdDeleteDayNow(d) {
-        if (DB.period.rec[d]) {
-          delete DB.period.rec[d];
-          save();
-          pdRerender();
-          toast("已删除");
-        }
+        delWithUndo(
+          () => {
+            if (DB.period.rec[d]) delete DB.period.rec[d];
+          },
+          () => pdRerender(),
+        );
       }
 
       // 一键记录“今天来月经了”：默认取中等流量，免填其余字段
@@ -23959,7 +25306,6 @@
             <div class="card couple-profile" style="margin-top:8px">
               <div class="cp-header">
                 <span class="cp-title">👫 情侣资料</span>
-                <span class="cp-together">${C.loveStart ? (relS.together ? "💞 已在一起" : "💔 已分开") : "未设置恋爱日"}</span>
               </div>
               ${rows
                 .map(([defName, p, isP]) => {
@@ -23976,10 +25322,32 @@
                 })
                 .join("")}
               <div class="cp-hint">${md ? `🎁 还有 <b>${md.n}</b> 天，${esc(md.p.name || "TA")} 的生日就到啦` : "🎂 补充生日后，这里会贴心提醒倒计时"}</div>
-              <div class="cp-footer">
-                <div class="cp-f-item"><span class="cp-f-num">${nextAnniversary !== null ? nextAnniversary + "天" : "—"}</span><span class="cp-f-label">距离周年</span></div>
-                <div class="cp-f-item"><span class="cp-f-num">${C.loveStart ? loveDays() + "天" : "—"}</span><span class="cp-f-label">已在一起</span></div>
-                <div class="cp-f-item"><span class="cp-f-num">${C.loveStart ? C.loveStart.replace(/-/g, ".") : "—"}</span><span class="cp-f-label">恋爱起始</span></div>
+              <div class="cp-footer" style="grid-template-columns:repeat(2,1fr)">
+                ${(() => {
+                  const ai = annivInfo();
+                  const bdName = md ? md.p.name || "TA" : "TA";
+                  const items = [
+                    [
+                      ai ? ai.days + "天" : "—",
+                      ai ? `距离${ai.nth}周年` : "距离周年",
+                    ],
+                    [C.loveStart ? loveDays() + "天" : "—", "已在一起"],
+                    [
+                      C.loveStart ? C.loveStart.replace(/-/g, ".") : "—",
+                      "恋爱起始",
+                    ],
+                    [
+                      md ? md.n + "天" : "—",
+                      `${cpShortName(bdName)}生日倒计时`,
+                    ],
+                  ];
+                  return items
+                    .map(
+                      ([n, l]) =>
+                        `<div class="cp-f-item"><span class="cp-f-num">${n}</span><span class="cp-f-label">${l}</span></div>`,
+                    )
+                    .join("");
+                })()}
               </div>
             </div>
             <button class="btn blk" style="margin-top:14px" onclick="profileEdit()">✏️ 编辑情侣资料</button>
@@ -23987,8 +25355,10 @@
               💡 填写生日后会自动计算农历、星座、生肖与生日倒计时。
             </div>`;
           },
-          "编辑",
-          () => profileEdit(),
+          // 顶栏右上角不再放「编辑」：底部已经有一个主按钮了，
+          // 两个入口做同一件事，反而让人犹豫该点哪个。
+          "",
+          null,
         );
       }
 
@@ -24073,20 +25443,12 @@
           const pin = pinnedTools();
           const rest = unpinnedTools();
           el.innerHTML = `
-          ${
-            pin.length
-              ? `<div class="sec-hd" style="margin:12px 2px 0"><span class="sec-t">📌 已固定到我的页</span>
+          ${pin.length ? `<div class="sec-hd" style="margin:12px 2px 0"><span class="sec-t">📌 已固定到我的页</span>
             <button class="sec-more" onclick="toolsEdit()">编辑</button></div>
-          <div class="glist" style="margin-top:8px">${pin.map(toolCellHtml).join("")}</div>`
-              : ""
-          }
-          ${
-            rest.length
-              ? `<div class="sec-hd" style="margin:${pin.length ? 18 : 12}px 2px 0"><span class="sec-t">🧩 更多工具</span>
+          <div class="glist" style="margin-top:8px">${pin.map(toolCellHtml).join("")}</div>` : ""}
+          ${rest.length ? `<div class="sec-hd" style="margin:${pin.length ? 18 : 12}px 2px 0"><span class="sec-t">🧩 更多工具</span>
             ${pin.length ? "" : `<button class="sec-more" onclick="toolsEdit()">编辑</button>`}</div>
-          <div class="glist" style="margin-top:8px">${rest.map(toolCellHtml).join("")}</div>`
-              : ""
-          }
+          <div class="glist" style="margin-top:8px">${rest.map(toolCellHtml).join("")}</div>` : ""}
           <div style="font-size:12px;color:var(--sub);margin:14px 4px;line-height:1.7">
             💡 在「编辑」里可以勾选哪些工具固定到「我的」页。
           </div>`;
@@ -24104,7 +25466,6 @@
         let drag = null; // 进入拖拽态：{row, startY}
         let press = null; // 长按判定中：{row, y, timer}
         const rowsOf = () => [...list.querySelectorAll(".db-row")];
-        const HOLD = 250; // 长按阈值 ms
         list.addEventListener(
           "touchstart",
           (e) => {
@@ -24114,17 +25475,20 @@
             const row = e.target.closest(".db-row");
             if (!row) return;
             const y = e.touches[0].clientY;
+            // 起手就给按压态（和全 App 一致），按够 LONG_PRESS_MS 才真正进入拖拽
+            row.classList.add("pressing");
             press = {
               row,
               y,
               timer: setTimeout(() => {
                 // 长按成立 → 进入拖拽态，轻微震动给个反馈（若可用）
                 drag = { row: press.row, startY: press.y };
+                row.classList.remove("pressing");
                 row.classList.add("dragging");
                 row.style.transition = "none";
                 if (navigator.vibrate) navigator.vibrate(10);
                 press = null;
-              }, HOLD),
+              }, LONG_PRESS_MS),
             };
           },
           { passive: true },
@@ -24137,6 +25501,7 @@
             if (!drag && press) {
               if (Math.abs(y - press.y) > 10) {
                 clearTimeout(press.timer);
+                press.row.classList.remove("pressing");
                 press = null;
               }
               return;
@@ -24159,19 +25524,23 @@
                 : 0;
             const step = drag.row.offsetHeight + gap;
             const r = drag.row.getBoundingClientRect();
-            // 越过下一行的中线 → 交换到它后面；基准 startY 平移一个步长，视觉连续不跳
+            // 越过下一行的中线 → 交换到它后面。
+            // 交换后这一行在文档流里的自然位置变了（下移/上移一个步长），
+            // 必须把 startY 往「同一方向」挪一个步长，让 translateY 相应减/增，
+            // 视觉位置才不会跳。注意方向：DOM 下移 → startY 也要 +step，
+            // 写成 -= 的话补偿量会变成叠加，拖一格会直接窜到列表末尾。
             if (dy > 0 && idx < rows.length - 1) {
               const n = rows[idx + 1].getBoundingClientRect();
               if (r.bottom > n.top + n.height / 2) {
                 rows[idx + 1].after(drag.row);
-                drag.startY -= step;
+                drag.startY += step;
                 drag.row.style.transform = `translateY(${y - drag.startY}px)`;
               }
             } else if (dy < 0 && idx > 0) {
               const p = rows[idx - 1].getBoundingClientRect();
               if (r.top < p.top + p.height / 2) {
                 rows[idx - 1].before(drag.row);
-                drag.startY += step;
+                drag.startY -= step;
                 drag.row.style.transform = `translateY(${y - drag.startY}px)`;
               }
             }
@@ -24181,6 +25550,7 @@
         const finish = (persist) => {
           if (press) {
             clearTimeout(press.timer);
+            press.row.classList.remove("pressing");
             press = null;
           }
           if (!drag) return;
@@ -24188,7 +25558,12 @@
           drag = null;
           row.style.transition = "transform 0.2s";
           row.style.transform = "";
-          setTimeout(() => (row.style.transition = ""), 220);
+          // 松手后必须摘掉 dragging：它带投影，不摘的话排完序那一行还浮着阴影
+          row.classList.remove("dragging");
+          setTimeout(() => {
+            row.style.transition = "";
+            row.classList.remove("dragging");
+          }, 220);
           if (persist && onDrop) onDrop();
         };
         list.addEventListener("touchend", () => finish(true));
@@ -24201,10 +25576,7 @@
           const draw = () => {
             const pin = pinnedTools();
             const rest = unpinnedTools();
-            const row = (
-              c,
-              draggable,
-            ) => `<div class="db-row" data-id="${c.id}">
+            const row = (c, draggable) => `<div class="db-row" data-id="${c.id}">
             <span class="db-ic">${c.ic}</span><span class="db-nm">${c.t}</span>
             <button class="switch ${draggable ? "on" : ""}" data-tg="${c.id}"></button></div>`;
             el.innerHTML = `<div class="db-hd first">已固定到「我的」页</div>
@@ -24241,6 +25613,185 @@
           };
           draw();
         });
+      }
+
+      /* —— 周年倒计时：返回 {days: 距下次周年天数, nth: 第几周年} —— */
+      function annivInfo() {
+        const C = DB.couple;
+        if (!C.loveStart) return null;
+        const s = new Date(C.loveStart + "T00:00:00");
+        const now = new Date();
+        let a = new Date(now.getFullYear(), s.getMonth(), s.getDate());
+        if (a <= now)
+          a = new Date(now.getFullYear() + 1, s.getMonth(), s.getDate());
+        return {
+          days: Math.floor((a - now) / 864e5),
+          nth: a.getFullYear() - s.getFullYear(),
+        };
+      }
+
+      /* —— 资料卡底部三格：显示什么可以自己定 ——
+         存 DB.coupleStat（三个 key），默认 周年 / 恋爱起始 / 生日倒计时。 */
+      const COUPLE_STAT_KEYS = [
+        "anniv",
+        "loveDays",
+        "loveStart",
+        "bday",
+        "ageMe",
+        "ageTa",
+      ];
+      const COUPLE_STAT_ICON = {
+        anniv: "💍",
+        loveDays: "❤️",
+        loveStart: "🗓️",
+        bday: "🎁",
+        ageMe: "🧑",
+        ageTa: "👧",
+      };
+      // 名字可能很长（「宝贝儿李奕蒙」），格子只有三分之一宽，超出 4 字就截断
+      const cpShortName = (s) => {
+        s = String(s || "TA");
+        return s.length > 4 ? s.slice(0, 4) + "…" : s;
+      };
+      function coupleStatDefs() {
+        const C = DB.couple;
+        const ai = annivInfo();
+        const md = [C.me, C.partner]
+          .map((p) =>
+            p.birthday ? { p, n: getAgeDetail(p.birthday).daysToBirthday } : null,
+          )
+          .filter(Boolean)
+          .sort((a, b) => a.n - b.n)[0];
+        const ageOf = (p) => (p.birthday ? getAgeDetail(p.birthday).years : null);
+        return {
+          anniv: {
+            num: ai ? ai.days + "天" : "—",
+            label: ai ? `距离${ai.nth}周年` : "距离周年",
+          },
+          loveDays: {
+            num: C.loveStart ? loveDays() + "天" : "—",
+            label: relNow().together ? "已在一起" : "累计在一起",
+          },
+          loveStart: {
+            num: C.loveStart ? C.loveStart.replace(/-/g, ".") : "—",
+            label: "恋爱起始",
+          },
+          bday: {
+            num: md ? md.n + "天" : "—",
+            label: `${cpShortName(md ? md.p.name || "TA" : "TA")}生日倒计时`,
+          },
+          ageMe: {
+            num: ageOf(C.me) !== null ? ageOf(C.me) + "岁" : "—",
+            label: `${cpShortName(C.me.name || "我")}的年龄`,
+          },
+          ageTa: {
+            num: ageOf(C.partner) !== null ? ageOf(C.partner) + "岁" : "—",
+            label: `${cpShortName(C.partner.name || "TA")}的年龄`,
+          },
+        };
+      }
+      function coupleStatKeys() {
+        const k = DB.coupleStat;
+        if (
+          Array.isArray(k) &&
+          k.length === 3 &&
+          k.every((x) => COUPLE_STAT_KEYS.includes(x))
+        )
+          return k.slice();
+        return ["anniv", "loveStart", "bday"];
+      }
+      // 三格内容编辑器：先选格子，再选这格显示什么
+      function coupleStatEdit() {
+        openSub("自定义资料数据", (el) => {
+          const defs = coupleStatDefs();
+          el.innerHTML = `<div class="db-hd first">资料卡底部三格</div>
+            <div class="db-tip">点任意一格换成你想看的数据（生日 / 年龄 / 恋爱天数…）</div>
+            <div class="db-card">${coupleStatKeys()
+              .map(
+                (k, i) => `<div class="db-row" data-slot="${i}">
+              <span class="db-ic">${COUPLE_STAT_ICON[k]}</span>
+              <span class="db-nm">第 ${i + 1} 格 · ${defs[k].label}</span>
+              <span style="font-size:13px;color:var(--sub)">${defs[k].num}</span>
+              <span class="arr">›</span></div>`,
+              )
+              .join("")}</div>`;
+          el.querySelectorAll("[data-slot]").forEach(
+            (r) => (r.onclick = () => pickCoupleStat(+r.dataset.slot)),
+          );
+        });
+      }
+      function pickCoupleStat(slot) {
+        openSub("选择显示内容", (el) => {
+          const defs = coupleStatDefs();
+          const keys = coupleStatKeys();
+          el.innerHTML = `<div class="db-tip" style="padding:4px 2px 10px">为「第 ${slot + 1} 格」选择显示内容</div>
+            <div class="db-card">${COUPLE_STAT_KEYS.map(
+              (k) => `<div class="db-row" data-k="${k}">
+              <span class="db-ic">${COUPLE_STAT_ICON[k]}</span>
+              <span class="db-nm">${defs[k].label}</span>
+              <span style="font-size:13px;color:var(--sub)">${defs[k].num}</span>
+              ${keys[slot] === k ? '<span style="color:var(--primary);font-weight:700">✓</span>' : ""}</div>`,
+            ).join("")}</div>`;
+          el.querySelectorAll("[data-k]").forEach(
+            (r) =>
+              (r.onclick = () => {
+                if (el.dataset.lock === "1") return; // 忽略幽灵点击
+                const arr = coupleStatKeys();
+                arr[slot] = r.dataset.k;
+                DB.coupleStat = arr;
+                save();
+                closeSub(true); // 关掉二级页并重绘「我的」，立刻看到新排布
+              }),
+          );
+          // 长按是由 touch 触发的，touchend 之后浏览器还会补一个 click。
+          // 那一击会「穿透」到刚渲染出来的这一页，命中同坐标的第一项并直接选中。
+          // 开页头 350ms 内不接受点击，闪过后再正常响应。
+          el.dataset.lock = "1";
+          setTimeout(() => (el.dataset.lock = "0"), 350);
+        });
+      }
+
+      /* 年度进度卡：一年过了多少 + 12 根月份刻度条。
+         以前挂在首页 Hero 里，把「早安 / 恋爱计时」那张卡撑得头重脚轻；
+         它属于「偶尔瞄一眼」的信息，搬到「我的」页做成独立卡片更合适。 */
+      function yearProgressHtml() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth() + 1;
+        const day = now.getDate();
+        const dayOfYear = Math.floor((now - new Date(year, 0, 0)) / 864e5);
+        const totalDays =
+          (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0 ? 366 : 365;
+        const pct = Math.round((dayOfYear / totalDays) * 100);
+        const leftDays = totalDays - dayOfYear;
+        /* 一个月一条，共 12 条：
+           - 已过的月份：满格实心红
+           - 当前月：按「本月已过天数比例」填充，未填部分留浅灰
+           - 未到的月份：浅灰
+           月份数字只标「当前月」。
+           每格实际只有 (326-11×3)/12 ≈ 24px，10.5px 的「100%」宽约 27px，
+           12 格全标必然糊成一坨；而「红=已过 / 浅=未到」本身已经说清进度，
+           真正需要读出来的只有「我在第几个月、过了多少」。 */
+        const bars = Array.from({ length: 12 }, (_, i) => {
+          const m = i + 1;
+          const dim = new Date(year, m, 0).getDate();
+          const isCur = m === month;
+          const passed = m < month;
+          // 当前月按日折算，其余只在「已过」时算满
+          const w = isCur ? Math.min(100, Math.round((day / dim) * 100)) : passed ? 100 : 0;
+          return `<span class="yp-col ${passed || isCur ? "past" : ""} ${isCur ? "cur" : ""}">
+            <span class="yp-m ${passed ? "full" : isCur ? "cur" : ""}" style="--w:${w}%"></span>
+            <span class="yp-mp">${isCur ? w + "%" : ""}</span>
+          </span>`;
+        }).join("");
+        return `<div class="card year-card" id="yearCard">
+          <div class="yp-top">
+            <span class="yp-year">${year} 年进度</span>
+            <span class="yp-pct">${pct}<i>%</i></span>
+          </div>
+          <div class="yp-months">${bars}</div>
+          <div class="yp-foot">本月第 ${day} 天 · 今年还剩 ${leftDays} 天</div>
+        </div>`;
       }
 
       function rMine() {
@@ -24313,7 +25864,6 @@
         <div class="card couple-profile" onclick="profileEdit()" style="cursor:pointer;">
           <div class="cp-header">
             <span class="cp-title">👫 情侣资料</span>
-            <span class="cp-together">${C.loveStart ? (relS.together ? "💞 已在一起" : "💔 已分开") : "未设置恋爱日"}</span>
           </div>
           <div class="cp-hero">
             <div class="cp-hside">
@@ -24330,15 +25880,27 @@
               <div class="cp-name">${taB.name}</div>
             </div>
           </div>
-          <!-- 补上三格关键数据，省得每次都要点进去才知道。
-               注意第三格不是详情页那格的「已在一起」：中间那颗心已经写着
-               「800 天 在一起」，上下出现同一个数字是纯重复。换成还没展示过的生日倒计时。 -->
-          <div class="cp-footer">
-            <div class="cp-f-item"><span class="cp-f-num">${nextAnniversary !== null ? nextAnniversary + "天" : "—"}</span><span class="cp-f-label">距离周年</span></div>
-            <div class="cp-f-item"><span class="cp-f-num">${C.loveStart ? C.loveStart.replace(/-/g, ".") : "—"}</span><span class="cp-f-label">恋爱起始</span></div>
-            <div class="cp-f-item"><span class="cp-f-num">${md ? md.n + "天" : "—"}</span><span class="cp-f-label">生日倒计时</span></div>
+          <!-- 关键数据改为「两行两列」信息块，不再是三格挤一行。
+               三格平分 326px 时每格只有 ~102px，而「距离1周年」这类标签
+               在 11px 下宽约 55px、数字「364天」又要占 ~44px，
+               数字和标签必须共用极窄的横向空间，视觉上就是「糊成一片」。
+               改成 2 列后每格 ~155px，数字和标签都能舒展地左对齐排布。 -->
+          <div class="cp-stats">
+            ${(() => {
+              const d = coupleStatDefs();
+              return coupleStatKeys()
+                .map(
+                  (k, i) => `<div class="cp-stat" data-slot="${i}">
+                    <span class="cp-s-num">${d[k].num}</span>
+                    <span class="cp-s-label">${d[k].label}</span>
+                  </div>`,
+                )
+                .join("");
+            })()}
           </div>
         </div>
+        <!-- 年度进度：从首页 Hero 搬过来的独立卡片 -->
+        ${yearProgressHtml()}
         <button class="mini-row" style="margin-top:12px" onclick="coupleProfilePage()">
           <span class="mr-ic">👫</span>
           <span class="mr-main">
@@ -24399,7 +25961,9 @@
           <div class="mz-hd"><span class="mz-t">🧰 常用工具</span>
             <button class="sec-more" onclick="toolsEdit()">编辑</button></div>
           <div class="glist">
-            ${pinnedTools().map(toolCellHtml).join("")}
+            ${pinnedTools()
+              .map(toolCellHtml)
+              .join("")}
             <button class="cell" style="width:100%;text-align:left" onclick="toolsPage()">
               <span class="ic">🧩</span><span class="tt">更多工具</span>
               <span style="font-size:13px;color:var(--sub);margin-left:auto">${unpinnedTools().length} 个</span>
@@ -24407,18 +25971,23 @@
           </div>
         </div>
 
-        <!-- ============ 分区 ④：系统 ============ -->
-        <div class="mz">
-          <div class="mz-hd"><span class="mz-t">⚙️ 系统</span></div>
-          <div class="glist">
+        <!-- 设置卡片：直接接在常用工具后面，不再套一个「⚙️ 系统」分区标题 -->
+        <div class="glist" style="margin-top:12px">
           <button class="cell" style="width:100%;text-align:left" onclick="settingsPage()">
             <span class="ic">⚙️</span><span class="tt">设置</span><span class="arr">›</span></button>
-          </div>
         </div>
         <div style="text-align:center;font-size:11px;color:var(--sub);margin-top:20px">💕 情侣全记录 V2.0 · 纯离线 · 数据仅存本机</div>`;
         p.querySelectorAll("[data-mi]").forEach(
           (b) => (b.onclick = () => achTap(ACH_VIEW[+b.dataset.mi])),
         );
+        // 数据格：长按（300ms，全站统一）选这一格显示什么
+        p.querySelectorAll(".cp-stat[data-slot], .cp-f-item[data-slot]").forEach((it) => bindLongPressSel(it));
+      }
+
+      // 资料卡三格：长按换这一格显示什么。直接复用统一手势，
+      // 阈值/取消/防穿透全站一致，这里只负责「触发后做什么」。
+      function bindLongPressSel(el) {
+        longPress(el, () => pickCoupleStat(+el.dataset.slot));
       }
 
       /* ================================================================
@@ -24435,12 +26004,16 @@
             const capsules = DB.timeCapsules || [];
             const capRows = capsules
               .map((c) => {
-                const days = dayDiff(c.date, today());
+                // 双保险：load() 已归一化过，这里再兜一次，
+                // 保证任何来源的胶囊都不会渲染出 NaN
+                const cd = c.date || today();
+                const raw = dayDiff(cd, today());
+                const days = Number.isFinite(raw) ? raw : 0;
                 return `<button class="capsule-card" onclick="capsuleDetail('${c.id}')">
                   <span class="cc-ic">⏳</span>
                   <span class="cc-main">
-                    <span class="cc-name">${esc(c.name)}</span>
-                    <span class="cc-sub">${fmtCN(c.date)} · 距下次还有 ${Math.max(0, 365 - (days % 365))} 天</span>
+                    <span class="cc-name">${esc(c.name || "未命名胶囊")}</span>
+                    <span class="cc-sub">${fmtCN(cd)} · 距下次还有 ${Math.max(0, 365 - (((days % 365) + 365) % 365))} 天</span>
                   </span>
                   <span class="cc-days"><span class="num">${Math.max(0, days)}</span><span class="unit">天</span></span>
                   <span class="cc-arr">›</span></button>`;
@@ -24541,22 +26114,37 @@
       function capsuleDetail(id) {
         const c = DB.timeCapsules.find((x) => x.id === id);
         if (!c) return;
-        const days = dayDiff(c.date, today());
+        const cd = c.date || today();
+        const raw = dayDiff(cd, today());
+        const days = Number.isFinite(raw) ? raw : 0;
         openSub("时间胶囊详情", (el) => {
           el.innerHTML = `
           <div class="card capsule-detail">
-            <div class="cd-row"><span class="cd-label">🏷️名称</span><span class="cd-value">${esc(c.name)}</span></div>
-            <div class="cd-row"><span class="cd-label">📅起始日期</span><span class="cd-value">${fmtCN(c.date)} ${weekday(c.date)}</span></div>
+            <div class="cd-row"><span class="cd-label">🏷️名称</span><span class="cd-value">${esc(c.name || "未命名胶囊")}</span></div>
+            <div class="cd-row"><span class="cd-label">📅起始日期</span><span class="cd-value">${fmtCN(cd)} ${weekday(cd)}</span></div>
             <div class="cd-row"><span class="cd-label">⌛已过天数</span><span class="cd-value"><span class="big">${Math.max(0, days)}</span> 天</span></div>
             <div class="cd-row"><span class="cd-label">💡状态</span><span class="cd-value">${days >= 0 ? "🌱 进行中" : "⏳ 还未到来"}</span></div>
             <div class="cd-row"><span class="cd-label">🔖创建时间</span><span class="cd-value">${c.createdAt ? fmtCN(c.createdAt.slice(0, 10)) : "—"}</span></div>
           </div>
           <div style="display:flex;gap:10px;margin-top:14px;">
             
-            <button class="btn danger" style="flex:1" onclick="confirmBox('删除此时间胶囊？',()=>{DB.timeCapsules=DB.timeCapsules.filter(x=>x.id!=='${id}');save();closeSub();toast('已删除')})">删除</button>
+            <button class="btn danger" style="flex:1" onclick="capsuleDel('${id}')">删除</button>
             <button class="btn ghost" style="flex:1" onclick="capsuleEdit('${id}')">编辑</button>
           </div>`;
         });
+      }
+
+      // 时间胶囊删除：直接删 + 5 秒撤销（不再弹二次确认）
+      function capsuleDel(id) {
+        delWithUndo(
+          () => {
+            DB.timeCapsules = DB.timeCapsules.filter((x) => x.id !== id);
+          },
+          () => {
+            if (subStack.length) closeSub();
+            else renderTab();
+          },
+        );
       }
 
       function capsuleEdit(id) {
@@ -24609,6 +26197,8 @@
               title: "🎨 外观",
               items: [
                 ["🎨", "外观设置", "", "appearancePage()"],
+                ["🧭", "底部导航样式", "", "tabStylePage()"],
+                ["📐", "顶部导航样式", "", "headerStylePage()"],
                 ["🖌️", "默认卡片颜色", "", "defaultCardColorPage()"],
                 ["💬", "每日情话", "", "quotePage()"],
                 ["✨", "自定义开屏图文", "", "splashPage()"],
@@ -24840,6 +26430,78 @@
               render();
             });
           };
+          // 底部导航样式：胶囊玻璃（默认）/ 极简 —— 后者去掉描边高光与选中胶囊
+          window.tabStylePage = () => {
+            openSub("底部导航样式", (el2) => {
+              const cur = DB.settings.tabStyle || "glass";
+              const opts = [
+                ["glass", "💊 胶囊玻璃", "悬浮胶囊 + 半透明毛玻璃 + 选中高亮"],
+                ["plain", "➖ 极简线条", "贴底一条细线，选中只留主题色短线"],
+              ];
+              el2.innerHTML = `<div class="card">${opts
+                .map(
+                  ([v, t, d]) => `<div class="db-row" data-ts="${v}">
+                  <span class="db-ic">${v === "glass" ? "💊" : "➖"}</span>
+                  <span class="db-nm">${t}<div style="font-size:12px;color:var(--sub);font-weight:400;margin-top:2px">${d}</div></span>
+                  ${cur === v ? '<span style="color:var(--primary);font-weight:700">✓</span>' : ""}</div>`,
+                )
+                .join("")}</div>
+              <div style="font-size:12px;color:var(--sub);margin:12px 4px;line-height:1.7">
+                💡 极简样式更安静，适合想让内容更突出的时候。
+              </div>`;
+              el2.querySelectorAll("[data-ts]").forEach(
+                (r) =>
+                  (r.onclick = () => {
+                    DB.settings.tabStyle = r.dataset.ts;
+                    save();
+                    applyTabStyle();
+                    paintSub();
+                    toast("已切换为" + (r.dataset.ts === "glass" ? "胶囊玻璃" : "极简线条"));
+                  }),
+              );
+            });
+          };
+          // 把样式落到 #tabBar 上（启动与切换时都要调）
+          window.applyTabStyle = () => {
+            const bar = document.getElementById("tabBar");
+            if (!bar) return;
+            bar.classList.toggle(
+              "plain",
+              (DB.settings && DB.settings.tabStyle) === "plain",
+            );
+          };
+          // 四个主页面的顶部导航：极简一行（只留居中页面名）/ 经典（大标题+副标题）
+          window.headerStylePage = () => {
+            openSub("顶部导航样式", (el2) => {
+              const cur = DB.settings.headerStyle || "slim";
+              const opts = [
+                ["slim", "➖ 极简一行", "只留居中的页面名，顶栏压到最矮"],
+                ["classic", "📝 经典", "大标题 + 下面一行日期/提示语"],
+              ];
+              el2.innerHTML = `<div class="card">${opts
+                .map(
+                  ([v, t, d]) => `<div class="db-row" data-hs="${v}">
+                  <span class="db-ic">${v === "slim" ? "➖" : "📝"}</span>
+                  <span class="db-nm">${t}<div style="font-size:12px;color:var(--sub);font-weight:400;margin-top:2px">${d}</div></span>
+                  ${cur === v ? '<span style="color:var(--primary);font-weight:700">✓</span>' : ""}</div>`,
+                )
+                .join("")}</div>
+              <div style="font-size:12px;color:var(--sub);margin:12px 4px;line-height:1.7">
+                💡 只影响首页 / 记录 / 总览 / 我的 四个主页面，二级页保持标准返回栏。
+              </div>`;
+              el2.querySelectorAll("[data-hs]").forEach(
+                (r) =>
+                  (r.onclick = () => {
+                    DB.settings.headerStyle = r.dataset.hs;
+                    save();
+                    renderTab(); // 重设顶栏并重算页面顶部留白
+                    paintSub();
+                    toast("已切换为" + (r.dataset.hs === "slim" ? "极简一行" : "经典"));
+                  }),
+              );
+            });
+          };
+
           // 记录下默认子页函数注册（供 headers 编辑按钮引用）
           window.defaultRecordTypePage = () => {
             openSub("默认记录类型", (el2) => {
@@ -25046,12 +26708,12 @@
             el.querySelectorAll("[data-del]").forEach((b) => {
               b.onclick = () => {
                 const id = b.dataset.del;
-                confirmBox("确定删除这条记录？", () => {
-                  C.relEvents = (C.relEvents || []).filter((x) => x.id !== id);
-                  save();
-                  toast("已删除");
-                  draw();
-                });
+                delWithUndo(
+                  () => {
+                    C.relEvents = (C.relEvents || []).filter((x) => x.id !== id);
+                  },
+                  () => paintSub(),
+                );
               };
             });
           };
@@ -25460,10 +27122,7 @@
               icon: "⏳",
               label: "持续",
               value: (r.days || 1) + " 天",
-              sub:
-                fmtCN(r.startDate || r.date) +
-                " → " +
-                fmtCN(r.endDate || r.date),
+              sub: fmtCN(r.startDate || r.date) + " → " + fmtCN(r.endDate || r.date),
             },
             { icon: "🖼️", label: "图片", value: (r.imgs || []).length + " 张" },
             {
@@ -25555,12 +27214,33 @@
 
       function removeImgFromAlbums(img) {
         DB.albums.forEach(
-          (a) => (a.items = a.items.filter((it) => it.img !== img)),
+          (a) => (a.items = (a.items || []).filter((it) => (it.img || it) !== img)),
         );
       }
 
       /* ---------- 普通记录：轻确认 + 撤销 ---------- */
       let undoRec = null;
+
+      /* 通用撤销删除：删之前整份 DB 拍个快照，撤销时整体还原。
+         比「给每种数据单独写恢复逻辑」可靠得多 —— 数组位置、关联字段、
+         相册引用全都一起回来，不会出现「撤销后顺序变了 / 少个字段」。
+         mutate 里只管删，after 负责重绘（撤销时也会再跑一次）。 */
+      function delWithUndo(mutate, after, msg = "已删除") {
+        const snap = JSON.stringify(DB);
+        mutate();
+        save();
+        if (after) after();
+        toastUndo(
+          msg,
+          () => {
+            DB = JSON.parse(snap);
+            save();
+            if (after) after();
+            toast("已撤销");
+          },
+          5000,
+        );
+      }
 
       function commitDelete() {
         if (!undoRec) return;
@@ -25583,21 +27263,59 @@
         drawRecList();
       }
 
-      function toastUndo(msg, onUndo, duration = 5000) {
+      // 带「撤销」按钮的 toast。timer 自己持有，不再挂在 undoRec 上 ——
+      // undoRec 是「记录删除」专用的，通用撤销（delWithUndo）走的是 DB 快照，
+      // 那时 undoRec 是 null，往它上面写 timer 会直接抛错。
+      /* 带操作按钮的 toast（可多个）。
+         toastUndo 是「删除撤销」专用（单按钮 + 过期收尾逻辑），
+         这里另开一个通用的：随手记完成后要同时给「补充」和「改分类」两个出口。 */
+      function toastAct(msg, actions, duration = 4200) {
+        const t = $("#toast");
+        const list = (actions || []).filter(Boolean);
+        t.classList.add("undo");
+        t.innerHTML =
+          `<span>${esc(msg)}</span>` +
+          list
+            .map(
+              (a, i) =>
+                `<button class="toast-act" data-ai="${i}">${esc(a.label)}</button>`,
+            )
+            .join("");
+        let timer = null;
+        const done = () => {
+          clearTimeout(timer);
+          t.classList.remove("on", "undo");
+        };
+        t.querySelectorAll(".toast-act").forEach((btn) => {
+          btn.onclick = (e) => {
+            e.stopPropagation();
+            done();
+            const a = list[+btn.dataset.ai];
+            if (a && a.fn) a.fn();
+          };
+        });
+        t.classList.add("on");
+        timer = setTimeout(done, duration);
+      }
+
+      function toastUndo(msg, onUndo, duration = 5000, onCommit) {
         const t = $("#toast");
         if (undoRec && undoRec.timer) clearTimeout(undoRec.timer);
         t.classList.add("undo");
         t.innerHTML = `<span>${esc(msg)}</span><button class="toast-act">撤销</button>`;
+        let timer = null;
         const btn = t.querySelector(".toast-act");
         btn.onclick = (e) => {
           e.stopPropagation();
+          clearTimeout(timer);
           t.classList.remove("on", "undo");
           onUndo();
         };
         t.classList.add("on");
-        undoRec.timer = setTimeout(() => {
+        timer = setTimeout(() => {
           t.classList.remove("on", "undo");
-          commitDelete();
+          if (onCommit) onCommit();
+          else commitDelete(); // 记录删除专用收尾（undoRec 为空时内部会直接返回）
         }, duration);
       }
 
@@ -25868,25 +27586,31 @@
           <div class="sec" id="calDay" style="margin-top:14px"></div>`;
           // 本月概览：把当月所有事件按类计数，垫在日历下面，
           // 不然选中日没事件时整页就一张日历、下面大片空白。
+          // 概览片统一用「圆点 + 名称」，和下方图例同一套颜色：
+          // 之前这里用 🔥/🩸/🛡️ 表情，图例却用色点，两套标记打架。
+          // 排卵日不再单独成条（它就是排卵期里的一天），计数并入排卵期。
           const CAT_META = [
-            ["anniv", "💝", "纪念/生日"],
-            ["checkin", "✅", "打卡"],
-            ["happy", "💖", "快乐"],
-            ["travel", "🧳", "旅行"],
-            ["capsule", "💊", "时间胶囊"],
-            ["period", "🩸", "经期"],
-            ["pred", "🕊️", "预测经期"],
-            ["fertile", "🔥", "排卵期"],
-            ["ovulation", "🥚", "排卵日"],
-            ["safe", "🛡️", "安全期"],
+            ["anniv", "#FF2D55", "纪念/生日"],
+            ["checkin", "#30B0C7", "打卡"],
+            ["happy", "#F7B500", "快乐"],
+            ["travel", "#30B0C7", "旅行"],
+            ["capsule", "#AF52DE", "时间胶囊"],
+            ["period", "#34C759", "经期"],
+            ["pred", "#7FD89A", "预测经期"],
+            ["fertile", "#FF9500", "排卵期"],
+            ["safe", "#3478F6", "安全期"],
           ];
           const catCnt = {};
           for (const arr of Object.values(evs))
             for (const e of arr) catCnt[e.cat] = (catCnt[e.cat] || 0) + 1;
+          if (catCnt.ovulation) {
+            catCnt.fertile = (catCnt.fertile || 0) + catCnt.ovulation;
+            delete catCnt.ovulation;
+          }
           const chips = CAT_META.filter(([c]) => catCnt[c])
             .map(
-              ([c, ic, nm]) =>
-                `<span class="cal-sum-chip">${ic} ${nm} <b>${catCnt[c]}</b></span>`,
+              ([c, color, nm]) =>
+                `<span class="cal-sum-chip"><i style="background:${color}"></i>${nm} <b>${catCnt[c]}</b></span>`,
             )
             .join("");
           html += `<div class="sec-hd" style="margin:18px 2px 0"><span class="sec-t">📊 ${m} 月概览</span></div>
@@ -26088,7 +27812,11 @@
                   .slice(0, 30)
                   .map((d) => {
                     const c = DB.checkin.find((x) => x.date === d);
-                    return `<div class="card hairline" style="display:flex;align-items:center;gap:10px;padding:12px 14px;margin-bottom:8px">
+                    /* 卡片间距统一走 --card-gap（12px）。
+                       原来是写死的 margin-bottom:8px，和全站其它页面的 12px 对不上，
+                       打卡列表看起来就比别处挤。改用相邻兄弟规则可以自动
+                       跳过第一张（它紧跟小标题，不需要额外上边距）。 */
+                    return `<div class="card hairline" style="display:flex;align-items:center;gap:10px;padding:12px 14px">
               <span>✅</span><div style="flex:1"><div style="font-size:14px">${fmtCN(d)}</div>
               ${c.text ? `<div style="font-size:12px;color:var(--sub)">${esc(c.text)}</div>` : ""}</div>
               <button class="btn sm danger" data-dc="${d}">删除</button></div>`;
@@ -26193,8 +27921,8 @@
               .map(
                 (a) => `<div data-ab="${a.id}" style="cursor:pointer">
               <div style="aspect-ratio:1;border-radius:10px;overflow:hidden;background:#F0F1F3;display:flex;align-items:center;justify-content:center;font-size:30px">
-                ${a.items[0] ? `<img src="${a.items[0].img}" style="width:100%;height:100%;object-fit:cover">` : "🖼️"}</div>
-              <div style="font-size:13px;margin-top:6px">${esc(a.name)}<span style="color:var(--sub)"> · ${a.items.length}张</span></div></div>`,
+                ${(a.items||[])[0] ? `<img src="${(a.items||[])[0].img}" style="width:100%;height:100%;object-fit:cover">` : "🖼️"}</div>
+              <div style="font-size:13px;margin-top:6px">${esc(a.name)}<span style="color:var(--sub)"> · ${(a.items||[]).length}张</span></div></div>`,
               )
               .join("")}</div>`
               : `<div style="text-align:center;padding:26px 0;color:var(--sub);font-size:13px">🗂️ 还没有相册分组<br>新建相册后可手动归类所有图片</div>`
@@ -26242,18 +27970,18 @@
           );
           const draw = () => {
             el.innerHTML = `<div class="sec-hd" style="margin-top:8px"><span class="sec-t">${esc(a.name)}</span>
-            <span style="font-size:12px;color:var(--sub)">${a.items.length} 张</span></div>
+            <span style="font-size:12px;color:var(--sub)">${(a.items||[]).length} 张</span></div>
           <div style="display:flex;gap:10px;margin-bottom:12px">
             <button class="btn plain" style="flex:1" id="abAddRec">从记录添加</button>
             <button class="btn ghost" style="flex:1" id="abAddUp">上传图片</button>
             <button class="btn danger" id="abDel">删除相册</button></div>
-          ${a.items.length ? `<div class="abm" style="background:var(--card);box-shadow:var(--shadow)">${a.items.map((it, i) => `<img src="${it.img}" data-i="${i}">`).join("")}</div>` : empty("🖼️", "相册还是空的", "从记录中挑选图片归类到这里", "从记录添加", "albumPick()")}`;
+          ${(a.items||[]).length ? `<div class="abm" style="background:var(--card);box-shadow:var(--shadow)">${(a.items||[]).map((it, i) => `<img src="${it.img}" data-i="${i}">`).join("")}</div>` : empty("🖼️", "相册还是空的", "从记录中挑选图片归类到这里", "从记录添加", "albumPick()")}`;
             el.querySelectorAll(".abm img").forEach(
               (im) =>
                 (im.onclick = () => {
                   const i = +im.dataset.i;
                   lightbox(
-                    a.items.map((x) => x.img),
+                    (a.items||[]).map((x) => x.img),
                     i,
                     {
                       onDelete: (j) => {
@@ -26274,13 +28002,18 @@
                 paintSub();
               });
             $("#abDel").onclick = () =>
-              confirmBox("删除相册（不影响原始记录）", () => {
-                DB.albums = DB.albums.filter((x) => x.id !== id);
-                save();
-                closeSub();
-              });
+              delWithUndo(
+                () => {
+                  DB.albums = DB.albums.filter((x) => x.id !== id);
+                },
+                () => {
+                  if (subStack.length) closeSub();
+                  else renderTab();
+                },
+                "相册已删除",
+              );
             window.albumPick = () => {
-              const sel = new Set(a.items.map((it) => it.rid + ":" + it.img));
+              const sel = new Set((a.items || []).map((it) => it.rid + ":" + it.img));
               const m = modal({
                 title: "选择图片加入「" + esc(a.name) + "」",
                 body: `<div class="abm" id="pkGrid" style="max-height:340px;overflow-y:auto;background:#F5F6F8;border-radius:8px">
@@ -26872,16 +28605,15 @@
               closeSub();
             });
             $("#ubBind")?.addEventListener("click", () =>
-              confirmBox(
-                "解绑后双方数据各自独立保留，确定解绑？",
+              delWithUndo(
                 () => {
                   C.paired = false;
-                  save();
+                },
+                () => {
                   paintSub();
                   closeSub();
-                  toast("已解绑");
                 },
-                "解绑确认",
+                "已解绑",
               ),
             );
           };
@@ -27234,20 +28966,9 @@
         </div>
         <div style="font-size:12px;color:var(--sub);margin:14px 4px;line-height:1.7;font-weight:500">
           ⚠️ 清除浏览器缓存、无痕模式或更换设备会导致本地数据丢失，请定期导出备份。</div>`;
-            $("#dExp").onclick = () => {
-              const blob = new Blob([JSON.stringify(DB)], {
-                type: "application/json",
-              });
-              const url = URL.createObjectURL(blob);
-              const a = document.createElement("a");
-              a.href = url;
-              a.download = "love_backup_" + today() + ".json";
-              document.body.appendChild(a);
-              a.click();
-              a.remove();
-              setTimeout(() => URL.revokeObjectURL(url), 500);
-              toast("已导出备份文件");
-            };
+            // 复用首页提醒卡那一份导出实现：导出成功后会记下 lastBackup，
+            // 首页的提醒卡因此自动消失，不会出现「刚备份完还在提醒」
+            $("#dExp").onclick = () => doExportBackup();
             $("#dImp").onclick = () => {
               const inp = document.createElement("input");
               inp.type = "file";
@@ -27335,55 +29056,21 @@
         });
       }
 
+      const varPrimary = (key) =>
+        !key
+          ? "var(--primary)"
+          : key === "accent"
+            ? "var(--accent)"
+            : "var(--ok)";
+
       function aboutPage() {
         openSub("关于本产品", (el) => {
-          // 版本记录（新版本在上），点条目展开当次更新内容
-          const VERSIONS = [
-            {
-              v: "2.0 完整版",
-              date: "2026-09-12",
-              cur: true,
-              items: [
-                "全新视觉：吸顶导航、左滑返回、深色模式",
-                "常用工具自定义固定与长按拖拽排序",
-                "情侣日历：纪念日、经期智能分析与预测",
-                "时间胶囊、成就墙与恋爱分体系",
-              ],
-            },
-            {
-              v: "1.4",
-              date: "2026-07-02",
-              items: [
-                "回忆珍藏页：时间胶囊与纪念日聚合展示",
-                "外观自定义：主题色、分割线、卡片圆角",
-              ],
-            },
-            {
-              v: "1.3",
-              date: "2026-05-18",
-              items: ["相册管理与图片滑动切换", "自定义记录类型与标签体系"],
-            },
-            {
-              v: "1.2",
-              date: "2026-03-30",
-              items: [
-                "数据看板与幸福指数，指标可编辑看板",
-                "JSON 导入导出合并，自动去重",
-              ],
-            },
-            {
-              v: "1.0",
-              date: "2026-02-14",
-              items: [
-                "首个版本：快乐记录、旅行足迹、备忘录、打卡",
-                "纯离线运行，全量数据本地存储",
-              ],
-            },
-          ];
-          // 功能亮点：每组一个专属色，颜色即分类
+          // 功能亮点：三组用「主题色 + 两个中性色」，
+          // 原来写死 #FF2D55 / #3478F6 / #34C759，用户换主题色后这里不跟着变，
+          // 整页就只剩这一块是死的。现在第一组吃主题色，另两组走 accent / ok。
           const groups = [
             {
-              c: "#FF2D55",
+              c: "",
               t: "💝 记录我们的日子",
               items: [
                 "快乐记录、旅行足迹、相册、时间胶囊",
@@ -27392,7 +29079,7 @@
               ],
             },
             {
-              c: "#3478F6",
+              c: "accent",
               t: "📊 懂你们的数字",
               items: [
                 "恋爱计时、年龄计算器、早上好卡片",
@@ -27401,7 +29088,7 @@
               ],
             },
             {
-              c: "#34C759",
+              c: "ok",
               t: "🔒 数据只属于你们",
               items: [
                 "纯离线运行，无后端、无联网依赖",
@@ -27417,27 +29104,24 @@
             <div class="ab-sub">V2.0 完整版 · 纯本地运行 · 无需网络</div>
           </div>
           <div class="about-sec-t">🗓️ 版本记录</div>
-          <div class="card" style="padding:4px 16px">
-            <div class="vtl">
-            ${VERSIONS.map(
-              (r) => `<div class="vtl-item ${r.cur ? "cur" : ""}">
-              <span class="vtl-dot"></span>
-              <div class="vtl-row"><span class="vtl-v">V${r.v}</span>
-              ${r.cur ? '<span class="vtl-tag">当前版本</span>' : ""}
-              <span class="vtl-date">${r.date}</span><span class="vtl-arrow">›</span></div>
-              <div class="vtl-body">${r.items.map((i) => `<div>${i}</div>`).join("")}</div>
-            </div>`,
-            ).join("")}
-            </div>
-          </div>
+          <!-- 每个版本一张卡，卡上只留「版本号 + 更新日期」；
+               具体更新内容点进二级页看 —— 一屏就能扫完所有版本 -->
+          ${versionList().map(
+            (r, i) => `<button class="card vcard slim ${r.cur ? "cur" : ""}" onclick="versionPage(${i})">
+              <span class="vc-v">V${r.v}</span>
+              ${r.cur ? '<span class="vc-tag">当前版本</span>' : ""}
+              <span class="vc-date">${r.date}</span>
+              <span class="vc-arr">›</span>
+            </button>`,
+          ).join("")}
           ${groups
             .map(
               (g) =>
-                `<div class="about-sec-t" style="color:${g.c}">${g.t}</div>
+                `<div class="about-sec-t" style="color:${varPrimary(g.c)}">${g.t}</div>
           <div class="card">${g.items
             .map(
               (f) =>
-                `<div class="about-item"><span class="ai-ck" style="background:${g.c}1A;color:${g.c}">✓</span><span>${f}</span></div>`,
+                `<div class="about-item"><span class="ai-ck" style="background:${varPrimary(g.c)}1A;color:${varPrimary(g.c)}">✓</span><span>${f}</span></div>`,
             )
             .join("")}</div>`,
             )
@@ -27445,12 +29129,88 @@
           <div style="font-size:13px;color:var(--sub);text-align:center;margin:20px 0 8px;line-height:1.8">
             把每一个平凡日子，都过成值得纪念的样子。
           </div>`;
-          // 点版本条目展开 / 收起更新内容
-          el.querySelectorAll(".vtl-item .vtl-row").forEach(
-            (r) =>
-              (r.onclick = () =>
-                r.closest(".vtl-item").classList.toggle("open")),
-          );
+        });
+      }
+
+      /* 版本详情数据 + 二级页。
+         需求：版本列表只看「版本号 + 日期」，点进去才看这一版改了什么。 */
+      function versionList() {
+        return [
+          {
+            v: "2.0 完整版",
+            date: "2026-09-12",
+            cur: true,
+            items: [
+              "全新视觉：吸顶导航、左滑返回、深色模式",
+              "常用工具自定义固定与长按拖拽排序",
+              "情侣日历：纪念日、经期智能分析与预测",
+              "时间胶囊、成就墙与恋爱分体系",
+            ],
+          },
+          {
+            v: "1.4",
+            date: "2026-07-02",
+            items: [
+              "回忆珍藏页：时间胶囊与纪念日聚合展示",
+              "外观自定义：主题色、分割线、卡片圆角",
+            ],
+          },
+          {
+            v: "1.3",
+            date: "2026-05-18",
+            items: [
+              "相册管理与图片滑动切换",
+              "自定义记录类型与标签体系",
+            ],
+          },
+          {
+            v: "1.2",
+            date: "2026-03-30",
+            items: [
+              "数据看板与幸福指数，指标可编辑看板",
+              "JSON 导入导出合并，自动去重",
+            ],
+          },
+          {
+            v: "1.0",
+            date: "2026-02-14",
+            items: [
+              "首个版本：快乐记录、旅行足迹、备忘录、打卡",
+              "纯离线运行，全量数据本地存储",
+            ],
+          },
+        ];
+      }
+
+      function versionPage(i) {
+        const list = versionList();
+        const r = list[i];
+        if (!r) return;
+        openSub("V" + r.v, (el) => {
+          const prev = list[i + 1]; // 列表是新版本在前，下一条更早
+          el.innerHTML = `
+          <div class="card vdetail">
+            <div class="vd-hd">
+              <span class="vd-v">V${r.v}</span>
+              ${r.cur ? '<span class="vc-tag">当前版本</span>' : ""}
+            </div>
+            <div class="vd-date">📅 更新于 ${r.date}</div>
+            <div class="vd-list">${r.items
+              .map((t) => `<div class="vd-item"><i></i><span>${t}</span></div>`)
+              .join("")}</div>
+          </div>
+          ${
+            prev
+              ? `<button class="mini-row" style="margin-top:12px" onclick="closeSub();setTimeout(()=>versionPage(${i + 1}),260)">
+                   <span class="mr-ic">⬅️</span>
+                   <span class="mr-main">
+                     <span class="mr-t">上一版本 V${prev.v}</span>
+                     <span class="mr-d">${prev.date}</span>
+                   </span>
+                   <span class="mr-arr">›</span>
+                 </button>`
+              : ""
+          }`;
         });
       }
 
@@ -27855,6 +29615,29 @@
       ];
 
       /* ---------- 纪念日 ---------- */
+
+      /* 字段兼容：纪念日历史上被写成过 {name}、{text}、{label} 几种形态，
+         而页面只读 m.title —— 老数据因此全部渲染成空白行，
+         只剩日期和倒计时，用户根本不知道那是哪个纪念日。
+         统一在这里归一化一次（写回 DB），后续全站只认 title。 */
+      function msTitle(m) {
+        return (m && (m.title || m.name || m.text || m.label)) || "";
+      }
+      function normalizeMilestones() {
+        if (!Array.isArray(DB.milestones)) DB.milestones = [];
+        DB.milestones = DB.milestones
+          .filter((m) => m && typeof m === "object" && m.date)
+          .map((m) => ({
+            ...m,
+            id: m.id || genId(),
+            title: msTitle(m),
+            icon: m.icon || "📌",
+            repeat: m.repeat === "once" ? "once" : "year",
+          }))
+          .filter((m) => m.title);
+      }
+      normalizeMilestones();
+
       function nearestMilestone() {
         let best = null;
         DB.milestones.forEach((m) => {
@@ -27879,7 +29662,7 @@
         return `<div class="ms-near" onclick="milestonePage()">
           <div class="ms-near-ic">${esc(n.m.icon || "📌")}</div>
           <div class="ms-near-main">
-            <div class="ms-near-title">${esc(n.m.title)}</div>
+            <div class="ms-near-title">${esc(msTitle(n.m))}</div>
             <div class="ms-near-date">${fmtCN(n.date)} · ${weekday(n.date)}${
               n.m.repeat === "year" ? " · 每年" : ""
             }</div>
@@ -27927,7 +29710,7 @@
                         const soon = x.dd <= 7;
                         return `<button class="cell ms-cell" style="width:100%;text-align:left" onclick="milestoneEdit('${x.m.id}')">
                   <span class="ms-ic">${esc(x.m.icon || "📌")}</span>
-                  <span class="tt">${esc(x.m.title)}<div class="desc">${fmtCN(x.date)} · ${
+                  <span class="tt">${esc(msTitle(x.m))}<div class="desc">${fmtCN(x.date)} · ${
                     x.m.repeat === "year" ? "每年" : "仅一次"
                   }</div></span>
                   <span class="ms-cd2 ${soon ? "soon" : ""}">${x.dd}天</span>
@@ -28093,9 +29876,16 @@
         );
         DB.timeCapsules.forEach((c) =>
           arr.push({
-            date: c.date,
+            // 时间胶囊历史上存的是 openAt（开启日）/ ts（创建时间戳），
+            // 并没有 date 字段。这里之前直接取 c.date，导致只要有胶囊，
+            // 打开「时间线」就会在 it.date.slice(0,7) 处整页崩掉
+            // （Cannot read properties of undefined）。三级兜底保证永远有日期串。
+            date:
+              c.date ||
+              c.openAt ||
+              (c.ts ? new Date(c.ts).toISOString().slice(0, 10) : ""),
             icon: "💊",
-            title: "封存时光：" + (c.name || ""),
+            title: "封存时光：" + (c.name || c.title || ""),
             sub: "",
           }),
         );
@@ -28128,14 +29918,18 @@
           }
           const groups = {};
           items.forEach((it) => {
-            const k = it.date.slice(0, 7);
+            // 双保险：即使某条数据来自历史版本、真的缺日期，
+            // 也只是这一条落到「未知时间」分组，而不是整页白屏。
+            const k = (it.date || "").slice(0, 7) || "0000-00";
             (groups[k] = groups[k] || []).push(it);
           });
           const keys = Object.keys(groups).sort().reverse();
           el.innerHTML = keys
             .map((k) => {
               const [y, mo] = k.split("-");
-              return `<div class="sec"><div class="sec-hd"><span class="sec-t">${y}年${+mo}月</span><span class="sec-more">${groups[k].length} 件</span></div>
+              const title =
+                k === "0000-00" ? "未知时间" : `${y}年${+mo}月`;
+              return `<div class="sec"><div class="sec-hd"><span class="sec-t">${title}</span><span class="sec-more">${groups[k].length} 件</span></div>
                 ${groups[k]
                   .map(
                     (it, idx) =>
@@ -28171,14 +29965,38 @@
       }
 
       /* ---------- 愿望清单 ---------- */
+      // 完成数：兼容历史数据里用 title 存文案、用 finished 存状态的情况
       function doneWishes() {
-        return DB.wishes.filter((w) => w.done).length;
+        return (DB.wishes || []).filter(
+          (w) => !!(w && (w.done || w.finished)),
+        ).length;
       }
       function wishPage() {
         openSub("愿望清单", (el) => {
+          /* 字段兼容：早期版本愿望存的是 {title}，后来改成 {text}，
+             但没有统一迁移。结果老数据的愿望在页面上全部渲染成空白
+             （esc(undefined) → 空串），用户看到「已完成 1/2」却看不到任何条目。
+             这里做一次就地归一化，写回 DB，一次修复、永久生效。 */
+          const wText = (w) =>
+            (w && (w.text || w.title || w.name || w.content)) || "";
+          const wDone = (w) => !!(w && (w.done || w.finished));
+          const normWish = () => {
+            if (!Array.isArray(DB.wishes)) DB.wishes = [];
+            DB.wishes = DB.wishes
+              .filter((w) => w && typeof w === "object")
+              .map((w) => ({
+                ...w,
+                id: w.id || genId(),
+                text: wText(w),
+                done: wDone(w),
+                createdAt: w.createdAt || w.ts || today(),
+              }))
+              .filter((w) => w.text);
+          };
+          normWish();
           const draw = () => {
             const total = DB.wishes.length,
-              done = DB.wishes.filter((w) => w.done).length;
+              done = DB.wishes.filter(wDone).length;
             const pct = total ? Math.round((done / total) * 100) : 0;
             el.innerHTML = `
             <div class="wish-add">
@@ -28190,8 +30008,8 @@
               ${
                 DB.wishes.length
                   ? (() => {
-                      const todo = DB.wishes.filter((w) => !w.done);
-                      const done = DB.wishes.filter((w) => w.done);
+                      const todo = DB.wishes.filter((w) => !wDone(w));
+                      const done = DB.wishes.filter(wDone);
                       const block = (arr, title, ic) =>
                         arr.length
                           ? `<div class="sec"><div class="sec-hd"><span class="sec-t">${ic} ${title}</span><span class="sec-more">${arr.length} 项</span></div>${arr
@@ -28199,8 +30017,8 @@
                                 (w) => `<div class="wish-wrap">
                   <div class="wish-del-bg" data-id="${w.id}">删除</div>
                   <div class="wish-row" data-id="${w.id}">
-                  <div class="wish-ck ${w.done ? "on" : ""}">${w.done ? "✓" : ""}</div>
-                  <div class="wish-t ${w.done ? "done" : ""}">${esc(w.text)}</div>
+                  <div class="wish-ck ${wDone(w) ? "on" : ""}">${wDone(w) ? "✓" : ""}</div>
+                  <div class="wish-t ${wDone(w) ? "done" : ""}">${esc(wText(w))}</div>
                 </div></div>`,
                               )
                               .join("")}</div>`
@@ -28243,7 +30061,8 @@
               const id = row.dataset.id;
               row.querySelector(".wish-ck").onclick = () => {
                 const w = DB.wishes.find((x) => x.id === id);
-                w.done = !w.done;
+                if (!w) return;
+                w.done = !wDone(w);
                 save();
                 if (curTab === "home") rHome();
                 draw();
@@ -28264,10 +30083,7 @@
               row.addEventListener(
                 "touchmove",
                 (e) => {
-                  cur = Math.max(
-                    -80,
-                    Math.min(0, base + e.touches[0].clientX - sx),
-                  );
+                  cur = Math.max(-80, Math.min(0, base + e.touches[0].clientX - sx));
                   row.style.transform = `translateX(${cur}px)`;
                 },
                 { passive: true },
@@ -28306,6 +30122,7 @@
       (function init() {
         applyTheme();
         checkAchAll();
+        if (window.applyTabStyle) window.applyTabStyle();
         const d = new Date();
         setHeader({
           big: "首页",
