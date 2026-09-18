@@ -1789,6 +1789,15 @@
         overflow-x: auto;
         scroll-snap-type: x mandatory;
         -webkit-overflow-scrolling: touch;
+        /* 滑动到左右尽头时不要把「剩余的手势」传给父级：
+           否则在 iOS 上会接着触发卡片的左滑删除，或触发页面的滑动返回，
+           表现为「图片没切过去，卡片却动了 / 页面退了」。 */
+        overscroll-behavior-x: contain;
+        /* 只声明横向手势归本容器，纵向仍然交给页面滚。
+           不加 pan-x 时，iOS 要在「轮播横滑」和「父级 .swipe-c 的拖拽」之间
+           做手势仲裁，慢半拍的那一下经常被判成 tap ——
+           就是「左右滑不动、反而打开了记录详情」的来源。 */
+        touch-action: pan-x;
         /* 上下留 10px：当前图会放大到 1.04 + 加阴影，
            余量不够时放大的那张上下会被裁掉一条 */
         padding: 10px 0;
@@ -19942,7 +19951,8 @@
           currentX = 0,
           isSwiping = false,
           horizontal = false,
-          open = false;
+          open = false,
+          startInCarousel = false;
         // 操作区宽度=152px，阈值与其一致，确保编辑+删除两个按钮都露出
         const THRESH = 152;
         // 删除二次确认状态：第一次点=进入确认态，第二次点=真正删除
@@ -19984,8 +19994,10 @@
             // 导致图片轮播无法左右切换。
             if (e.target.closest && e.target.closest(".imggrid.carousel")) {
               isSwiping = false;
+              startInCarousel = true;
               return;
             }
+            startInCarousel = false;
             const touch = e.touches[0];
             startX = touch.clientX;
             startY = touch.clientY;
@@ -20010,6 +20022,10 @@
             const deltaY = touch.clientY - startY;
             // 判定手势方向：横向位移占优才算左滑，避免竖滑时误触发
             if (!horizontal) {
+              // 起点落在轮播里就彻底放手：轮播自己会 stopPropagation，
+              // 这里是兜底（例如事件从别的路径进来时），
+              // 保证左滑删除永远不会和「左右切图」抢同一根手指。
+              if (startInCarousel) return;
               if (Math.abs(deltaX) < 10 || Math.abs(deltaX) <= Math.abs(deltaY))
                 return;
               horizontal = true;
@@ -23153,6 +23169,63 @@
           markOn();
         }, 80);
         cg.addEventListener("scroll", onScroll, { passive: true });
+
+        /* —— 手势隔离 + 滑动守卫 ——
+           轮播嵌在卡片里，而卡片外层 .swipe-c 挂了一套 non-passive 的
+           左滑删除手势、卡片 .mom 上又挂了长按菜单。手指在图片上横滑时，
+           这两套监听都会从冒泡路径收到事件，iOS 的手势仲裁一旦偏向它们，
+           结果就是：图片没滚，松手却被当成 tap 打开了记录详情。
+           做法：轮播区内的 touch 事件一律不再向外冒泡，
+           横滑超过阈值就把紧随其后的 click 在捕获阶段直接吞掉。 */
+        let tSX = 0,
+          tSY = 0,
+          tMoved = false,
+          tTrack = false;
+        const MOVE_TOL = 8; // 手指抖动的容差，超过就算「这是一次滑动」
+        cg.addEventListener(
+          "touchstart",
+          (e) => {
+            const t = e.touches[0];
+            tSX = t.clientX;
+            tSY = t.clientY;
+            tMoved = false;
+            tTrack = true;
+            e.stopPropagation();
+          },
+          { passive: true },
+        );
+        cg.addEventListener(
+          "touchmove",
+          (e) => {
+            if (!tTrack) return;
+            const t = e.touches[0];
+            if (
+              Math.abs(t.clientX - tSX) > MOVE_TOL ||
+              Math.abs(t.clientY - tSY) > MOVE_TOL
+            )
+              tMoved = true;
+            e.stopPropagation();
+          },
+          { passive: true },
+        );
+        const tEnd = () => {
+          tTrack = false;
+        };
+        cg.addEventListener("touchend", tEnd, { passive: true });
+        cg.addEventListener("touchcancel", tEnd, { passive: true });
+        // 捕获阶段：刚滑过就吞掉 click，比冒泡层的任何处理都早，
+        // 卡片的「点击进详情」和轮播自己的「点图看大图」都不会被误触发。
+        cg.addEventListener(
+          "click",
+          (e) => {
+            if (!tMoved) return;
+            tMoved = false;
+            e.stopPropagation();
+            e.preventDefault();
+          },
+          true,
+        );
+
         if (window.ResizeObserver) {
           try {
             // 容器尺寸变化（旋转/字体加载）时重新计算，元素移除后自动失效
