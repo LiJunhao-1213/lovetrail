@@ -851,10 +851,11 @@
            视觉上就是「上面贴边、下面四周留白」。现在四个值统一。 */
       .seg {
         display: flex;
+        /* 在 .rec-toolbar 里已经去壳（见下方 #pg-records 的覆盖规则），
+           这里保留白底 + 投影是给「其它页面直接单独用 .seg」的场景兜底。
+           border-radius 用 999px 是为了那些单排场景仍是胶囊形。 */
         background: var(--card);
         border-radius: 999px;
-        /* 不加容器描边：下面那排 .filter-row 也只有白底+轻投影，没有外圈线。
-           两排紧挨着，一个有线一个没线会更明显地「不像一家人」。 */
         border: 0;
         padding: 5px 4px;
         gap: 6px;
@@ -904,30 +905,31 @@
       .seg button:active {
         opacity: 0.65;
       }
-      /* 类别切换条吸顶（B-5：用户选了「随时可切」）。
+      /* 控制区吸顶（B-5：用户选了「随时可切」）。
          必须显式写 position:sticky —— 之前只留了下面的 ::before 背板，
          规则本体在一次样式整理中被整段删掉了，于是这一排会跟着内容滚走，
-         滚过一屏后就再也切不了类别，等于白做。 */
-      #pg-records > .seg {
+         滚过一屏后就再也切不了类别，等于白做。
+         现在已经没有独立的 .seg 容器了，吸顶的是整块 .rec-toolbar。 */
+      #pg-records > .rec-toolbar {
         position: sticky;
         top: var(--sticky-top);
         z-index: 20;
-        padding: 10px;
       }
-      /* 吸顶时背后会有卡片滚过去：seg 自己的底色只有 16% 不透明度，会把下面的
-         标题文字透出来。补一层不透明背板（左右各撑满 16px 页面边距、上下各多 8px），
-         颜色就用页面底色 —— 没滚动的时候跟页面同色完全看不出来，只有吸顶时顶用。 */
-      #pg-records > .seg::before {
+      /* 吸顶时背后会有卡片滚过去，补一层不透明背板（左右各撑满 16px 页面边距），
+         颜色就用页面底色 —— 没滚动时跟页面同色看不出来，只有吸顶时顶用。 */
+      #pg-records > .rec-toolbar::before {
         content: "";
         position: absolute;
         inset: -8px -16px;
         z-index: -1;
       }
-      /* 两层吸顶不能叠在同一个位置：月份头要让开一个 seg 的高度（36 + 8 间隙），
-         钉到 seg 下方，否则滚起来月份头会从 seg 脸中间穿过去。 */
+      /* 两层吸顶不能叠在同一个位置：月份头要让开控制区的高度，
+         钉到控制区下方，否则滚起来月份头会从按钮脸中间穿过去。
+         控制区 = 类别行(32) + 间隙(8) + 筛选行(32) + 上下内边距(20) ≈ 92px，
+         再加吸顶背板上下各 8px，取 108px 留出余量。 */
       #pg-records .sec-hd,
       #pg-records .tl-d {
-        top: calc(var(--sticky-top) + 44px);
+        top: calc(var(--sticky-top) + 108px);
       }
       .input,
       textarea.input {
@@ -954,6 +956,12 @@
         font-size: 13px;
         color: var(--sub);
         margin: 0 2px 6px;
+      }
+      .re-hint {
+        font-size: 11px;
+        color: var(--sub);
+        margin: 5px 2px 0;
+        opacity: 0.85;
       }
       .cell {
         display: flex;
@@ -1348,6 +1356,8 @@
         height: 30px;
         border-radius: 10px;
         font-size: 15px;
+        /* 图标底色块保持中性：整页只有「数字」用主题色，
+           色块再上色会变成一片主色，反而把数字的重点吃掉。 */
         background: var(--bg);
       }
       .ov-cv {
@@ -1355,7 +1365,8 @@
         font-weight: 800;
         line-height: 1.1;
         margin-top: 9px;
-        color: var(--text);
+        /* 数字走主题色，和 hero 项、以及全站的关键数值保持同一套配色 */
+        color: var(--primary);
         font-variant-numeric: tabular-nums;
       }
       .ov-ct {
@@ -1831,14 +1842,14 @@
         cursor: pointer;
         -webkit-tap-highlight-color: transparent;
       }
-      /* 当前图：放大到 1.04 + 明显的投影 + 主题色描边，三重视觉差叠加 */
+      /* 当前图：放大到 1.04 + 明显投影，靠「尺寸 + 亮度 + 影深」拉开差距。
+         不再用主题色描边 —— 一圈亮紫/亮的边框太抢眼，像选中态的高亮框，
+         反而盖过了照片本身。 */
       .imggrid.carousel .im.on {
         transform: scale(1.04);
         opacity: 1;
         filter: none;
-        box-shadow:
-          0 8px 22px rgba(0, 0, 0, 0.18),
-          0 0 0 2px var(--primary);
+        box-shadow: 0 10px 26px rgba(0, 0, 0, 0.22);
         z-index: 2;
       }
       .imggrid.n1 .im,
@@ -3298,6 +3309,18 @@
         opacity: 1;
         animation: subOut 0.3s cubic-bezier(0.32, 0.72, 0, 1) forwards;
       }
+      /* 同级替换（如「上一版本」）用原地淡入，不做横向滑入 */
+      #sub.anim-swap {
+        animation: subSwap 0.2s ease;
+      }
+      @keyframes subSwap {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
       @keyframes subIn {
         from {
           transform: translateX(100%);
@@ -3320,6 +3343,48 @@
         }
         to {
           transform: translateX(100%);
+        }
+      }
+      /* 多级返回垫层：返回前把「上一级页面」预先渲染在这一层，
+         位置在 #sub 之下（z-index 低一级），手指也点不到（pointer-events:none）。
+         没有这一层之前，多级返回是「当前页滑出屏幕 → 露出系统主页面 →
+         上一级再从左边滑进来」，中间那 300ms 用户看到的是主页面（比如「我的」），
+         观感就成了「先退回我的页面，再跳回上一级」。
+         现在上一级一直垫在下面等着，当前页只是从它身上挪开，一步到位。 */
+      #under {
+        position: fixed;
+        inset: 0;
+        z-index: 69;
+        background: var(--bg);
+        display: none;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+        padding: 0 16px calc(30px + var(--safe-b));
+        transform: translateX(-26%);
+        pointer-events: none;
+        will-change: transform;
+      }
+      #under::before {
+        content: "";
+        display: block;
+        height: var(--page-pt);
+      }
+      #under.on {
+        display: block;
+      }
+      /* 顶栏标题在多级返回时提前换成上一级的名字，加一层淡入，
+         避免「页面已经露出上一级了，标题还写着下一级」。 */
+      #hdTitle.swap {
+        animation: hdTitleSwap 0.22s ease;
+      }
+      @keyframes hdTitleSwap {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
         }
       }
       /* 子页打开时主页的「压暗」效果：
@@ -3813,13 +3878,50 @@
         display: flex;
         align-items: center;
         gap: 6px;
-        margin-bottom: 8px;
+        margin-bottom: 0;
         flex-wrap: nowrap;
-        background: var(--card);
+        background: transparent;
         /* 左右各 4px：按钮自己已经够宽，再留 10px 会显得空 */
-        padding: 10px 10px;
-        border-radius: 999px;
+        padding: 0;
+        border-radius: 0;
+        box-shadow: none;
+      }
+      /* 记录页的「控制区」大容器：把类别切换（3 个）和筛选（3 个）六个按钮
+         装进同一张白卡里，成为一个整体。里面两排都退成透明（去壳），
+         圆角和投影只由这一层出，避免「容器里套容器」的双层胶囊。 */
+      .rec-toolbar {
+        background: var(--card);
+        border-radius: 18px;
         box-shadow: var(--shadow-sm);
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .rec-toolbar > .filter-row {
+        margin: 0;
+      }
+      /* 容器内的两排都去壳：白底、圆角、投影只由 .rec-toolbar 出。
+         否则 .seg 自带的白底 + shadow-sm 会在容器里再画一个胶囊，
+         看起来就是「两个容器」而不是一整块控制区。 */
+      #pg-records > .rec-toolbar .seg {
+        background: transparent;
+        border-radius: 0;
+        box-shadow: none;
+        padding: 0;
+        gap: 6px;
+      }
+      /* 两排按钮统一到 32px 高，等宽对齐才不会「上排满、下排缩」 */
+      #pg-records > .rec-toolbar .seg button {
+        height: 32px;
+      }
+      #pg-records > .rec-toolbar .filter-row .filter-date-btn {
+        height: 32px;
+        padding: 0 14px;
+      }
+      #pg-records > .rec-toolbar .filter-row .chip {
+        height: 32px;
+        padding: 0 14px;
       }
       /* 记录搜索：和上面的筛选条同一套胶囊语言，上下叠成一整块 */
       .rec-search {
@@ -3955,6 +4057,12 @@
       }
       /* 分割线与全局统一：::after 半像素细线，颜色走 --line。
          不用 border-bottom（1px 实线偏重，且与别处的 0.5px 线不一致）。 */
+      /* 卡片本身已有 padding 把首行推开，这里再用负 margin 抵掉首行的
+         上内边距 —— 直接写 padding-top:0 会把首行压矮 14px，
+         导致「类型」行比其余行矮一截、分割线间距不齐。 */
+      .detail-info-row:first-child {
+        margin-top: -20px;
+      }
       .detail-info-row::after {
         content: "";
         position: absolute;
@@ -3967,6 +4075,14 @@
       }
       .detail-info-row:last-child::after {
         display: none;
+      }
+      /* emoji 的字形盒比同字号文字高一截（📅/⏳/📷 实测 ~19px，文字 ~14px），
+         不显式压住行高，带 emoji 的行就会被撑高 —— 分割线间距忽大忽小。
+         图标、标签、值三者统一到 18px 行盒，行高就完全一致了。 */
+      .detail-info-row .di-icon,
+      .detail-info-row .di-label,
+      .detail-info-row .di-value {
+        line-height: 18px;
       }
       .detail-info-row .di-icon {
         font-size: 18px;
@@ -3992,6 +4108,7 @@
       .detail-info-row .di-sub {
         font-size: 12px;
         color: var(--sub);
+        line-height: 16px;
         margin-top: 3px;
       }
 
@@ -4147,6 +4264,92 @@
         font-weight: 600;
         color: var(--sub);
         margin: 16px 4px 8px;
+      }
+      /* 关于页的功能入口列表：白卡里一行一条，右侧箭头。
+         和系统「关于」页同款，比原来三块大文字段落好扫得多。 */
+      .about-menu {
+        margin-top: 14px;
+        padding: 0 16px;
+      }
+      .about-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        padding: 15px 0;
+        background: none;
+        border: 0;
+        border-bottom: 1px solid var(--line);
+        font: inherit;
+        color: inherit;
+        text-align: left;
+        cursor: pointer;
+      }
+      .about-row:last-child {
+        border-bottom: 0;
+      }
+      .about-row:active {
+        background: var(--bg);
+      }
+      .about-row .ar-t {
+        flex: 1;
+        min-width: 0;
+        font-size: 15px;
+        font-weight: 500;
+      }
+      /* 右侧数量/版本号：中性灰。整页只有「数字」相关的主数值才用主题色，
+         列表里的辅助文字一律不上色，避免整页花掉。 */
+      .about-row .ar-n {
+        flex: none;
+        font-size: 12.5px;
+        color: var(--sub);
+      }
+      .about-row .ar-arr {
+        flex: none;
+        font-size: 17px;
+        color: var(--sub);
+        opacity: 0.6;
+      }
+      /* 二级页：每条「标题 + 说明」两行，说明用小字灰色 */
+      .about-sec-card {
+        margin-top: 12px;
+        padding: 6px 16px;
+      }
+      .about-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 9px;
+        padding: 11px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .about-item:last-child {
+        border-bottom: 0;
+      }
+      .about-item .ai-tx {
+        flex: 1;
+        min-width: 0;
+        font-size: 13.5px;
+        line-height: 1.5;
+      }
+      .about-item .ai-tx i {
+        display: block;
+        font-style: normal;
+        font-size: 12px;
+        color: var(--sub);
+        margin-top: 3px;
+        line-height: 1.5;
+      }
+      /* 页脚：版本信息 + 一句话，居中弱化，收在页面最底 */
+      .about-foot {
+        text-align: center;
+        font-size: 12px;
+        color: var(--sub);
+        margin: 22px 0 10px;
+        line-height: 1.9;
+      }
+      .about-foot .af-note {
+        margin-top: 6px;
+        opacity: 0.85;
       }
       /* 版本记录：列表卡只放「版本号 + 更新日期」，点进去看详情 */
       .vcard {
@@ -4396,6 +4599,10 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        /* 勾只做「结构性标记」，用中性灰 + 浅底：
+           这一页的主题色配额留给真正的数值，标记再上色会打碎层级。 */
+        background: var(--bg);
+        color: var(--sub);
       }
       .about-list {
         margin-top: 12px;
@@ -4959,12 +5166,14 @@
         font-size: 26px;
         font-weight: 700;
         line-height: 1;
-        color: var(--text);
+        /* 关键数值统一走主题色（和总览页指标格各处大数字同一套） */
+        color: var(--primary);
         font-variant-numeric: tabular-nums;
       }
       .mx-card .mx-v small {
         font-size: 13px;
         font-weight: 400;
+        /* 单位保持灰色：只有数字本身上色，单位跟着变会让整行糊成一片色 */
         color: var(--sub);
         margin-left: 3px;
       }
@@ -7112,6 +7321,9 @@
       </button>
     </nav>
 
+    <!-- 多级返回的「父页垫层」：返回时父页面已经渲染在这一层上，
+         当前页从它上面滑走即可露出父页；不需要先退回主页面再进来。 -->
+    <div id="under"></div>
     <div id="sub"></div>
     <div id="ovl"></div>
     <div id="toast"></div>
@@ -19047,14 +19259,62 @@
       const KEY = "LOVE_TRACK_V1";
       let DB = load();
 
+      /* localStorage 同步读取是启动时的唯一可用路径（IDB 是异步的，
+         不可能阻塞首屏）。所以启动先用 localStorage；若已经迁移过，
+         会再由 bootIDB() 异步从 IDB 取最新数据并热替换。
+         两边的数据由 save() 保持同步，IDB 里有更新的版本时以 IDB 为准
+         （迁移后所有写入都直接落 IDB，ls 那份是去图镜像）。 */
+      async function bootIDB() {
+        try {
+          const marked = localStorage.getItem(IDB_MARK) === "idb";
+          if (!StoreInfo.hasIDB) return;
+          idbHandle = await openIDB();
+          if (!idbHandle) return;
+          if (!marked) {
+            // 还没迁移过：探测一下环境（配额 + localStorage 实测水位），
+            // 并把连接留着 —— 数据真的写不下时可以直接搬过去，不用再等一次打开。
+            await probeStorage();
+            probeLocalStorage();
+            return;
+          }
+          usingIDB = true;
+          const raw = await idbGet(IDB_KEY);
+          if (typeof raw === "string" && raw.length > 2) {
+            const d = JSON.parse(raw);
+            const norm = normalizeLoaded(d);
+            if (norm) {
+              DB = norm;
+              applyTheme();
+              if (typeof renderTab === "function") renderTab();
+              syncFab && syncFab();
+            }
+          }
+          await probeStorage();
+        } catch (e) {}
+      }
+
       function load() {
         try {
           const raw = localStorage.getItem(KEY);
           if (raw) {
             const d = JSON.parse(raw);
-            if (d && d.ui) {
-              if (["#A8736F", "#D96D63", "#E8556A"].includes(d.ui.primary))
-                d.ui.primary = "#FF2D55";
+            const norm = normalizeLoaded(d);
+            if (norm) return norm;
+          }
+        } catch (e) {}
+        return DEF();
+      }
+
+      /* 把一份（可能来自旧版本 / IDB / 导入文件的）数据补齐成当前结构。
+         load() 与 bootIDB() 共用同一套归一化逻辑，避免两边口径不一致 —— 
+         以前所有迁移都塞在 load() 里，从 IDB 读回来的数据就绕过了这些修补，
+         旧字段会让页面读到 undefined。 */
+      function normalizeLoaded(d) {
+        try {
+          if (!d || typeof d !== "object") return null;
+          if (d.ui) {
+            if (["#A8736F", "#D96D63", "#E8556A"].includes(d.ui.primary))
+              d.ui.primary = "#FF2D55";
               if (["#7C93A6", "#4E8FC4", "#5B8DEF"].includes(d.ui.accent))
                 d.ui.accent = "#007AFF";
               if (d.ui.bg === "#F2F3F5") d.ui.bg = "#F5F5F7";
@@ -19163,6 +19423,44 @@
                 };
               });
             }
+            /* 标签表自愈：
+               DB.tags.happy 只应该是字符串数组，但实测有用户设备上它变成了
+               [{...},{...}]，于是「新增记录」里的事件标签整排渲染成
+               [object Object] —— esc() 对对象就是 String(obj)。
+               代码里两处写入都是 push 字符串，说明污点来自导入的备份文件
+               （或更早版本遗留结构）。这里统一矫正：字符串直接留，
+               对象/数组只取其可当标签用的字段，其余丢弃。
+               同时清掉记录里 r.tags 的非字符串项，避免详情页出现 [object Object]。 */
+            if (!d.tags || typeof d.tags !== "object") d.tags = {};
+            const tagList = (arr) => {
+              if (!Array.isArray(arr)) return [];
+              const out = [];
+              arr.forEach((t) => {
+                const s =
+                  typeof t === "string"
+                    ? t
+                    : t && typeof t === "object"
+                      ? // 兼容 {name}/{t}/{label}/{text}/{v} 等历史写法
+                        t.name || t.t || t.label || t.text || t.v || ""
+                      : t == null
+                        ? ""
+                        : String(t);
+                const v = String(s).trim();
+                // 过滤空串与已损坏的 "[object Object]"
+                if (v && v !== "[object Object]" && !out.includes(v))
+                  out.push(v);
+              });
+              return out;
+            };
+            d.tags.happy = tagList(d.tags.happy);
+            if (!d.tags.happy.length)
+              d.tags.happy = ["约会", "干饭", "看电影", "逛街", "游玩", "做饭"];
+            ["happy", "travel"].forEach((k) => {
+              if (!Array.isArray(d[k])) return;
+              d[k].forEach((r) => {
+                if (r && typeof r === "object" && r.tags) r.tags = tagList(r.tags);
+              });
+            });
             // 迁移：清理旧版看板里被合并的 loveTimer 板块
             if (d.dash) {              if (Array.isArray(d.dash.order))
                 d.dash.order = d.dash.order.filter((k) => k !== "loveTimer");
@@ -19185,9 +19483,8 @@
               delete d.couple.breakupVisible;
             }
             return deepDef(DEF(), d);
-          }
         } catch (e) {}
-        return DEF();
+        return null;
       }
 
       // 把默认结构递归地补齐到已保存数据上。
@@ -19207,63 +19504,369 @@
       // 存储空间不足提示的频率控制：避免每次保存都反复弹提示
       let lastQuotaToast = 0;
 
+      /* ================================================================
+       * 存储引擎探测 + IndexedDB 迁移
+       *
+       * 这套应用的数据底座有两种可能：
+       *   ① localStorage —— 上限极小且各家实现不一：Chrome 按「字符数」算，
+       *      塞满大约 5M 字符；iOS Safari / WKWebView 普遍只有 5MB 甚至更小。
+       *      这是「每次改设置都提示存储已满」的直接原因，不是数据真的多。
+       *   ② IndexedDB —— 同样在浏览器里、同样不出设备，但配额跟源站空间走，
+       *      通常是硬盘可用空间的一个比例（几百 MB～GB 级），并且存的是
+       *      二进制，图片不用按 base64 的 1.37 倍膨胀。
+       *
+       * 所以「把空间弄大一点」的正确做法不是调参数，而是换底座。
+       * 下面先探测环境实际给多少，再在需要时把数据整体搬过去。
+       * ================================================================ */
+      const IDB_NAME = "LOVE_TRACK_IDB";
+      const IDB_STORE = "kv";
+      const IDB_KEY = "db";
+      const IDB_MARK = "LOVE_TRACK_STORE"; // "idb" 表示已迁移
+
+      // 环境探测结果，启动时填充一次
+      const StoreInfo = {
+        hasIDB: typeof indexedDB !== "undefined",
+        quotaMB: 0, // 浏览器给这个源站的总配额（MB）
+        usageMB: 0,
+        lsChars: 0, // localStorage 实测能塞多少字符
+        lsMB: 0, // 折算成 MB（UTF-16 每字符 2 字节）
+      };
+      let idbHandle = null; // 已打开的 IDB 连接
+      let usingIDB = false; // 当前是否以 IDB 为主存储
+
+      function openIDB() {
+        return new Promise((res) => {
+          if (!StoreInfo.hasIDB) return res(null);
+          try {
+            const rq = indexedDB.open(IDB_NAME, 1);
+            rq.onupgradeneeded = () => {
+              const db = rq.result;
+              if (!db.objectStoreNames.contains(IDB_STORE))
+                db.createObjectStore(IDB_STORE);
+            };
+            rq.onsuccess = () => res(rq.result);
+            rq.onerror = () => res(null);
+            rq.onblocked = () => res(null);
+          } catch (e) {
+            res(null);
+          }
+        });
+      }
+      function idbPut(key, val) {
+        return new Promise((res) => {
+          if (!idbHandle) return res(false);
+          try {
+            const tx = idbHandle.transaction(IDB_STORE, "readwrite");
+            tx.objectStore(IDB_STORE).put(val, key);
+            tx.oncomplete = () => res(true);
+            tx.onerror = () => res(false);
+            tx.onabort = () => res(false);
+          } catch (e) {
+            res(false);
+          }
+        });
+      }
+      function idbGet(key) {
+        return new Promise((res) => {
+          if (!idbHandle) return res(null);
+          try {
+            const tx = idbHandle.transaction(IDB_STORE, "readonly");
+            const rq = tx.objectStore(IDB_STORE).get(key);
+            rq.onsuccess = () => res(rq.result === undefined ? null : rq.result);
+            rq.onerror = () => res(null);
+          } catch (e) {
+            res(null);
+          }
+        });
+      }
+      function idbDel(key) {
+        return new Promise((res) => {
+          if (!idbHandle) return res(false);
+          try {
+            const tx = idbHandle.transaction(IDB_STORE, "readwrite");
+            tx.objectStore(IDB_STORE).delete(key);
+            tx.oncomplete = () => res(true);
+            tx.onerror = () => res(false);
+          } catch (e) {
+            res(false);
+          }
+        });
+      }
+      // 读 localStorage 的真实容量水位：二分探测，结果缓存。
+      // 不猜「5MB」——各家浏览器口径不同，实测才知道会撞到哪堵墙。
+      function probeLocalStorage() {
+        try {
+          const probeKey = "__ls_probe__";
+          const keep = localStorage.getItem(probeKey);
+          let lo = 0,
+            hi = 12 * 1024 * 1024,
+            best = 0;
+          for (let i = 0; i < 14; i++) {
+            const mid = (lo + hi) >> 1;
+            let ok = false;
+            try {
+              localStorage.setItem(probeKey, "x".repeat(mid));
+              ok = true;
+            } catch (e) {
+              ok = false;
+            }
+            if (ok) {
+              best = mid;
+              lo = mid;
+            } else hi = mid;
+          }
+          if (keep === null) localStorage.removeItem(probeKey);
+          else localStorage.setItem(probeKey, keep);
+          StoreInfo.lsChars = best;
+          // 探测本身会短暂占用空间，探测完把垃圾收掉
+          try {
+            localStorage.removeItem(probeKey);
+          } catch (e) {}
+          StoreInfo.lsMB = +((best * 2) / 1048576).toFixed(2);
+          return best;
+        } catch (e) {
+          StoreInfo.lsMB = 5;
+          return 0;
+        }
+      }
+      async function probeStorage() {
+        try {
+          if (navigator.storage && navigator.storage.estimate) {
+            const e = await navigator.storage.estimate();
+            StoreInfo.quotaMB = +((e.quota || 0) / 1048576).toFixed(1);
+            StoreInfo.usageMB = +((e.usage || 0) / 1048576).toFixed(2);
+          }
+        } catch (e) {}
+        return StoreInfo;
+      }
+
       // 最近一次写入是否失败。为 true 时页面顶部会常驻一条红色警示，
       // 直到写入重新成功为止 —— 光靠一次性的 toast 是不够的：
       // toast 2 秒就没了，用户根本不知道自己刚记的东西其实还在内存里、一刷新就没。
       let saveFailed = false;
+      // 迁移到 IDB 后，localStorage 只留一份「轻量镜像」给老的读取路径兜底；
+      // 镜像里把图片剔除，避免继续挤那条 5MB 的窄缝。
+      let mirrorFull = true;
 
       function save(immediate) {
         clearTimeout(saveTimer);
         const flush = () => {
-          try {
-            localStorage.setItem(KEY, JSON.stringify(DB));
-            if (saveFailed) {
-              // 写入恢复成功 → 撤掉警示条，并明确告诉用户已经安全了
-              saveFailed = false;
-              hideSaveAlert();
-              toast("✅ 已恢复保存");
-            }
-          } catch (e) {
-            // 写入失败：不再静默自动压缩用户的照片（那等于未经同意就降质），
-            // 改成「挂一条持久警示 + 把选择权交还给用户」。
-            saveFailed = true;
-            showSaveAlert();
-            const now = Date.now();
-            if (now - lastQuotaToast > 60000) {
-              lastQuotaToast = now;
-              toast("⚠️ 本地存储已满，改动没能保存");
-            }
+          const json = JSON.stringify(DB);
+          /* ① 已经迁到 IndexedDB：主写入走 IDB（空间大、图片不膨胀），
+                localStorage 只同步一份去图片的镜像。镜像写不进去也不报警——
+                IDB 那份才是数据的家，别再用「5MB 满了」吓用户。 */
+          if (usingIDB && idbHandle) {
+            idbPut(IDB_KEY, json).then((ok) => {
+              if (ok) {
+                if (saveFailed) {
+                  saveFailed = false;
+                  hideSaveAlert();
+                  toast("✅ 已恢复保存");
+                }
+                // 镜像失败静默处理：它的唯一作用是兼容旧读取路径
+                idbPut("mirrorPending", false);
+                try {
+                  localStorage.setItem(KEY, slimJson(json));
+                } catch (e) {}
+              } else {
+                // IDB 写失败很少见（配额、隐私模式）；退回 localStorage 再试
+                writeLocalStorage(json);
+              }
+            });
+            return;
           }
+          writeLocalStorage(json);
         };
         if (immediate) flush();
         else saveTimer = setTimeout(flush, 120);
       }
 
+      // 去掉图片的 JSON 版本：给 localStorage 镜像用
+      function slimJson(json) {
+        try {
+          const d = JSON.parse(json);
+          const strip = (o) => {
+            if (!o || typeof o !== "object") return;
+            if (Array.isArray(o)) {
+              for (let i = o.length - 1; i >= 0; i--) {
+                const v = o[i];
+                if (typeof v === "string" && /^data:image\//.test(v)) {
+                  o.splice(i, 1);
+                  if (o !== d && o.constructor === Array) continue;
+                } else strip(v);
+              }
+              return;
+            }
+            for (const k in o) {
+              const v = o[k];
+              if (typeof v === "string" && /^data:image\//.test(v)) o[k] = "";
+              else if (v && typeof v === "object") strip(v);
+            }
+          };
+          strip(d);
+          return JSON.stringify(d);
+        } catch (e) {
+          return json;
+        }
+      }
+
+      function writeLocalStorage(json) {
+        try {
+          localStorage.setItem(KEY, json);
+          if (saveFailed) {
+            // 写入恢复成功 → 撤掉警示条，并明确告诉用户已经安全了
+            saveFailed = false;
+            hideSaveAlert();
+            toast("✅ 已恢复保存");
+          }
+        } catch (e) {
+          // 写入失败：不再静默自动压缩用户的照片（那等于未经同意就降质），
+          // 改成「挂一条持久警示 + 把选择权交还给用户」。
+          // 但先确认一件事：是不是「本来就能换个大房子只是还没换」?
+          // 是的话直接搬，而不是让用户去删照片。
+          if (!usingIDB && StoreInfo.hasIDB) {
+            saveFailed = true;
+            showSaveAlert(true);
+            if (!migrateAsked) {
+              migrateAsked = true;
+              migrateAsk();
+            }
+            return;
+          }
+          saveFailed = true;
+          showSaveAlert();
+          const now = Date.now();
+          if (now - lastQuotaToast > 60000) {
+            lastQuotaToast = now;
+            toast("⚠️ 本地存储已满，改动没能保存");
+          }
+        }
+      }
+
       /* 保存失败警示条：常驻在顶栏下方，直到写入成功或用户处理完。
          两个出口都指向「把数据弄出去」，因为此刻最重要的事是保住已有内容。 */
-      function showSaveAlert() {
+      function showSaveAlert(offerMove) {
         let el = $("#saveAlert");
         if (el) return;
         el = document.createElement("div");
         el.id = "saveAlert";
         el.className = "save-alert";
+        // offerMove：还有 IndexedDB 这条更大的路没走，主按钮就推「换大空间」，
+        // 而不是让用户先去删自己的照片。
         el.innerHTML = `<span class="sa-ic">⚠️</span>
           <div class="sa-main">
-            <div class="sa-t">本地存储已满，改动没能保存</div>
-            <div class="sa-d">关掉页面后新记的内容会丢失，请先导出备份</div>
+            <div class="sa-t">${
+              offerMove ? "存储空间不够用了" : "本地存储已满，改动没能保存"
+            }</div>
+            <div class="sa-d">${
+              offerMove
+                ? "可启用大容量存储（IndexedDB），不清数据、不降画质"
+                : "关掉页面后新记的内容会丢失，请先导出备份"
+            }</div>
           </div>
           <div class="sa-act">
-            <button class="sa-btn" data-a="export">导出备份</button>
-            <button class="sa-btn ghost" data-a="heal">压缩照片腾空间</button>
+            ${
+              offerMove
+                ? `<button class="sa-btn" data-a="move">换大容量存储</button>
+                   <button class="sa-btn ghost" data-a="export">先导出备份</button>`
+                : `<button class="sa-btn" data-a="export">导出备份</button>
+                   <button class="sa-btn ghost" data-a="heal">压缩照片腾空间</button>`
+            }
           </div>`;
         el.addEventListener("click", (e) => {
           const a = e.target.closest("[data-a]");
           if (!a) return;
           if (a.dataset.a === "export") doExportBackup();
+          else if (a.dataset.a === "move") migrateToIDB(true);
           else healStorageAsk();
         });
         document.body.appendChild(el);
         requestAnimationFrame(() => el.classList.add("on"));
+      }
+
+      /* ---------- 搬到 IndexedDB ----------
+         这是「把本地存储空间弄大一点」的实际解法：数据一条不动，
+         只是从 5MB 的窄抽屉换到按源站配额分配的 IndexedDB。
+         迁移前必读一次旧数据并校验，成功才切换主存储；任何一步失败都原地留在
+         localStorage，保证不会出现「搬一半，两边都没有」。 */
+      let migrateAsked = false;
+
+      async function migrateToIDB(interactive) {
+        if (usingIDB) {
+          if (interactive) toast("已经在使用大容量存储了");
+          return true;
+        }
+        if (!StoreInfo.hasIDB) {
+          if (interactive)
+            toast("这台设备的浏览器不支持 IndexedDB，只能先清理旧图片");
+          return false;
+        }
+        try {
+          if (!idbHandle) idbHandle = await openIDB();
+          if (!idbHandle) {
+            if (interactive) toast("打不开 IndexedDB，可能处于隐私模式");
+            return false;
+          }
+          const json = JSON.stringify(DB);
+          // 先写后读校验，确认这份数据真的落地了
+          const ok = await idbPut(IDB_KEY, json);
+          if (!ok) {
+            if (interactive) toast("写入大容量存储失败");
+            return false;
+          }
+          const back = await idbGet(IDB_KEY);
+          if (typeof back !== "string" || back.length !== json.length) {
+            if (interactive) toast("校验未通过，已放弃迁移（数据未受影响）");
+            return false;
+          }
+          usingIDB = true;
+          try {
+            localStorage.setItem(IDB_MARK, "idb");
+          } catch (e) {}
+          // 迁移成功：旧的那份 localStorage 留着当保险，
+          // 但把图片剔除，好把 5MB 的窄缝腾出来给镜像用。
+          try {
+            localStorage.setItem(KEY, slimJson(json));
+          } catch (e) {
+            try {
+              localStorage.removeItem(KEY);
+            } catch (e2) {}
+          }
+          saveFailed = false;
+          hideSaveAlert();
+          await probeStorage();
+          if (interactive)
+            toast(
+              `已搬到 ${StoreInfo.quotaMB ? StoreInfo.quotaMB + "MB 的" : "大容量"}存储空间`,
+            );
+          renderTab && renderTab();
+          return true;
+        } catch (e) {
+          if (interactive) toast("迁移出错，数据仍保存在原处");
+          return false;
+        }
+      }
+
+      // 自动询问：只在确实写不下、且明明有更好的底座时才弹，不打扰正常使用
+      function migrateAsk() {
+        modal({
+          title: "换用更大的存储空间？",
+          body: `刚写的改动<b>没能保存</b>，原因是浏览器的 localStorage 上限太小
+            （这台设备实测约 <b>${StoreInfo.lsMB || 5}MB</b>）。<br><br>
+            可以搬到 <b>IndexedDB</b>：同样是<b>纯本地</b>、不上传、不同步，
+            但容量按浏览器给这个网页的配额走${
+              StoreInfo.quotaMB
+                ? `（当前约 <b>${StoreInfo.quotaMB}MB</b>）`
+                : ""
+            }，图片也不再按 base64 膨胀。<br><br>
+            <b>已有数据会原样搬过去，不会丢、不会降画质。</b>`,
+          ok: "立即搬过去",
+          cancel: "暂不，先导出备份",
+          onOk: () => migrateToIDB(true),
+          // 「暂不」不等于「什么都不做」：此刻用户的数据还没保存成功，
+          // 最该做的就是把已有内容导一份出来。
+          onCancel: () => doExportBackup(),
+        });
       }
       function hideSaveAlert() {
         const el = $("#saveAlert");
@@ -19559,6 +20162,7 @@
         ok = "确定",
         cancel = "取消",
         onOk,
+        onCancel,
         okCls = "btn",
         wide,
       }) {
@@ -19570,7 +20174,11 @@
         <button class="${okCls}" data-ok>${ok}</button></div></div>`;
         document.body.appendChild(m);
         m.addEventListener("click", (e) => {
-          if (e.target === m || e.target.dataset.x !== undefined) close();
+          if (e.target === m || e.target.dataset.x !== undefined) {
+            close();
+            // 点「取消」时的动作单独走这里：区别于点遮罩关掉
+            if (e.target.dataset.x !== undefined && onCancel) onCancel();
+          }
         });
         m.querySelector("[data-ok]").onclick = () => {
           if (onOk && onOk(m) === false) return;
@@ -20982,6 +21590,7 @@
         }
         // 取消仍在进行的关闭动画，避免其收尾时清空刚打开的新页面
         closeSeq++;
+        clearUnder(); // 新开一层时垫层必定是过期的，收掉
         const sub = $("#sub");
         sub.classList.remove("closing");
         subStack.push({ title, renderFn, act, onAct, scrollTop: 0 });
@@ -21010,7 +21619,7 @@
         void sub.offsetHeight; // 强制回流，确保定位生效后再显示
         sub.style.visibility = "";
         // 方向动画：进入 → 右侧滑入；返回 → 左侧滑回；原地刷新 → 不动画
-        sub.classList.remove("anim-fwd", "anim-back");
+        sub.classList.remove("anim-fwd", "anim-back", "anim-swap");
         if (dir !== "none") {
           void sub.offsetHeight; // 重置动画，确保每次都能重播
           sub.classList.add(dir === "back" ? "anim-back" : "anim-fwd");
@@ -21022,65 +21631,163 @@
       function subGoBack() {
         if (!subStack.length) return;
         if (subStack.length === 1) {
+          // 只有一层：关掉整个子页回到主页面（这种场景本来就该看到主页面）
           closeSub(true);
         } else {
-          // 多级返回：先把当前这层滑走，等它完全离开屏幕（约 300ms 动画）再把
-          // 顶栏标题切回上一级。以前是立刻切标题——当前页还在屏幕上滑，
-          // 标题已经变了，看起来像「滑完又跳一下」。
+          // 多级返回：当前页从「上一级」身上滑走，全程不让主页面出场
           const from = subStack[subStack.length - 1];
           from.scrollTop = $("#sub").scrollTop;
-          flyBackToParent(320);
+          flyBackToParent(300);
         }
       }
 
-      // 多级返回的滑动动画 + 收尾（动画结束后才切换顶栏标题）
+      /* ---------- 多级返回垫层 #under ----------
+         在两个多层子页之间返回时，先把「上一级」渲染到垫层 #under：
+         它垫在 #sub 下面（z-index 69），当前页从它身上挪开就直接露出上一级，
+         不需要主页面过渡。用完立即清空，平时不占 DOM。 */
+      function prepareUnder() {
+        const u = document.getElementById("under");
+        if (!u || subStack.length < 2) return null;
+        const par = subStack[subStack.length - 2];
+        try {
+          u.style.transition = "none";
+          u.classList.add("on");
+          par.renderFn && par.renderFn(u);
+          u.scrollTop =
+            par.scrollTop && par.scrollTop > 0 ? par.scrollTop : 0;
+          // 抹掉垫层内部的 id：它只是给眼睛看的一张「截图」，
+          // 留着 id 会和 #sub 里的同名元素打架（getElementById 只会取文档里第一个）。
+          try {
+            u.querySelectorAll("[id]").forEach((el) => {
+              if (el.id && el.id !== "under")
+                el.removeAttribute("id");
+            });
+          } catch (e) {}
+          u.style.transform = "translateX(-26%)";
+          void u.offsetHeight; // 强制回流，保证起点位生效后再开始动画
+          u.style.transition = "";
+          return u;
+        } catch (err) {
+          // 父页渲染失败也不能把返回卡死：收掉垫层，交给调用方退化处理
+          try {
+            u.classList.remove("on");
+            u.innerHTML = "";
+            u.style.transform = "";
+            u.style.transition = "";
+          } catch (e) {}
+          return null;
+        }
+      }
+      function clearUnder() {
+        const u = document.getElementById("under");
+        if (!u) return;
+        u.classList.remove("on");
+        u.style.transition = "";
+        u.style.transform = "";
+        u.innerHTML = "";
+      }
+      /* 顶栏提前换成上一级的标题 + 动作（配一层淡入）。
+         否则会出现「页面已经露出上一级了、顶栏还写着下一级」，
+         这种错位最容易被看成「返回时又多退了一层」。 */
+      function retitleForParent() {
+        if (subStack.length < 2) return;
+        const par = subStack[subStack.length - 2];
+        setHeader({
+          title: par.title || "",
+          act: par.act || "",
+          onAct: par.onAct || null,
+          back: true,
+        });
+        const t = document.getElementById("hdTitle");
+        if (t) {
+          t.classList.remove("swap");
+          void t.offsetHeight;
+          t.classList.add("swap");
+        }
+      }
+
+      // 多级返回的滑动动画 + 收尾
       function flyBackToParent(dur = 320) {
-        const sub = $("#sub"),
-          hd = $("#hd");
+        const sub = $("#sub");
         if (!sub || subStack.length < 2) return;
         const CURVE = "cubic-bezier(0.32,0.72,0,1)";
+        const u = prepareUnder();
+        if (!u) {
+          // 垫层没准备好也不能把返回卡死，退化为直接退栈
+          subGoBackNow();
+          return;
+        }
         let done = false;
         const finish = () => {
           if (done) return;
           done = true;
           sub.removeEventListener("transitionend", onEnd);
+          clearTimeout(timer);
           sub.style.transition = "";
           sub.style.transform = "";
-          if (hd) {
-            // 内联位移必须抹掉再换内容，否则下一级顶栏会带着上一级的 translateX 出现，
-            // 表现为「按钮返回后导航栏偏在屏幕外」。
-            hd.style.transition = "";
-            hd.style.transform = "";
-          }
+          // 上一级已经在垫层里停在原位，退栈后直接无动画接管，用户看不到切换；
+          // 接管完成再把垫层收掉。
           subGoBackNow();
+          clearUnder();
         };
         const onEnd = (ev) => {
           if (ev.target === sub && ev.propertyName === "transform") finish();
         };
         sub.style.transition = `transform ${dur}ms ${CURVE}`;
-        if (hd) hd.style.transition = `transform ${dur}ms ${CURVE}`;
+        u.style.transition = `transform ${dur}ms ${CURVE}`;
+        retitleForParent();
         void sub.offsetHeight;
         sub.style.transform = "translateX(100%)";
-        if (hd) hd.style.transform = "translateX(100%)";
+        u.style.transform = "translateX(0)";
         sub.addEventListener("transitionend", onEnd);
-        setTimeout(finish, dur + 120); // 兜底：个别机型漏触发 transitionend
+        const timer = setTimeout(finish, dur + 140); // 兜底：个别机型漏触发 transitionend
       }
 
-      // 真正的「退栈 + 换成上一级内容」（在动画结束后调用）
+      // 真正的「退栈 + 换成上一级内容」（动画结束后调用）
       function subGoBackNow() {
         if (subStack.length <= 1) return;
         // 先把中间这一层的顶栏（标题 + 右上角动作）复原到干净状态，再换内容。
         // 这一步是关键：被 pop() 掉的那一层，它的标题和动作是挂在全局 #hd 上的，
         // 退栈本身不会把它们清掉 —— 于是下一级 paintSub 只覆盖「有值」的字段，
         // 上一个页面的动作按钮（比如「编辑」「编辑看板」）就会一直粘在顶栏上。
-        // 左滑返回之所以没这个问题，是因为它的 settle() 里显式清了顶栏内联样式。
         setHeader({ title: "", act: "", onAct: null, back: true });
         subStack.pop();
-        paintSub("back");
+        // 这里必须用 "none"：上一级此刻已经显示在屏幕上了，
+        // 再播一次滑入动画就等于「退回主页面再进来」，正是这次要修的毛病。
+        paintSub("none");
+      }
+
+      /* 同级替换：把当前子页换成另一个同层级的子页（如「上一版本」）。
+         不要写成 closeSub() + setTimeout(开新页) —— 那样会先把整个子页栈清空
+         退回主页面，再延时重新打开，用户会看到「先弹回列表页、再进新页」的闪烁，
+         返回路径也被打断了。这里直接替换栈顶那一项，页面原地切换、不闪。
+         用 "back" 方向动画：视觉上是「往回翻」，与「上一版本」的语义一致。 */
+      function replaceSub(title, renderFn, act = "", onAct = null) {
+        if (!subStack.length) return openSub(title, renderFn, act, onAct);
+        subStack[subStack.length - 1] = {
+          title,
+          renderFn,
+          act,
+          onAct,
+          scrollTop: 0,
+        };
+        // 顶栏动作先清干净再让 paintSub 按新页覆盖（同 subGoBackNow 的理由）
+        setHeader({ title: "", act: "", onAct: null, back: true });
+        paintSub("none");
+        // 原地淡入替代滑入：滑入动画会让屏幕右侧空出一条，露出下面的主页面，
+        // 又变成「先回主页面再进来」。同层替换用淡入，层级不动、不露底。
+        const sub = $("#sub");
+        if (sub) {
+          sub.classList.remove("anim-swap");
+          void sub.offsetHeight;
+          sub.classList.add("anim-swap");
+        }
       }
 
       function closeSub(render = true) {
         const sub = $("#sub");
+        // 整个子页要退出舞台了，垫层一并收掉，避免残留 DOM 长期占位
+        clearUnder();
         if (
           sub.classList.contains("on") &&
           !sub.classList.contains("closing")
@@ -21132,8 +21839,9 @@
           hd = $("#hd");
         if (!sub || !main) return;
         let sd = null;
-        // 顶栏（#hd）是 #sub 的兄弟节点，子页滑走时它得跟着一起滑，
-        // 否则标题和返回键会钉在原地，看起来像「页面动了、导航栏没动」。
+        // 顶栏（#hd）是 #sub 的兄弟节点，只有「最底层子页退回主页面」时才跟着
+        // 一起滑走（此时底下确实是该出场的tab页）；多级返回不能带着顶栏走，
+        // 否则标题和返回键会被推出屏幕，剩下的一段正好露出主页面。
         const moveHd = (x) => {
           if (hd) hd.style.transform = `translateX(${x}px)`;
         };
@@ -21142,6 +21850,11 @@
           hd.style.transition = "";
           hd.style.transform = "";
         };
+        // 上一级页面一起跟手（从 -26% 走到 0），保证右边不露主页面
+        const moveUnder = (p) => {
+          const u = document.getElementById("under");
+          if (u) u.style.transform = `translateX(${(-26 + 26 * p).toFixed(3)}%)`;
+        };
         const isMobile = () => window.matchMedia("(max-width: 600px)").matches;
         const CURVE = "cubic-bezier(0.32,0.72,0,1)";
         sub.addEventListener(
@@ -21149,13 +21862,24 @@
           (e) => {
             if (!subStack.length || !isMobile()) return;
             if (e.touches[0].clientX <= 22) {
-              sd = { x0: e.touches[0].clientX, active: true };
+              sd = {
+                x0: e.touches[0].clientX,
+                active: true,
+                multi: subStack.length > 1,
+              };
               sub.style.transition = "none";
               main.style.transition = "none";
-              if (hd) hd.style.transition = "none";
-              // 起点就是压暗静止态，避免先跳「亮」再跟手的抖动
-              main.style.transform = "scale(0.96)";
-              main.style.setProperty("--veil", "0.12");
+              if (sd.multi) {
+                // 多级：把上一级铺到垫层上、顶栏原地不动
+                const u = prepareUnder();
+                if (u) u.style.transition = "none";
+                sd.multi = !!u;
+              } else {
+                if (hd) hd.style.transition = "none";
+                // 起点就是压暗静止态，避免先跳「亮」再跟手的抖动
+                main.style.transform = "scale(0.96)";
+                main.style.setProperty("--veil", "0.12");
+              }
             }
           },
           { passive: true },
@@ -21165,18 +21889,26 @@
           (e) => {
             if (!sd || !sd.active) return;
             const dx = e.touches[0].clientX - sd.x0;
+            const p = Math.min(Math.max(dx, 0) / 320, 1);
             if (dx < 0) {
               sub.style.transform = "translateX(0)";
-              moveHd(0);
+              if (sd.multi) {
+                moveUnder(0);
+              } else {
+                moveHd(0);
+              }
               return;
             }
             sub.style.transform = `translateX(${dx}px)`;
-            moveHd(dx);
-            const p = Math.min(dx / 320, 1);
-            // 主页随进度放大回原位、薄纱随进度揭开（只动 transform/透明纱层）
-            if (isMobile())
-              main.style.transform = `scale(${(0.96 + 0.04 * p).toFixed(4)})`;
-            main.style.setProperty("--veil", (0.12 * (1 - p)).toFixed(3));
+            if (sd.multi) {
+              moveUnder(p);
+            } else {
+              moveHd(dx);
+              // 主页随进度放大回原位、薄纱随进度揭开（只动 transform/透明纱层）
+              if (isMobile())
+                main.style.transform = `scale(${(0.96 + 0.04 * p).toFixed(4)})`;
+              main.style.setProperty("--veil", (0.12 * (1 - p)).toFixed(3));
+            }
           },
           { passive: true },
         );
@@ -21185,21 +21917,30 @@
           (e) => {
             if (!sd || !sd.active) return;
             const dx = e.changedTouches[0].clientX - sd.x0;
+            const multi = sd.multi;
             sd.active = false;
             const isBack = dx > 90; // 是否达到「返回上一级」的阈值
+            const u = document.getElementById("under");
             sub.style.transition = `transform 0.3s ${CURVE}`;
-            main.style.transition = `transform 0.3s ${CURVE}`;
-            if (hd) hd.style.transition = `transform 0.3s ${CURVE}`;
-            if (isBack) {
-              sub.style.transform = "translateX(100%)";
-              if (hd) hd.style.transform = "translateX(100%)";
-              main.style.transform = "scale(1)";
-              main.style.setProperty("--veil", "0");
+            if (multi) {
+              if (u) u.style.transition = `transform 0.3s ${CURVE}`;
+              if (isBack) retitleForParent();
+              sub.style.transform = isBack ? "translateX(100%)" : "translateX(0)";
+              if (u) u.style.transform = isBack ? "translateX(0)" : "translateX(-26%)";
             } else {
-              sub.style.transform = "translateX(0)";
-              if (hd) hd.style.transform = "translateX(0)";
-              main.style.transform = "scale(0.96)";
-              main.style.setProperty("--veil", "0.12");
+              main.style.transition = `transform 0.3s ${CURVE}`;
+              if (hd) hd.style.transition = `transform 0.3s ${CURVE}`;
+              if (isBack) {
+                sub.style.transform = "translateX(100%)";
+                if (hd) hd.style.transform = "translateX(100%)";
+                main.style.transform = "scale(1)";
+                main.style.setProperty("--veil", "0");
+              } else {
+                sub.style.transform = "translateX(0)";
+                if (hd) hd.style.transform = "translateX(0)";
+                main.style.transform = "scale(0.96)";
+                main.style.setProperty("--veil", "0.12");
+              }
             }
             // 收尾：动画结束后统一清理内联样式。
             // 不能只依赖 transitionend（某些机型/快速滑动时会漏触发），
@@ -21213,22 +21954,26 @@
               sub.style.transition = "";
               sub.style.transform = "";
               clearMainFx(); // 抹掉 main 上的内联 transform / --veil / transition
+              if (multi) {
+                clearHd();
+                if (isBack) {
+                  // 多级：垫层已经在原位，直接退栈接管，不用再和动画
+                  subGoBackNow();
+                }
+                clearUnder();
+                main.classList.add("dim");
+                return;
+              }
               clearHd(); // 抹掉顶栏的内联位移，避免下次打开时顶栏错位
               if (isBack) {
-                if (subStack.length > 1) {
-                  // 多级返回：子页已滑出屏幕，退回上一级
-                  // （标题在滑完之后才换，不会在滑动过程中跳字）
-                  subGoBackNow();
-                } else {
-                  // 达到阈值：关闭子页，回到父页面（与点返回一致）
-                  closeSeq++; // 让仍在进行中的关闭动画收尾失效
-                  sub.classList.remove("on", "closing", "anim-fwd", "anim-back");
-                  sub.innerHTML = "";
-                  subStack = [];
-                  main.classList.remove("dim");
-                  renderTab && renderTab();
-                  syncFab();
-                }
+                // 达到阈值：关闭子页，回到父页面（与点返回一致）
+                closeSeq++; // 让仍在进行中的关闭动画收尾失效
+                sub.classList.remove("on", "closing", "anim-fwd", "anim-back");
+                sub.innerHTML = "";
+                subStack = [];
+                main.classList.remove("dim");
+                renderTab && renderTab();
+                syncFab();
               } else {
                 // 未达阈值：回弹，子页继续打开，恢复「压暗」的静止样式
                 main.classList.add("dim");
@@ -21477,10 +22222,12 @@
         );
         return d >= 0 ? d : 0;
       }
-      // 一键导出：设置页和首页提醒卡共用同一份实现，避免两处逻辑漂移
+      // 一键导出：设置页和首页提醒卡共用同一份实现，避免两处逻辑漂移。
+      // 导出内容始终以内存里的 DB 为准（它是最新的完整数据，含全部图片），
+      // 所以不管底座是 localStorage 还是 IndexedDB，导出的都是一份完整备份。
       function doExportBackup() {
         try {
-          const blob = new Blob([JSON.stringify(DB)], {
+          const blob = new Blob([JSON.stringify(DB, null, 0)], {
             type: "application/json",
           });
           const url = URL.createObjectURL(blob);
@@ -22524,10 +23271,15 @@
             n: rec.n || "",
           };
           p.innerHTML = `
-          <div class="seg" style="margin-bottom:10px">
-            <button data-t="happy">💖 快乐日常</button>
-            <button data-t="travel">🧳 旅行足迹</button>
-            <button class="on" data-t="period">🩸 经期</button>
+          <!-- 经期 Tab 也要和其它两个 Tab 保持同一套控制区结构：
+               不包这层的话，切到经期时上方那块会变回独立的圆角胶囊，
+               三个 Tab 之间的视觉会跳。 -->
+          <div class="rec-toolbar">
+            <div class="seg">
+              <button data-t="happy">💖 快乐日常</button>
+              <button data-t="travel">🧳 旅行足迹</button>
+              <button class="on" data-t="period">🩸 经期</button>
+            </div>
           </div>
           ${periodFormHtml()}
           ${periodHistoryEntryHtml()}`;
@@ -22544,16 +23296,21 @@
           return;
         }
         p.innerHTML = `
-        <div class="seg" style="margin-bottom:10px">
-          <button class="${recTab === "happy" ? "on" : ""}" data-t="happy">💖 快乐日常</button>
-          <button class="${recTab === "travel" ? "on" : ""}" data-t="travel">🧳 旅行足迹</button>
-          <button class="${recTab === "period" ? "on" : ""}" data-t="period">🩸 经期</button>
-        </div>
-        <div class="filter-row">
-          <button class="filter-date-btn" id="filterYmBtn">${recYmLabel()} <i class="fd-caret">▾</i></button>
-          <button class="filter-date-btn" id="recSortBtn">${recSortLabel()} <i class="fd-caret">▾</i></button>
-          <button class="chip" id="viewToggle">${DB.ui.viewMode === "moments" ? "🕐 时间轴" : "🖼 卡片流"}</button>
-          <button class="chip chip-clear" id="recFilterClear" style="display:${recHasFilter() ? "" : "none"}">清除</button>
+        <!-- 六个按钮（3 个类别 + 3 个筛选）装进同一个白底大容器里，
+             成为「一整块控制区」。两排都退成透明底、圆角和投影只由
+             .rec-toolbar 这一层出，避免出现两个割裂的胶囊。 -->
+        <div class="rec-toolbar">
+          <div class="seg">
+            <button class="${recTab === "happy" ? "on" : ""}" data-t="happy">💖 快乐日常</button>
+            <button class="${recTab === "travel" ? "on" : ""}" data-t="travel">🧳 旅行足迹</button>
+            <button class="${recTab === "period" ? "on" : ""}" data-t="period">🩸 经期</button>
+          </div>
+          <div class="filter-row">
+            <button class="filter-date-btn" id="filterYmBtn">${recYmLabel()} <i class="fd-caret">▾</i></button>
+            <button class="filter-date-btn" id="recSortBtn">${recSortLabel()} <i class="fd-caret">▾</i></button>
+            <button class="chip" id="viewToggle">${DB.ui.viewMode === "moments" ? "🕐 时间轴" : "🖼 卡片流"}</button>
+            <button class="chip chip-clear" id="recFilterClear" style="display:${recHasFilter() ? "" : "none"}">清除</button>
+          </div>
         </div>
         <!-- 搜索框：常驻 DOM。输入时只重绘列表而不整页重绘 ——
              否则每次按键都会重建 input，焦点直接丢失，根本没法连续打字。 -->
@@ -22952,6 +23709,45 @@
         <div class="swipe-act"><button class="ed">编辑</button><button class="de">删除</button></div></div>`;
       }
 
+      /* 往一条已有记录里追加图片：选图 → 压缩 → 存盘 → 回调重绘。
+         以前只有「进编辑页 → 加图 → 保存」这一条路，卡片上的 ＋ 又是跳到编辑页，
+         用户点完常常以为没反应。这里做成一步到位，并且把结果明确说出来：
+         成功几张、失败几张、超容量了要删哪些。 */
+      function addImgsToRecord(type, id, after) {
+        const r = DB[type].find((x) => x.id === id);
+        if (!r) {
+          toast("记录不存在，可能已被删除");
+          return;
+        }
+        pickImages((arr) => {
+          const ok = (arr || []).filter(Boolean);
+          if (!ok.length) {
+            toast("没有读取到可用图片，已取消");
+            return;
+          }
+          r.imgs = r.imgs || [];
+          const before = r.imgs.length;
+          r.imgs.push(...ok);
+          r.updatedAt = new Date().toISOString();
+          let saved = false;
+          try {
+            saved = save(true) !== false;
+          } catch (e) {
+            saved = false;
+          }
+          if (!saved) {
+            // 存不下就回滚，别留下「界面上有图、刷新就没了」的假象
+            r.imgs.length = before;
+            toast("保存失败：本地存储已满，请先删除部分图片或导出备份");
+            return;
+          }
+          // 返回列表时自动定位到最后一张（也就是这次新加的）
+          pendingImgFocus = { type, id, i: r.imgs.length - 1 };
+          toast(`已添加 ${ok.length} 张图片`);
+          if (after) after();
+        });
+      }
+
       function bindCards(box) {
         box.querySelectorAll(".swipe-wrap").forEach((wrap) => {
           const content = wrap.querySelector(".swipe-c");
@@ -23031,6 +23827,11 @@
               type,
               id,
               onAdd: () => recEditor(type, id),
+              // 卡片上的「＋」：直接选图上传，存盘后原地重绘卡片，新图立刻可见
+              onAddUpload: () =>
+                addImgsToRecord(type, id, () => {
+                  drawRecList();
+                }),
             },
           );
         });
@@ -23045,7 +23846,9 @@
             add.addEventListener("click", (e) => {
               e.preventDefault();
               e.stopPropagation();
-              recEditor(type, id);
+              addImgsToRecord(type, id, () => {
+                drawRecList();
+              });
             });
           const im = g.querySelector("img.im");
           if (im)
@@ -23240,7 +24043,10 @@
           if (im.classList.contains("im-add")) {
             e.preventDefault();
             e.stopPropagation();
-            if (cfg.onAdd) cfg.onAdd();
+            // 直接进选图+上传，不再绕到「编辑记录」页里再点一次添加 ——
+            // 那一步既多余，又容易让人以为点了没反应。
+            if (cfg.onAddUpload) cfg.onAddUpload();
+            else if (cfg.onAdd) cfg.onAdd();
             return;
           }
           const list = items();
@@ -24377,7 +25183,12 @@
             const meta = periodHistMeta();
             el.innerHTML = `
             <div class="sec-hd" style="margin:12px 2px 0"><span class="sec-t">🩸 共 ${meta.count} 次经期</span>
-              <button class="sec-more" onclick="pdEditDay(today())">记一笔</button></div>
+              ${
+                // 右上角导航栏已有「记一笔」，页面内不再重复一个
+                false
+                  ? `<button class="sec-more" onclick="pdEditDay(today())">记一笔</button>`
+                  : ""
+              }</div>
             <div style="margin-top:8px">${periodHistoryCards() || '<div class="card" style="margin-top:8px;text-align:center;color:var(--sub);font-size:13px;padding:22px 12px">还没有经期记录，记一笔后自动生成周期分析</div>'}</div>
             <div style="font-size:12px;color:var(--sub);margin:14px 4px;line-height:1.7">
               💡 每条日期可左滑编辑或删除。
@@ -24773,6 +25584,11 @@
         pdRecOpen = true;
         pdHost = "records";
         recTab = "period";
+        // 先把可能开着的子页收掉：表单在「记录」页上，切 tab 之后
+        // 原来那个子页（经期状态 / 历史记录）不会自己关，
+        // 返回手势的栈还留着它 —— 用户返回时就会看到「退回一个已经过时的旧页」。
+        // 收在切 tab 之前，动画和栈状态才不会打架。
+        if (subStack.length) closeSub(false);
         switchTab("records");
         // 这里原来强制把窗口和「记录」页都滚到 0：
         // 用户从经期状态页点进来、再返回时，主页面已经被滚到顶了，
@@ -26904,64 +27720,95 @@
           // 也导致保存时算不出「这次新增了几张」。
           const imgs = [...(d.imgs || [])];
           d.imgs = imgs;
-          const updateEndDate = () => {
-            const start = $("#reStartDate").value;
-            const days = +$("#reDays").value || 1;
-            if (start) {
-              const end = addDays(start, days - 1);
-              $("#reEndDate").value = end;
-              d.endDate = end;
-            }
+          /* 日期规则：表单里只保留「开始日期 / 结束日期」两个日期，
+             持续天数 = 结束 − 开始 + 1，自动算出，不再手填。
+             三者互相联动：改天数 → 推结束日期；改结束日期 → 反推天数；
+             改开始日期 → 保持天数、推结束日期；结束早于开始时自动纠正。 */
+          const FKEY = {
+            reStartDate: "startDate",
+            reEndDate: "endDate",
+            reDays: "days",
+            rePlace: "place",
+            reFrom: "from",
+            reTo: "to",
+            reText: "text",
           };
-          const fields = [
-            ["reDate", "date", d.date],
-            ["reStartDate", "date", d.startDate],
-            ["reEndDate", "date", d.endDate],
-            ["reDays", "number", d.days],
-            ["rePlace", "text", d.place],
-            ["reFrom", "text", d.from],
-            ["reTo", "text", d.to],
-            ["reText", "textarea", d.text],
-          ];
-          fields.forEach(([fid, type, val]) => {
-            const i = el.querySelector("#" + fid);
-            if (!i) return;
-            if (type === "textarea") i.value = val;
-            else i.value = val;
-            i.addEventListener("input", () => {
-              if (fid === "reStartDate" || fid === "reDays") updateEndDate();
-              d[fid.replace("re", "").toLowerCase()] = i.value;
-            });
-            i.addEventListener("change", () => {
-              if (fid === "reStartDate" || fid === "reDays") updateEndDate();
-              d[fid.replace("re", "").toLowerCase()] = i.value;
-            });
-          });
+          const qe = (s) => el.querySelector(s);
+          // 同时更新隐藏输入、按钮文案、以及内存里的 d
+          const setVal = (id, v) => {
+            const inp = qe("#" + id);
+            if (inp) inp.value = v;
+            const btn = qe("#" + id + "Btn");
+            if (btn) btn.textContent = v ? fmtCN(v) + " ▾" : "选择 ▾";
+            const k = FKEY[id];
+            if (k) d[k] = v;
+          };
+          // 改天数 / 改开始日期 → 推出结束日期
+          const pushEnd = () => {
+            const s = qe("#reStartDate").value;
+            if (!s) return;
+            setVal("reEndDate", addDays(s, Math.max(1, +qe("#reDays").value || 1) - 1));
+          };
+          // 改结束日期 → 反推持续天数
+          const pushDays = () => {
+            const s = qe("#reStartDate").value;
+            const e = qe("#reEndDate").value;
+            if (!s || !e) return;
+            setVal("reDays", Math.max(1, dayDiff(s, e) + 1));
+          };
+          // 结束早于开始 → 把结束日期顶到开始日期，避免出现负数天数
+          const clampEnd = () => {
+            const s = qe("#reStartDate").value;
+            const e = qe("#reEndDate").value;
+            if (s && e && dayDiff(s, e) < 0) {
+              setVal("reEndDate", s);
+              return true;
+            }
+            return false;
+          };
           const tplChips =
             type === "happy" && DB.templates.length
               ? `<div class="field-l">使用模板</div><div class="sym-grid" id="tplChips">${DB.templates.map((t) => `<button class="chip" data-tp="${t.id}">${esc(t.name)}</button>`).join("")}</div>`
               : "";
-          el.innerHTML = `<div class="card">${tplChips}
-          <div class="field"><div class="field-l">日期 *</div>
-            <button class="btn ghost" style="width:100%;" id="reDateBtn">${fmtCN(d.date)} ▾</button>
-            <input type="hidden" id="reDate" value="${d.date}">
-          </div>
-          <div class="field"><div class="field-l">开始日期</div>
+          /* 标签按钮只在「这里」生成。除了走一遍 load() 已经做过的清洗，
+             这里再兜一次底：任何非字符串都先转成字符串，
+             损坏值直接跳过 —— 保证 [object Object] 永远不会被渲染出来。 */
+          const tagChipsHtml = (sel) => {
+            const pick = (t) =>
+              typeof t === "string"
+                ? t
+                : t && typeof t === "object"
+                  ? t.name || t.t || t.label || t.text || t.v || ""
+                  : t == null
+                    ? ""
+                    : String(t);
+            const chosen = new Set((Array.isArray(sel) ? sel : []).map(pick));
+            return (Array.isArray(DB.tags.happy) ? DB.tags.happy : [])
+              .map(pick)
+              .filter((t) => t && t !== "[object Object]")
+              .map(
+                (t) =>
+                  `<button class="chip ${chosen.has(t) ? "on" : ""}" data-tg="${esc(t)}">${esc(t)}</button>`,
+              )
+              .join("") + `<button class="chip" id="reAddTag">＋ 新标签</button>`;
+          };          el.innerHTML = `<div class="card">${tplChips}
+          <div class="field"><div class="field-l">开始日期 *</div>
             <button class="btn ghost" style="width:100%;" id="reStartDateBtn">${d.startDate ? fmtCN(d.startDate) : "选择"} ▾</button>
             <input type="hidden" id="reStartDate" value="${d.startDate}">
           </div>
           <div class="field"><div class="field-l">结束日期（自动计算）</div>
-            <input class="input" id="reEndDate" value="${d.endDate ? fmtCN(d.endDate) : ""}" readonly style="background:#e8e8ea;">
+            <button class="btn ghost" style="width:100%;" id="reEndDateBtn">${d.endDate ? fmtCN(d.endDate) : "选择"} ▾</button>
+            <input type="hidden" id="reEndDate" value="${d.endDate}">
           </div>
-          <div class="field"><div class="field-l">持续天数</div>
-            <input class="input" type="number" min="1" id="reDays" value="${d.days || 1}"></div>
+          <div class="field"><div class="field-l">持续天数（自动计算）</div>
+            <input class="input" type="number" min="1" inputmode="numeric" id="reDays" value="${d.days || 1}">
+            <div class="re-hint">改「结束日期」或「持续天数」，另一项会自动换算</div></div>
           ${
             type === "happy"
               ? `
             <div class="field"><div class="field-l">地点</div><input class="input" id="rePlace" value="${esc(d.place || "")}" placeholder="在哪里？"></div>
             <div class="field"><div class="field-l">事件标签</div><div class="sym-grid" id="reTags">
-              ${DB.tags.happy.map((t) => `<button class="chip ${d.tags && d.tags.includes(t) ? "on" : ""}" data-tg="${esc(t)}">${esc(t)}</button>`).join("")}
-              <button class="chip" id="reAddTag">＋ 新标签</button></div></div>`
+              ${tagChipsHtml(d.tags)}</div></div>`
               : `
             <div class="field"><div class="field-l">出发地</div><input class="input" id="reFrom" value="${esc(d.from || "")}" placeholder="如：上海"></div>
             <div class="field"><div class="field-l">目的地 *</div><input class="input" id="reTo" value="${esc(d.to || "")}" placeholder="如：成都"></div>`
@@ -26982,7 +27829,8 @@
           <button class="btn blk" id="reSave">保存</button></div>`;
 
           // 日期选择器绑定
-          const bindDatePicker = (btnId, inputId, title) => {
+          // 日期选择器绑定
+          const bindDatePicker = (btnId, inputId, title, key) => {
             const btn = el.querySelector(btnId);
             const inp = el.querySelector(inputId);
             if (!btn || !inp) return;
@@ -26995,18 +27843,45 @@
                 month: parts[1] || 1,
                 day: parts[2] || 1,
                 onConfirm: (res) => {
+                  if (key) d[key] = res;
                   inp.value = res;
                   btn.textContent = fmtCN(res) + " ▾";
-                  d[inputId.replace("#", "").replace("re", "").toLowerCase()] =
-                    res;
-                  if (inputId === "#reStartDate") updateEndDate();
-                  if (inputId === "#reDate") d.date = res;
+                  // 触发一次 input，让联动（推结束日期 / 反推天数）走统一入口
+                  inp.dispatchEvent(new Event("input", { bubbles: true }));
                 },
               });
             };
           };
-          bindDatePicker("#reDateBtn", "#reDate", "选择日期");
-          bindDatePicker("#reStartDateBtn", "#reStartDate", "选择开始日期");
+          bindDatePicker("#reStartDateBtn", "#reStartDate", "选择开始日期", "startDate");
+          bindDatePicker("#reEndDateBtn", "#reEndDate", "选择结束日期", "endDate");
+          const fields = [
+            ["reStartDate", "date", d.startDate],
+            ["reEndDate", "date", d.endDate],
+            ["reDays", "number", d.days],
+            ["rePlace", "text", d.place],
+            ["reFrom", "text", d.from],
+            ["reTo", "text", d.to],
+            ["reText", "textarea", d.text],
+          ];
+          fields.forEach(([fid, ftype, val]) => {
+            const i = el.querySelector("#" + fid);
+            if (!i) return;
+            i.value = val;
+            const onEdit = () => {
+              const k = FKEY[fid];
+              if (k) d[k] = i.value;
+              if (fid === "reDays") pushEnd();
+              else if (fid === "reStartDate") {
+                clampEnd();
+                pushEnd();
+              } else if (fid === "reEndDate") {
+                clampEnd();
+                pushDays();
+              }
+            };
+            i.addEventListener("input", onEdit);
+            i.addEventListener("change", onEdit);
+          });
 
           let color = d.color || "";
           let tags = new Set(d.tags || []);
@@ -27040,6 +27915,9 @@
               "新增标签",
               [{ k: "t", label: "标签名", req: 1 }],
               (v) => {
+                DB.tags.happy = DB.tags.happy.filter(
+                  (t) => typeof t === "string" && t,
+                );
                 if (!DB.tags.happy.includes(v.t)) DB.tags.happy.push(v.t);
                 tags.add(v.t);
                 save();
@@ -27079,18 +27957,14 @@
               }),
           );
           $("#reSave").onclick = () => {
-            const date = $("#reDate").value;
-            if (!date) {
-              toast("请选择日期");
-              return;
-            }
-            const startDate = $("#reStartDate").value;
-            const days = +$("#reDays").value || 1;
-            if (!startDate) {
-              toast("请选择开始日期");
-              return;
-            }
-            const endDate = addDays(startDate, days - 1);
+            const startDate = qe("#reStartDate").value || today();
+            let endDate = qe("#reEndDate").value || startDate;
+            if (dayDiff(startDate, endDate) < 0) endDate = startDate;
+            // 保存前以两端日期为准再算一次持续天数，防止手填值和日期对不上
+            const days = Math.max(1, dayDiff(startDate, endDate) + 1);
+            // 表单里的「日期」字段已按需求移除；下游（时间轴 / 排序 / 搜索）仍读 r.date，
+            // 这里统一让 date = 开始日期，保证所有老逻辑不改也能正常跑。
+            const date = startDate;
             let obj;
             if (type === "happy") {
               const text = $("#reText").value.trim(),
@@ -27106,7 +27980,9 @@
                 days,
                 place,
                 text,
-                tags: [...tags],
+                tags: [...tags]
+                  .map((t) => String(t))
+                  .filter((t) => t && t !== "[object Object]"),
                 imgs: [...d.imgs],
                 color,
               };
@@ -27151,7 +28027,8 @@
             toast("已保存");
             closeSub();
           };
-          updateEndDate();
+          clampEnd();
+          pushDays();
         });
       }
 
@@ -27210,14 +28087,21 @@
             },
           );
           const rowsHtml = infoRows
-            .map(
-              (row, idx) =>
-                `<div class="detail-info-row" style="${idx === 0 ? "padding-top:0" : ""}">
+            .map((row, idx) => {
+              // 「持续」的值是「天数 + 起止区间」两行，整行会比别的行高。
+              // 前一行多缩进 6px、这一行少缩 6px，两条分割线的间距就一样了；
+              // 值本身保持居中，起止区间也跟天数对齐。
+              // 两行行：上 4px / 下 11px，让它的两条分割线间距与其余行（52px）完全一致
+              const twoLine = !!row.sub;
+              const style = twoLine
+                ? "padding-top:4px;padding-bottom:11px"
+                : "padding-bottom:20px";
+              return `<div class="detail-info-row" style="${style}">
             <span class="di-icon">${row.icon}</span>
             <span class="di-label">${row.label}</span>
-            <span class="di-value">${row.value}${row.sub ? `<div class="di-sub">${row.sub}</div>` : ""}</span>
-          </div>`,
-            )
+            <span class="di-value">${row.value}${twoLine ? `<div class="di-sub">${row.sub}</div>` : ""}</span>
+          </div>`;
+            })
             .join("");
           el.innerHTML = `
           <div class="card" style="padding:18px;text-align:center">
@@ -27258,6 +28142,10 @@
               type,
               id,
               onAdd: () => recEditor(type, id),
+              onAddUpload: () =>
+                addImgsToRecord(type, id, () => {
+                  paintSub();
+                }),
             });
           const dtLeft = el.querySelector(".imggrid.addleft");
           if (dtLeft) {
@@ -27266,7 +28154,9 @@
               a.onclick = (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                recEditor(type, id);
+                addImgsToRecord(type, id, () => {
+                  paintSub();
+                });
               };
             const im = dtLeft.querySelector("img.im");
             if (im) im.onclick = () => lightbox(r.imgs, 0, { onDelete: dtDel });
@@ -28250,12 +29140,13 @@
           <div class="card" style="margin-top:12px">
             <div class="field-l">当前标签（点击 ✎ 重命名，✕ 删除）</div>
             <div class="sym-grid" style="margin-top:10px">${DB.tags.happy
+              .filter((t) => typeof t === "string" && t)
               .map(
                 (t) => `<span class="chip">${esc(t)}
               <span style="cursor:pointer" data-e="${esc(t)}">✎</span>
               <span class="x" data-x="${esc(t)}">✕</span></span>`,
               )
-              .join("")}</div>
+              .join("") || '<span style="font-size:12.5px;color:var(--sub)">还没有标签，在下面添加</span>'}</div>
             <div style="display:flex;gap:8px;margin-top:14px">
               <input class="input" id="tagIn" placeholder="输入新标签，如：露营">
               <button class="btn" id="tagAdd" style="flex:none">添加</button></div>
@@ -28264,6 +29155,9 @@
             $("#tagAdd").onclick = () => {
               const v = $("#tagIn").value.trim();
               if (!v) return;
+              // 先剔除历史脏数据，再判重 —— 否则 DB 里存着对象时
+              // includes(字符串) 永远为 false，会越加越乱
+              DB.tags.happy = DB.tags.happy.filter((t) => typeof t === "string" && t);
               if (DB.tags.happy.includes(v)) return toast("标签已存在");
               DB.tags.happy.push(v);
               save();
@@ -29003,23 +29897,68 @@
               }
             };
             walk(DB);
-            // localStorage 以 UTF-16 存储，约 2 字节/字符，与 5MB 上限口径一致
-            const totalKB = (raw.length * 2) / 1024;
+            // 占用口径分两种底座：
+            //  · 还在 localStorage：按实际存进去的字符串算（UTF-16 每字符 2 字节），
+            //    这个数字才有意义，因为它要跟 5MB 那堵墙比。
+            //  · 已搬到 IndexedDB：localStorage 只剩去图镜像，按它算会严重低估，
+            //    改用 JSON 实长 + 浏览器给的实际占用（usage）里取大者。
+            const dataChars = JSON.stringify(DB).length;
+            const totalKB = usingIDB
+              ? Math.max(
+                  (dataChars * 2) / 1024,
+                  (StoreInfo.usageMB || 0) * 1024,
+                )
+              : (raw.length * 2) / 1024;
             const imgKB = (imgChars * 2) / 1024;
             const recKB = Math.max(0, totalKB - imgKB);
             const pct =
               totalKB > 0
-                ? Math.max(2, Math.round((imgKB / totalKB) * 100))
+                ? Math.max(2, Math.min(100, Math.round((imgKB / totalKB) * 100)))
                 : 0;
+            // 容量条的最大值：localStorage 用实测出来的那堵墙；IDB 用浏览器配额
+            const capKB = usingIDB
+              ? (StoreInfo.quotaMB || 0) * 1024
+              : (StoreInfo.lsMB || 5) * 1024;
+            const usePct =
+              capKB > 0
+                ? Math.min(100, Math.round((totalKB / capKB) * 100))
+                : 0;
+            const engineRow = `
+          <div class="glist" style="margin-top:12px">
+            <div class="cell" style="cursor:default;align-items:flex-start">
+              <span class="ic">🗄️</span>
+              <span class="tt" style="flex:1">
+                <span style="display:block">存储引擎</span>
+                <span style="display:block;font-size:12px;color:var(--sub);font-weight:500;margin-top:4px;line-height:1.6">
+                  当前：<b style="color:${usingIDB ? "var(--primary)" : "var(--sub)"}">${
+                    usingIDB ? "IndexedDB（大容量）" : "localStorage（约 " + (StoreInfo.lsMB || 5) + "MB 上限）"
+                  }</b><br>
+                  ${
+                    usingIDB
+                      ? `总容量约 ${StoreInfo.quotaMB ? StoreInfo.quotaMB + "MB" : "按浏览器配额"}，已用 ${usePct}%`
+                      : `这台设备实测可写约 ${StoreInfo.lsMB || 5}MB，已用 ${usePct}%`
+                  }
+                </span>
+              </span>
+              ${
+                usingIDB
+                  ? ""
+                  : `<button class="sa-btn" id="dMove" style="align-self:center">换大容量</button>`
+              }
+            </div>
+          </div>`;
             el.innerHTML = `<div class="card" style="margin-top:8px">
           <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:500">
-            <span style="color:var(--sub)">本地存储占用</span><b style="font-weight:600">${totalKB.toFixed(1)} KB</b></div>
+            <span style="color:var(--sub)">当前数据占用</span><b style="font-weight:600">${totalKB.toFixed(1)} KB</b></div>
           <div style="height:8px;border-radius:6px;background:var(--bg);overflow:hidden;margin-top:10px;display:flex">
             <span style="width:${pct}%;background:var(--primary)"></span>
             <span style="flex:1;background:var(--accent)"></span></div>
           <div style="display:flex;gap:16px;margin-top:8px;font-size:12px;color:var(--sub);font-weight:500;flex-wrap:wrap">
             <span>🖼️ 图片 ${imgCount} 张 · ${imgKB.toFixed(1)} KB</span>
-            <span>📝 记录等 ${recKB.toFixed(1)} KB</span></div></div>
+            <span>📝 记录等 ${recKB.toFixed(1)} KB</span></div>
+          <div style="margin-top:12px;font-size:12px;color:var(--sub);font-weight:500">
+            容量占用 ${usePct}%（上限约 ${capKB >= 1024 ? (capKB / 1024).toFixed(1) + "MB" : capKB.toFixed(0) + "KB"}）</div></div>
+        ${engineRow}
         <div class="glist" style="margin-top:12px">
           <button class="cell" style="width:100%;text-align:left" id="dExp"><span class="ic">📤</span>
             <span class="tt">导出数据（JSON备份）</span><span class="arr">›</span></button>
@@ -29042,6 +29981,14 @@
             // 复用首页提醒卡那一份导出实现：导出成功后会记下 lastBackup，
             // 首页的提醒卡因此自动消失，不会出现「刚备份完还在提醒」
             $("#dExp").onclick = () => doExportBackup();
+            const mvBtn = $("#dMove");
+            if (mvBtn)
+              mvBtn.onclick = async () => {
+                mvBtn.textContent = "搬运中…";
+                const ok = await migrateToIDB(true);
+                if (ok) draw();
+                else mvBtn.textContent = "换大容量";
+              };
             $("#dImp").onclick = () => {
               const inp = document.createElement("input");
               inp.type = "file";
@@ -29116,6 +30063,11 @@
                   okCls: "btn danger",
                   onOk: () => {
                     localStorage.removeItem(KEY);
+                    try {
+                      localStorage.removeItem(IDB_MARK);
+                    } catch (e) {}
+                    if (idbHandle) idbDel(IDB_KEY);
+                    usingIDB = false;
                     DB = DEF();
                     save();
                     applyTheme();
@@ -29136,71 +30088,118 @@
             ? "var(--accent)"
             : "var(--ok)";
 
+      /* 关于页：三组功能说明（记录 / 数据 / 隐私），每组一个二级页。
+         关于页本身只做入口列表，像系统「关于」那样一屏可扫完。 */
+      function aboutGroupPage(key) {
+        const G = aboutGroups().find((g) => g.k === key);
+        if (!G) return;
+        openSub(G.t, (el) => {
+          el.innerHTML = `
+          <div class="card about-sec-card">
+            ${G.items
+              .map((f) => {
+                // 支持「标题｜说明」两段式：有说明就排两行，没有就单行
+                const [t, d] = String(f).split("｜");
+                // 勾选标记用中性灰：整页只有主数值才上主题色，
+                // 一行一个彩色勾会让页面碎成好几块颜色。
+                return `<div class="about-item">
+                  <span class="ai-ck">✓</span>
+                  <span class="ai-tx">${esc(t)}${d ? `<i>${esc(d)}</i>` : ""}</span>
+                </div>`;
+              })
+              .join("")}
+          </div>
+          <div style="font-size:12.5px;color:var(--sub);margin:14px 4px;line-height:1.8">${G.note || ""}</div>`;
+        });
+      }
+
+      // 关于页的三组功能说明：唯一数据源，关于页入口 + 各二级页都用它
+      function aboutGroups() {
+        return [
+          {
+            k: "record",
+            c: "",
+            t: "记录我们的日子",
+            note: "所有内容都保存在这台设备上，不上传、不同步、不需要登录。",
+            items: [
+              "快乐日常与旅行足迹｜随手记下每天的小事，可以配图、打标签、选卡片颜色",
+              "相册与时间胶囊｜把照片归成册，写一封给未来的信定时开启",
+              "情侣日历｜纪念日、生日、经期一目了然，自动倒计时与智能预测",
+              "备忘录与打卡｜清单式待办、每日打卡，连成一条坚持记录",
+              "成就墙与恋爱分｜把累计的点点滴滴，换成看得见的成就",
+            ],
+          },
+          {
+            k: "data",
+            c: "accent",
+            t: "懂你们的数字",
+            note: "所有统计都由本地数据实时算出，不依赖任何服务端。",
+            items: [
+              "恋爱计时器｜按天/时/分/秒实时走字，支持暂停分段累计",
+              "数据看板｜指标可自定义显示与排序，长按拖拽调整",
+              "月度趋势与幸福指数｜按月汇总记录热度与心情分布",
+              "年龄计算器｜按生日自动换算年龄与下次生日倒计时",
+              "年度报告｜一整年的记录自动汇总成一页",
+            ],
+          },
+          {
+            k: "privacy",
+            c: "ok",
+            t: "数据只属于你们",
+            note: "换设备时用「数据管理」里的导出/导入搬家即可，导入会自动去重合并。",
+            items: [
+              "纯离线运行｜无后端、无账号、无联网依赖，断网也能用",
+              "全量数据本地存储｜只写在这台设备的浏览器里，第三方拿不到",
+              "JSON 导入导出｜可整份备份，也可与他人数据合并去重",
+              "本地图片压缩｜图片先压再存，尽量少占空间",
+              "存储守护｜空间不足会提前提醒并建议清理，避免静默丢数据",
+            ],
+          },
+        ];
+      }
+
       function aboutPage() {
         openSub("关于本产品", (el) => {
-          // 功能亮点：三组用「主题色 + 两个中性色」，
-          // 原来写死 #FF2D55 / #3478F6 / #34C759，用户换主题色后这里不跟着变，
-          // 整页就只剩这一块是死的。现在第一组吃主题色，另两组走 accent / ok。
-          const groups = [
-            {
-              c: "",
-              t: "💝 记录我们的日子",
-              items: [
-                "快乐记录、旅行足迹、相册、时间胶囊",
-                "情侣日历：纪念日、生日、经期一目了然",
-                "备忘录、打卡、成就墙，每天一点点",
-              ],
-            },
-            {
-              c: "accent",
-              t: "📊 懂你们的数字",
-              items: [
-                "恋爱计时、年龄计算器、早上好卡片",
-                "数据看板与幸福指数，自定义显示哪些指标",
-                "经期智能分析与预测",
-              ],
-            },
-            {
-              c: "ok",
-              t: "🔒 数据只属于你们",
-              items: [
-                "纯离线运行，无后端、无联网依赖",
-                "全量数据本地存储，隐私独立",
-                "JSON 导入导出合并，自动去重",
-              ],
-            },
-          ];
+          const groups = aboutGroups();
           el.innerHTML = `
           <div class="ab-head">
             <div class="ab-badge">💞</div>
-            <div class="ab-name">情侣全记录</div>
-            <div class="ab-sub">V2.0 完整版 · 纯本地运行 · 无需网络</div>
+            <div class="ab-name">${APP_NAME}</div>
+            <div class="ab-sub">${APP_V} · 纯本地运行 · 无需网络</div>
+          </div>
+          <!-- 像系统「关于」页那样：上面是 App 信息，中间是几个功能入口，
+               点进去才是具体内容；关于页本身保持一屏可扫完，不再堆满文字。 -->
+          <div class="card about-menu">
+            ${groups
+              .map(
+                (g) => `<button class="about-row" onclick="aboutGroupPage('${g.k}')">
+                  <span class="ar-t">${g.t}</span>
+                  <span class="ar-n">${g.items.length} 项</span>
+                  <span class="ar-arr">›</span>
+                </button>`,
+              )
+              .join("")}
+            <button class="about-row" onclick="versionPage(0)">
+              <span class="ar-t">版本更新</span>
+              <span class="ar-n">${APP_VER_NUM}</span>
+              <span class="ar-arr">›</span>
+            </button>
           </div>
           <div class="about-sec-t">🗓️ 版本记录</div>
           <!-- 每个版本一张卡，卡上只留「版本号 + 更新日期」；
                具体更新内容点进二级页看 —— 一屏就能扫完所有版本 -->
           ${versionList().map(
             (r, i) => `<button class="card vcard slim ${r.cur ? "cur" : ""}" onclick="versionPage(${i})">
-              <span class="vc-v">V${r.v}</span>
+              <span class="vc-v">Love轨迹 ${r.v}</span>
               ${r.cur ? '<span class="vc-tag">当前版本</span>' : ""}
               <span class="vc-date">${r.date}</span>
               <span class="vc-arr">›</span>
             </button>`,
           ).join("")}
-          ${groups
-            .map(
-              (g) =>
-                `<div class="about-sec-t" style="color:${varPrimary(g.c)}">${g.t}</div>
-          <div class="card">${g.items
-            .map(
-              (f) =>
-                `<div class="about-item"><span class="ai-ck" style="background:${varPrimary(g.c)}1A;color:${varPrimary(g.c)}">✓</span><span>${f}</span></div>`,
-            )
-            .join("")}</div>`,
-            )
-            .join("")}
-          <div style="font-size:13px;color:var(--sub);text-align:center;margin:20px 0 8px;line-height:1.8">
-            把每一个平凡日子，都过成值得纪念的样子。
+          <div class="about-foot">
+            <div>${APP_NAME} · ${APP_V}</div>
+            <div>纯离线运行 · 数据仅存本机</div>
+            <div class="af-note">把每一个平凡日子，都过成值得纪念的样子。</div>
           </div>`;
         });
       }
@@ -29210,7 +30209,11 @@
       function versionList() {
         return [
           {
-            v: "2.0 完整版",
+            // 版本号在这里统一定义成纯数字形式（"2.0.0"），
+            // 展示时由 APP_V / prevVer 加 "Love轨迹 " 前缀 ——
+            // 别在这里写「2.0 完整版」这种带后缀的写法，否则标题会变成
+            // 「Love轨迹 2.0 完整版」这种又长又跟卡片对不上的名字。
+            v: "2.0.0",
             date: "2026-09-12",
             cur: true,
             items: [
@@ -29255,36 +30258,58 @@
         ];
       }
 
-      function versionPage(i) {
+      /* 版本号格式：Love轨迹 x.x.x
+         APP_V 是唯一数据源 —— 关于页标题、版本列表、版本详情页标题全部取它，
+         改版本号只改这一处，不会出现「卡片上是 V2.0、详情页标题是 V2.0 完整版」
+         这类各处写法不一致的问题。 */
+      const APP_NAME = "情侣全记录";
+      const APP_VER_NUM = "2.0.0";
+      const APP_V = `Love轨迹 ${APP_VER_NUM}`;
+      // 传进来的可能是 "2.0 完整版" / "2.0.0" / "1.4" 等历史写法，统一成 "Love轨迹 x"
+      const prevVer = (v) =>
+        `Love轨迹 ${String(v).trim().split(/\s+/)[0] || v}`;
+
+      // replace=1 时原地替换当前栈顶（用于「上一版本」），不压新层、不闪回上一页
+      function versionPage(i, replace) {
         const list = versionList();
         const r = list[i];
         if (!r) return;
-        openSub("V" + r.v, (el) => {
-          const prev = list[i + 1]; // 列表是新版本在前，下一条更早
-          el.innerHTML = `
+        // 标题用完整版本号；点「上一版本」时用 replaceSub 原地换栈顶，
+        // 不再 closeSub + 延时重开（那会先弹回列表页、闪一下）。
+        const go = (idx, replace) => {
+          const it = list[idx];
+          if (!it) return;
+          const render = (el) => {
+            const prev = list[idx + 1];
+            el.innerHTML = `
           <div class="card vdetail">
             <div class="vd-hd">
-              <span class="vd-v">V${r.v}</span>
-              ${r.cur ? '<span class="vc-tag">当前版本</span>' : ""}
+              <span class="vd-v">Love轨迹 ${it.v}</span>
+              ${it.cur ? '<span class="vc-tag">当前版本</span>' : ""}
             </div>
-            <div class="vd-date">📅 更新于 ${r.date}</div>
-            <div class="vd-list">${r.items
+            <div class="vd-date">📅 更新于 ${it.date}</div>
+            <div class="vd-list">${it.items
               .map((t) => `<div class="vd-item"><i></i><span>${t}</span></div>`)
               .join("")}</div>
           </div>
           ${
             prev
-              ? `<button class="mini-row" style="margin-top:12px" onclick="closeSub();setTimeout(()=>versionPage(${i + 1}),260)">
+              ? `<button class="mini-row" style="margin-top:12px" onclick="versionPage(${idx + 1},1)">
                    <span class="mr-ic">⬅️</span>
                    <span class="mr-main">
-                     <span class="mr-t">上一版本 V${prev.v}</span>
+                     <span class="mr-t">上一版本 ${prevVer(prev.v)}</span>
                      <span class="mr-d">${prev.date}</span>
                    </span>
                    <span class="mr-arr">›</span>
                  </button>`
               : ""
           }`;
-        });
+          };
+          const title = `Love轨迹 ${it.v}`;
+          if (replace) replaceSub(title, render);
+          else openSub(title, render);
+        };
+        go(i, !!replace);
       }
 
       /* ================================================================
@@ -30204,6 +31229,9 @@
         rHome();
         switchTab("home");
         randomizeTabBar();
+        // 存储引擎初始化放在最后：探测环境配额、必要时从 IndexedDB 热加载。
+        // 不 await —— 首屏不能被异步存储拖住，数据到位后再重绘一次即可。
+        bootIDB();
         showSplash();
       })();
     </script>
